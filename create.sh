@@ -2,6 +2,7 @@
 
 set -euvx
 
+SELF_PATH=$(dirname "$0")
 REPO_NAME="example-get-started"
 REPO_PATH="../$REPO_NAME"
 
@@ -22,20 +23,24 @@ echo '.env/' >> .gitignore
 
 git add .
 git commit -a -m  "initialize Git"
+git tag -a "0-empty" -m "Git is initialized"
 
 pip install dvc[s3]
 
 dvc init
 git commit -m "initialize DVC"
+git tag -a "1-initialize" -m "DVC is initialized"
 
 dvc remote add -d s3 s3://dvc-storage   
 git commit -a -m "add default S3 remote"
+git tag -a "2-remote" -m "remote initialized"
 
 mkdir data
 wget https://dvc.org/s3/get-started/data.xml -O data/data.xml
 dvc add data/data.xml
 git add .gitignore data/data.xml.dvc
 git commit -m "add source data to DVC"
+git tag -a "3-add-file" -m "data file added"
 dvc push
 
 mkdir src
@@ -43,10 +48,13 @@ wget https://dvc.org/s3/get-started/code.zip -O src/code.zip
 unzip src/code.zip -d src
 rm -f src/code.zip
 mv src/requirements.txt .
+echo "dvc[s3]" >> requirements.txt
+cp $SELF_PATH/code/README.md $REPO_PATH
 git add .
 git commit -m 'add source code'
+git tag -a "4-sources" -m "source code added"
 
-pip install -U -r requirements.txt
+pip install -r requirements.txt
 
 dvc run -f prepare.dvc --wdir data \
         -d ../src/prepare.py -d data.xml \
@@ -54,6 +62,7 @@ dvc run -f prepare.dvc --wdir data \
         python ../src/prepare.py data.xml
 git add .gitignore prepare.dvc
 git commit -m "add data preparation stage"
+git tag -a "5-preparation" -m "first transformation stage added"
 dvc push
 
 dvc run -f featurize.dvc \
@@ -63,6 +72,7 @@ dvc run -f featurize.dvc \
                data/data-test.tsv data/matrix-test.pkl
 git add .gitignore featurize.dvc
 git commit -m "add featurization stage"
+git tag -a "6-featurization" -m "featurization stage added"
 dvc push
 
 dvc run -f train.dvc \
@@ -71,6 +81,7 @@ dvc run -f train.dvc \
         python src/train.py data/matrix.pkl model.pkl
 git add .gitignore train.dvc
 git commit -m "add train stage"
+git tag -a "7-train" -m "train stage added"
 dvc push
 
 dvc run -f evaluate.dvc \
@@ -79,7 +90,8 @@ dvc run -f evaluate.dvc \
         python src/evaluate.py model.pkl data/matrix-test.pkl auc.metric
 git add .gitignore evaluate.dvc auc.metric
 git commit -m "add evaluation stage"
-git tag -a "baseline" -m "baseline experiment"
+git tag -a "baseline-experiment" -m "baseline experiment"
+git tag -a "8-evaluation" -m "evaluation stage added"
 dvc push
 
 sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
@@ -87,10 +99,13 @@ sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "
 
 dvc repro evaluate.dvc
 git commit -a -m "try using bigrams"
-git tag -a "bigrams" -m "bigrams experiment"
+git tag -a "bigrams-experiment" -m "bigrams experiment"
+git tag -a "9-bigrams" -m "bigrams version added"
+dvc push
 
 hub create iterative/example-get-started -d "Get started DVC project" -h "https://dvc.org/doc/get-started" 
 git push -u origin master
+git push origin --tags
 
 popd
 
