@@ -2,7 +2,7 @@
 
 set -euvx
 
-SELF_PATH=$(dirname "$0")
+THIS="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-get-started"
 REPO_PATH="../$REPO_NAME"
 
@@ -38,7 +38,7 @@ git tag -a "2-remote" -m "remote initialized"
 mkdir data
 wget https://dvc.org/s3/get-started/data.xml -O data/data.xml
 dvc add data/data.xml
-git add .gitignore data/data.xml.dvc
+git add data/.gitignore data/data.xml.dvc
 git commit -m "add source data to DVC"
 git tag -a "3-add-file" -m "data file added"
 dvc push
@@ -49,7 +49,7 @@ unzip src/code.zip -d src
 rm -f src/code.zip
 mv src/requirements.txt .
 echo "dvc[s3]" >> requirements.txt
-cp $SELF_PATH/code/README.md $REPO_PATH
+cp $THIS/code/README.md $REPO_PATH
 git add .
 git commit -m 'add source code'
 git tag -a "4-sources" -m "source code added"
