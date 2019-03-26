@@ -1,4 +1,6 @@
 import sys
+import os
+
 from sklearn.metrics import precision_recall_curve
 import sklearn.metrics as metrics
 
@@ -13,7 +15,7 @@ if len(sys.argv) != 4:
     sys.exit(1)
 
 model_file = sys.argv[1]
-matrix_file = sys.argv[2]
+matrix_file = os.path.join(sys.argv[2], 'test.pkl')
 metrics_file = sys.argv[3]
 
 with open(model_file, 'rb') as fd:
@@ -34,3 +36,4 @@ auc = metrics.auc(recall, precision)
 
 with open(metrics_file, 'w') as fd:
     fd.write('{:4f}\n'.format(auc))
+

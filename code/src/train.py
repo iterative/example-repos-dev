@@ -1,6 +1,8 @@
+import sys
+import os
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-import sys
 
 try:
     import cPickle as pickle
@@ -17,7 +19,7 @@ input = sys.argv[1]
 output = sys.argv[2]
 seed = 20170426
 
-with open(input, 'rb') as fd:
+with open(os.path.join(input, 'train.pkl'), 'rb') as fd:
     matrix = pickle.load(fd)
 
 labels = np.squeeze(matrix[:, 1].toarray())

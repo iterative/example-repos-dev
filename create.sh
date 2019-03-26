@@ -44,10 +44,9 @@ git tag -a "3-add-file" -m "data file added"
 dvc push
 
 mkdir src
-wget https://dvc.org/s3/get-started/code.zip -O src/code.zip
-unzip src/code.zip -d src
-rm -f src/code.zip
-mv src/requirements.txt .
+wget https://dvc.org/s3/get-started/code.zip
+unzip code.zip
+rm -f code.zip
 echo "dvc[s3]" >> requirements.txt
 cp $THIS/code/README.md $REPO_PATH
 git add .
@@ -56,38 +55,38 @@ git tag -a "4-sources" -m "source code added"
 
 pip install -r requirements.txt
 
-dvc run -f prepare.dvc --wdir data \
-        -d ../src/prepare.py -d data.xml \
-        -o data.tsv -o data-test.tsv \
-        python ../src/prepare.py data.xml
-git add .gitignore prepare.dvc
+dvc run -f prepare.dvc \
+        -d src/prepare.py -d data/data.xml \
+        -o data/prepared \
+        python src/prepare.py data/data.xml
+git add data/.gitignore prepare.dvc
 git commit -m "add data preparation stage"
 git tag -a "5-preparation" -m "first transformation stage added"
 dvc push
 
 dvc run -f featurize.dvc \
-        -d src/featurization.py -d data/data.tsv -d data/data-test.tsv \
-        -o data/matrix.pkl -o data/matrix-test.pkl \
-        python src/featurization.py data/data.tsv data/matrix.pkl \
-               data/data-test.tsv data/matrix-test.pkl
-git add .gitignore featurize.dvc
+        -d src/featurization.py -d data/prepared \
+        -o data/features \
+        python src/featurization.py \
+               data/prepared data/features
+git add data/.gitignore featurize.dvc
 git commit -m "add featurization stage"
 git tag -a "6-featurization" -m "featurization stage added"
 dvc push
 
 dvc run -f train.dvc \
-        -d src/train.py -d data/matrix.pkl \
+        -d src/train.py -d data/features \
         -o model.pkl \
-        python src/train.py data/matrix.pkl model.pkl
+        python src/train.py data/features model.pkl
 git add .gitignore train.dvc
 git commit -m "add train stage"
 git tag -a "7-train" -m "train stage added"
 dvc push
 
 dvc run -f evaluate.dvc \
-        -d src/evaluate.py -d model.pkl -d data/matrix-test.pkl \
+        -d src/evaluate.py -d model.pkl -d data/features \
         -M auc.metric \
-        python src/evaluate.py model.pkl data/matrix-test.pkl auc.metric
+        python src/evaluate.py model.pkl data/features auc.metric
 git add .gitignore evaluate.dvc auc.metric
 git commit -m "add evaluation stage"
 git tag -a "baseline-experiment" -m "baseline experiment"

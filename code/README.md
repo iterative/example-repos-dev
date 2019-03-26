@@ -121,12 +121,14 @@ look like this:
     .
     ├── auc.metric           <-- DVC metric file to compare baseline and bigrams
     ├── data                 <-- directory with input and intermediate data
-    │   ├── data-test.tsv
-    │   ├── data.tsv
+    │   ├── features         <-- extracted feature matrices
+    │   │   ├── test.pkl
+    │   │   └── train.pkl
+    │   └── prepared         <-- pre-processed dataset, split and TSV formatted
+    │       ├── test.tsv
+    │       └── train.tsv    
     │   ├── data.xml         <-- initial XML StackOverflow dataset
     │   ├── data.xml.dvc
-    │   ├── matrix-test.pkl
-    │   └── matrix.pkl
     ├── evaluate.dvc         <-- DVC files in the project root describe pipeline
     ├── featurize.dvc
     ├── model.pkl
@@ -139,3 +141,4 @@ look like this:
     │   └── train.py
     └── train.dvc
 ```
+

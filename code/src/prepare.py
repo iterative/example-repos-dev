@@ -3,6 +3,8 @@ import sys
 import xml.etree.ElementTree
 import random
 import re
+import os
+import errno
 
 if len(sys.argv) != 2:
     sys.stderr.write('Arguments error. Usage:\n')
@@ -14,8 +16,8 @@ split = 0.20
 random.seed(20170426)
 
 input = sys.argv[1]
-output_train = 'data.tsv'
-output_test = 'data-test.tsv'
+output_train = os.path.join('data', 'prepared', 'train.tsv')
+output_test = os.path.join('data', 'prepared', 'test.tsv')
 
 try:
     reload(sys)
@@ -23,6 +25,14 @@ try:
 except NameError:
     pass
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 def process_posts(fd_in, fd_out_train, fd_out_test, target_tag):
     num = 1
@@ -43,8 +53,10 @@ def process_posts(fd_in, fd_out_train, fd_out_test, target_tag):
         except Exception as ex:
             sys.stderr.write('Error in line {}: {}\n'.format(num, ex))
 
+mkdir_p(os.path.join('data', 'prepared'))
 
 with io.open(input, encoding='utf8') as fd_in:
     with open(output_train, 'w', encoding='utf8') as fd_out_train:
         with open(output_test, 'w', encoding='utf8') as fd_out_test:
             process_posts(fd_in, fd_out_train, fd_out_test, u'<python>')
+
