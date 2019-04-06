@@ -41,13 +41,13 @@ intermediate and final results that were produced.
 
 ```shell
     $ dvc remote list
-    s3	s3://dvc-storage
+    storage https://remote.dvc.org/get-started
 ```
 
 You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 
 ```shell
-    $ dvc pull -r s3
+    $ dvc pull -r storage
 ```
 
 and [`dvc repro`](https://man.dvc.org/repro) to reproduce the pipeline:
@@ -80,7 +80,7 @@ playground ready.
 - `0-empty` - empty Git repository.
 - `1-initialize` - DVC has been initialized. The `.dvc` with the cache directory
   created.
-- `2-remote` - remote S3 storage initialized. It is a shared read only storage
+- `2-remote` - remote HTTP storage initialized. It is a shared read only storage
   that contains all data artifacts produced during next steps.
 - `3-add-file` - input data file `data.xml` downloaded and put under DVC
   control with [`dvc add`](https://man.dvc.org/add). First `.dvc` meta-file
@@ -126,7 +126,7 @@ look like this:
     │   │   └── train.pkl
     │   └── prepared         <-- pre-processed dataset, split and TSV formatted
     │       ├── test.tsv
-    │       └── train.tsv    
+    │       └── train.tsv
     │   ├── data.xml         <-- initial XML StackOverflow dataset
     │   ├── data.xml.dvc
     ├── evaluate.dvc         <-- DVC files in the project root describe pipeline

@@ -7,7 +7,7 @@ REPO_NAME="example-get-started"
 REPO_PATH="../$REPO_NAME"
 
 if [ -d "$REPO_PATH" ]; then
-    echo "Repo $REPO_NAME already exists, remove it first or update the version (ver file)"
+    echo "Repo $REPO_NAME already exists, remove it first"
     exit 1
 fi
 
@@ -31,8 +31,9 @@ dvc init
 git commit -m "initialize DVC"
 git tag -a "1-initialize" -m "DVC is initialized"
 
-dvc remote add -d s3 s3://dvc-storage   
-git commit -a -m "add default S3 remote"
+dvc remote add -d storage https://remote.dvc.org/get-started
+dvc remote add -d --local storage s3://dvc-storage/get-started
+git commit -a -m "add default HTTP remote"
 git tag -a "2-remote" -m "remote initialized"
 
 mkdir data
@@ -102,9 +103,22 @@ git tag -a "bigrams-experiment" -m "bigrams experiment"
 git tag -a "9-bigrams" -m "bigrams version added"
 dvc push
 
-hub create iterative/example-get-started -d "Get started DVC project" -h "https://dvc.org/doc/get-started" 
-git push -u origin master
-git push origin --tags
-
 popd
 
+echo "`cat <<EOF-
+Install 'hub' and run:
+
+hub create iterative/example-get-started -d "Get started DVC project" \
+-h "https://dvc.org/doc/get-started"
+if you'd like to create the repository from scratch.
+
+Make sure to delete the exising one on Github, save the tags and put them back
+via UI interface when you done.
+
+Run these commands manually in the generated get-started repo to rewrite the
+eixisting repo:
+
+git remote add origin git@github.com:iterative/example-get-started.git
+git push --force origin master
+git push --force origin --tags
+`"
