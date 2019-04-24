@@ -34,6 +34,7 @@ def mkdir_p(path):
         else:
             raise
 
+
 def process_posts(fd_in, fd_out_train, fd_out_test, target_tag):
     num = 1
     for line in fd_in:
@@ -51,12 +52,13 @@ def process_posts(fd_in, fd_out_train, fd_out_test, target_tag):
 
             num += 1
         except Exception as ex:
-            sys.stderr.write('Error in line {}: {}\n'.format(num, ex))
+            sys.stderr.write('Skipping the broken line {}: {}\n'.format(num, ex))
+
 
 mkdir_p(os.path.join('data', 'prepared'))
 
 with io.open(input, encoding='utf8') as fd_in:
-    with open(output_train, 'w', encoding='utf8') as fd_out_train:
-        with open(output_test, 'w', encoding='utf8') as fd_out_test:
+    with io.open(output_train, 'w', encoding='utf8') as fd_out_train:
+        with io.open(output_test, 'w', encoding='utf8') as fd_out_test:
             process_posts(fd_in, fd_out_train, fd_out_test, u'<python>')
 

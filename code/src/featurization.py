@@ -15,12 +15,6 @@ except ImportError:
 
 np.set_printoptions(suppress=True)
 
-try:
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-except NameError:
-    pass
-
 if len(sys.argv) != 3 and len(sys.argv) != 5:
     sys.stderr.write('Arguments error. Usage:\n')
     sys.stderr.write('\tpython featurization.py data-dir-path features-dir-path\n')
@@ -30,6 +24,12 @@ train_input = os.path.join(sys.argv[1], 'train.tsv')
 test_input = os.path.join(sys.argv[1], 'test.tsv')
 train_output = os.path.join(sys.argv[2], 'train.pkl')
 test_output = os.path.join(sys.argv[2], 'test.pkl')
+
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+except NameError:
+    pass
 
 
 def mkdir_p(path):
