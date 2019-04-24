@@ -53,7 +53,7 @@ You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 and [`dvc repro`](https://man.dvc.org/repro) to reproduce the pipeline:
 
 ```shell
-    $ dvc repro
+    $ dvc repro evaluate.dvc
 ```
 
 If you'd like to test commands like [`dvc push`](https://man.dvc.org/push),
