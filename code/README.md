@@ -1,7 +1,8 @@
 # DVC Get Started
 
-This is an auto-generated repository (please, don't create issues here, use the
-[example-get-started-dev](https://github.com/iterative/example-get-started-dev)).
+This is an auto-generated repository for use in https://dvc.org/doc/get-started.
+Please report any issues in
+[example-repos-dev](https://github.com/iterative/example-repos-dev).
 
 ![](https://dvc.org/static/img/example-flow-2x.png)
 

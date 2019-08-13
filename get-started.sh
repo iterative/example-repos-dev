@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# e Exit immediately if a command exits with a non-zero exit status.
+# u Treat unset variables as an error when substituting.
+# v Print shell input lines as they are read.
+# x Print commands and their arguments as they are executed.
 set -euvx
 
 THIS="$( cd "$(dirname "$0")" ; pwd -P )"

@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -uvex
+# e Exit immediately if a command exits with a non-zero exit status.
+# u Treat unset variables as an error when substituting.
+# v Print shell input lines as they are read.
+# x Print commands and their arguments as they are executed.
+set -euvx
 
 PACKAGE_DIR=code
 PACKAGE=code.zip
@@ -15,7 +19,7 @@ pushd $PACKAGE_DIR
 zip -r $PACKAGE src/* requirements.txt
 popd
 
-
+# Requires AWS CLI and write access to `dvc-share` S3 bucket.
 mv $PACKAGE_DIR/$PACKAGE .
 aws s3 cp --acl public-read $PACKAGE s3://dvc-share/get-started/$PACKAGE
 
