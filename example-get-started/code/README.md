@@ -6,6 +6,9 @@ Please report any issues in
 
 ![](https://dvc.org/static/img/example-flow-2x.png)
 
+Get Started is a step by step introduction into basic DVC concepts. It doesn't
+go into details much, but provides links and expandable sections to learn more.
+
 The idea of the project is a simplified version of the
 [tutorial](https://dvc.org/doc/tutorial). It explores the natural language
 processing (NLP) problem of predicting tags for a given StackOverflow question.
@@ -14,61 +17,67 @@ Python language by tagging it `python`.
 
 ## Installation
 
-First, you need to download the project:
+Start by cloning the project:
 
-```shell
-    $ git clone https://github.com/iterative/example-get-started
+```dvc
+$ git clone https://github.com/iterative/example-get-started
+$ cd example-get-started
 ```
 
-Second, let's install the requirements. But before we do that, we **strongly**
-recommend creating a virtual environment with `virtualenv` or a similar tool:
+Now let's install the requirements. But before we do that, we **strongly**
+recommend creating a virtual environment with a tool such as
+[virtualenv](https://virtualenv.pypa.io/en/stable/):
 
-```shell
-    $ cd example-get-started
-    $ virtualenv -p python3 .env
-    $ source .env/bin/activate
+```dvc
+$ virtualenv -p python3 .env
+$ source .env/bin/activate
+$ pip install -r src/requirements.txt
 ```
 
-Now, we can install requirements for the project:
+This DVC project comes with a preconfigured remote DVC storage that has raw data
+(input), intermediate, and final results that are produced.
 
-```shell
-    $ pip install -r requirements.txt
-```
-
-## Running in Your Environment
-
-This project comes with a predefined remote DVC storage that contains all input,
-intermediate and final results that were produced.
-
-```shell
-    $ dvc remote list
-    storage https://remote.dvc.org/get-started
+```console
+$ dvc remote list
+storage https://remote.dvc.org/get-started
 ```
 
 You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 
-```shell
-    $ dvc pull -r storage
+```console
+$ dvc pull -r storage
 ```
 
-and [`dvc repro`](https://man.dvc.org/repro) to reproduce the pipeline:
+## Running in Your Environment
 
-```shell
-    $ dvc repro evaluate.dvc
+Run [`dvc repro`](https://man.dvc.org/repro) to reproduce the
+[pipeline](https://dvc.org/doc/commands-reference/pipeline):
+
+```console
+$ dvc repro evaluate.dvc
 ```
+
+> `dvc repro` requires a target [stage file](https://man.dvc.org/run)
+> ([DVC-file](https://dvc.org/doc/user-guide/dvc-file-format)) to reconstruct
+> and regenerate a pipeline. In this case we use `evaluate.dvc`, the last stage
+> in this project's pipeline.
 
 If you'd like to test commands like [`dvc push`](https://man.dvc.org/push),
 that require write access to the remote storage, the easiest way would be to set
-up the local remote on your file system:
+up a "local remote" on your file system:
 
-```shell
-    $ dvc remote add local /tmp/dvc-storage
+> This kind of remote is located in the local file system, but is external to
+> the DVC project.
+
+```console
+$ mkdir -P /tmp/dvc-storage
+$ dvc remote add local /tmp/dvc-storage
 ```
 
-You should be able to run:
+You should now be able to run:
 
-```shell
-    $ dvc push -r local
+```console
+$ dvc push -r local
 ```
 
 ## Existing Stages
@@ -83,7 +92,7 @@ playground ready.
   created.
 - `2-remote` - remote HTTP storage initialized. It is a shared read only storage
   that contains all data artifacts produced during next steps.
-- `3-add-file` - input data file `data.xml` downloaded and put under DVC
+- `3-add-file` - raw data file `data.xml` downloaded and put under DVC
   control with [`dvc add`](https://man.dvc.org/add). First `.dvc` meta-file
   created.
 - `4-source` - source code downloaded and put under Git control.
@@ -108,38 +117,37 @@ There are two additional tags:
   for.
 - `bigrams-experiment` - second version of the experiment.
 
-Both these tags could be used to illustrate `-a` or `-T` DVC options across
-different commands.
+Both these tags could be used to illustrate `-a` or `-T` options across
+different [DVC commands](https://man.dvc.org/).
 
 ## Project Structure
 
-The project files, DVC files, data files changes as you apply stages one by one,
+The data files, DVC-files, and results change as stages are created one by one,
 but right after you for Git clone and [`dvc pull`](https://man.dvc.org/pull) to
 download files that are under DVC control, the structure of the project should
 look like this:
 
-```shell
-    .
-    ├── auc.metric           <-- DVC metric file to compare baseline and bigrams
-    ├── data                 <-- directory with input and intermediate data
-    │   ├── features         <-- extracted feature matrices
-    │   │   ├── test.pkl
-    │   │   └── train.pkl
-    │   └── prepared         <-- pre-processed dataset, split and TSV formatted
-    │       ├── test.tsv
-    │       └── train.tsv
-    │   ├── data.xml         <-- initial XML StackOverflow dataset
-    │   ├── data.xml.dvc
-    ├── evaluate.dvc         <-- DVC files in the project root describe pipeline
-    ├── featurize.dvc
-    ├── model.pkl
-    ├── prepare.dvc
-    ├── requirements.txt     <-- Python dependencies you need to run the project
-    ├── src                  <-- sources to run the pipeline
-    │   ├── evaluate.py
-    │   ├── featurization.py
-    │   ├── prepare.py
-    │   └── train.py
-    └── train.dvc
+```sh
+.
+├── auc.metric            # <-- DVC metric compares baseline and bigrams
+├── data                  # <-- Directory with raw and intermediate data
+│   ├── features          # <-- Extracted feature matrices
+│   │   ├── test.pkl
+│   │   └── train.pkl
+│   └── prepared          # <-- Processed dataset (split and TSV formatted)
+│       ├── test.tsv
+│       └── train.tsv
+│   ├── data.xml          # <-- Initial XML StackOverflow dataset (raw data)
+│   ├── data.xml.dvc
+├── evaluate.dvc          # <-- DVC-files in the project root describe pipeline
+├── featurize.dvc
+├── model.pkl
+├── prepare.dvc
+├── src                   # <-- Source code to run the pipeline stages
+│   ├── evaluate.py
+│   ├── featurization.py
+│   ├── prepare.py
+│   └── train.py
+│   └── requirements.txt  # <-- Python dependencies needed in the project
+└── train.dvc
 ```
-

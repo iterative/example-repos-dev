@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 # e Exit immediately if a command exits with a non-zero exit status.
 # u Treat unset variables as an error when substituting.
-# v Print shell input lines as they are read.
 # x Print commands and their arguments as they are executed.
-set -euvx
+set -eux
 
 THIS="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-get-started"
@@ -52,13 +51,13 @@ mkdir src
 wget https://dvc.org/s3/get-started/code.zip
 unzip code.zip
 rm -f code.zip
-echo "dvc[s3]" >> requirements.txt
+echo "dvc[s3]" >> src/requirements.txt
 cp $THIS/code/README.md $REPO_PATH
 git add .
 git commit -m 'add source code'
 git tag -a "4-sources" -m "source code added"
 
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 
 dvc run -f prepare.dvc \
         -d src/prepare.py -d data/data.xml \
