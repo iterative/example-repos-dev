@@ -19,7 +19,7 @@ Python language by tagging it `python`.
 
 Start by cloning the project:
 
-```dvc
+```console
 $ git clone https://github.com/iterative/example-get-started
 $ cd example-get-started
 ```
@@ -28,7 +28,7 @@ Now let's install the requirements. But before we do that, we **strongly**
 recommend creating a virtual environment with a tool such as
 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
-```dvc
+```console
 $ virtualenv -p python3 .env
 $ source .env/bin/activate
 $ pip install -r src/requirements.txt
