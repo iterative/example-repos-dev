@@ -14,7 +14,14 @@ will run:
 
 ## Scripts
 
-Each example DVC project is in each of the root folders:
+Each example DVC project is in each of the root directories (below). `cd` into
+the directory first before running the desired script e.g.:
+
+```console
+$ cd example-get-started
+$ ./deploy.sh
+...
+```
 
 <!-- ### dataset-registry -->
 
@@ -29,4 +36,4 @@ Each example DVC project is in each of the root folders:
 
 - `deploy.sh` - deploys code archive that is downloaded as part of the
   `generate.sh` to S3.
-  > Requires AWS CLI and write access to `s3://dvc-share/get-started/`.
+  > Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.

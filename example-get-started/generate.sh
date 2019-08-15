@@ -34,13 +34,17 @@ dvc init
 git commit -m "initialize DVC"
 git tag -a "1-initialize" -m "DVC is initialized"
 
+# Actual remote for generated project (read-only). Redirect of S3 bucket below.
 dvc remote add -d storage https://remote.dvc.org/get-started
-dvc remote add -d --local storage s3://dvc-storage/get-started
+
+# Remote active on this environment only for writing to HTTP redirect above.
+dvc remote add -d --local storage s3://dvc-public/remote/get-started
+
 git commit -a -m "add default HTTP remote"
 git tag -a "2-remote" -m "remote initialized"
 
 mkdir data
-wget https://dvc.org/s3/get-started/data.xml -O data/data.xml
+wget https://data.dvc.org/get-started/data.xml -O data/data.xml
 dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
 git commit -m "add raw data to DVC"
@@ -48,7 +52,7 @@ git tag -a "3-add-file" -m "data file added"
 dvc push
 
 mkdir src
-wget https://dvc.org/s3/get-started/code.zip
+wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
 echo "dvc[s3]" >> src/requirements.txt
