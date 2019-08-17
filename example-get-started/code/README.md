@@ -127,7 +127,7 @@ but right after you for Git clone and [`dvc pull`](https://man.dvc.org/pull) to
 download files that are under DVC control, the structure of the project should
 look like this:
 
-```sh
+```console
 $ tree
 .
 ├── auc.metric            # <-- DVC metric compares baseline and bigrams

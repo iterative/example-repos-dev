@@ -27,13 +27,14 @@ $ ./deploy.sh
 
 ### example-get-started
 
-- `generate.sh` - generates the `example-get-started` DVC project from
+- `deploy.sh`: Makes and deploys code archive from
+  [example-get-started/code](example-get-started/code) (downloaded as part of
+  the `generate.sh`) to S3.
+  > Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
+
+- `generate.sh`: Generates the `example-get-started` DVC project from
   scratch. A source code archive is downloaded from S3 the same way as in
   [Connect Code and Data](https://dvc.org/doc/get-started/connect-code-and-data).
 
   > If you change the [source code](code/src/) files in this repo, run
   > `deploy.sh` first, to make sure that the `code.zip` archive is up to date.
-
-- `deploy.sh` - deploys code archive that is downloaded as part of the
-  `generate.sh` to S3.
-  > Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
