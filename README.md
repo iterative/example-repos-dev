@@ -9,18 +9,18 @@ Started](https://dvc.org/doc/get-started) and other sections of the DVC docs.
 Please make sure you have these available on the environment where these scripts
 will run:
 
-- Git
-- Python (with `pip`)
+- [Git](https://git-scm.com/)
+- [Python](https://www.python.org/) 3 (with `python3` and [pip](https://pypi.org/project/pip/) commands)
+- [Virtualenv](https://virtualenv.pypa.io/en/stable/)
 
 ## Scripts
 
 Each example DVC project is in each of the root directories (below). `cd` into
-the directory first before running the desired script e.g.:
+the directory first before running the desired script, for example:
 
 ```console
 $ cd example-get-started
 $ ./deploy.sh
-...
 ```
 
 <!-- ### dataset-registry -->
