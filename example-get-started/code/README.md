@@ -6,11 +6,11 @@ Please report any issues in
 
 ![](https://dvc.org/static/img/example-flow-2x.png)
 
-Get Started is a step by step introduction into basic DVC concepts. It doesn't
+_Get Started_ is a step by step introduction into basic DVC concepts. It doesn't
 go into details much, but provides links and expandable sections to learn more.
 
 The idea of the project is a simplified version of the
-[tutorial](https://dvc.org/doc/tutorial). It explores the natural language
+[Tutorial](https://dvc.org/doc/tutorial). It explores the natural language
 processing (NLP) problem of predicting tags for a given StackOverflow question.
 For example, we want one classifier which can predict a post that is about the
 Python language by tagging it `python`.
@@ -19,7 +19,7 @@ Python language by tagging it `python`.
 
 Start by cloning the project:
 
-```dvc
+```console
 $ git clone https://github.com/iterative/example-get-started
 $ cd example-get-started
 ```
@@ -28,7 +28,7 @@ Now let's install the requirements. But before we do that, we **strongly**
 recommend creating a virtual environment with a tool such as
 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
-```dvc
+```console
 $ virtualenv -p python3 .env
 $ source .env/bin/activate
 $ pip install -r src/requirements.txt
@@ -127,7 +127,8 @@ but right after you for Git clone and [`dvc pull`](https://man.dvc.org/pull) to
 download files that are under DVC control, the structure of the project should
 look like this:
 
-```sh
+```console
+$ tree
 .
 ├── auc.metric            # <-- DVC metric compares baseline and bigrams
 ├── data                  # <-- Directory with raw and intermediate data
