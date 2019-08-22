@@ -48,7 +48,7 @@ mkdir data
 wget https://data.dvc.org/get-started/data.xml -O data/data.xml
 dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
-git commit -m "Add raw data with to project"
+git commit -m "Add raw data to project"
 git tag -a "3-add-file" -m "Data file added."
 dvc push
 
