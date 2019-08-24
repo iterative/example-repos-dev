@@ -9,6 +9,10 @@ Please report any issues in its source project,
 _Get Started_ is a step by step introduction into basic DVC concepts. It doesn't
 go into details much, but provides links and expandable sections to learn more.
 
+> Note that this project
+[imports](https://dvc.org/doc/commands-reference/import) a dataset from
+https://github.com/iterative/dataset-registry.
+
 The idea of the project is a simplified version of the
 [Tutorial](https://dvc.org/doc/tutorial). It explores the natural language
 processing (NLP) problem of predicting tags for a given StackOverflow question.
@@ -50,7 +54,7 @@ You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 $ dvc pull -r storage
 ```
 
-## Running in Your Environment
+## Running in your environment
 
 Run [`dvc repro`](https://man.dvc.org/repro) to reproduce the
 [pipeline](https://dvc.org/doc/commands-reference/pipeline):
@@ -82,7 +86,7 @@ You should now be able to run:
 $ dvc push -r local
 ```
 
-## Existing Stages
+## Existing stages
 
 This project with the help of the Git tags reflects the sequence of actions that
 are run in the DVC [get started](https://dvc.org/doc/get-started) guide. Feel
@@ -125,12 +129,11 @@ There are two additional tags:
 These tags can be used to illustrate `-a` or `-T` options across different
 [DVC commands](https://man.dvc.org/).
 
-## Project Structure
+## Project structure
 
-The data files, DVC-files, and results change as stages are created one by one,
-but right after you for Git clone and [`dvc pull`](https://man.dvc.org/pull) to
-download files that are under DVC control, the structure of the project should
-look like this:
+The data files, DVC-files, and results change as stages are created one by one.
+After cloning and using [`dvc pull`](https://man.dvc.org/pull) to download data
+under DVC control, the workspace should look like this:
 
 ```console
 $ tree

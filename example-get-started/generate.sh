@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Setup script env
+
 # e Exit immediately if a command exits with a non-zero exit status.
 # u Treat unset variables as an error when substituting.
 # x Print commands and their arguments as they are executed.
@@ -17,22 +19,29 @@ fi
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
-git init
+# Initialize Git repo
 
 virtualenv -p python3 .env
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .env/bin/activate
 echo '.env/' >> .gitignore
 
+git init
 git add .
 git commit -m  "Initialize Git repository"
 git tag -a "0-empty" -m "Git initialized"
 
+# https://dvc.org/doc/get-started/install
+
 pip install dvc[s3]
+
+# https://dvc.org/doc/get-started/initialize
 
 dvc init
 git commit -m "Initialize DVC project"
 git tag -a "1-initialize" -m "DVC initialized."
+
+# https://dvc.org/doc/get-started/configure
 
 # Remote active on this environment only for writing to HTTP redirect above.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
@@ -40,27 +49,35 @@ dvc remote add -d --local storage s3://dvc-public/remote/get-started
 # Actual remote for generated project (read-only). Redirect of S3 bucket below.
 dvc remote add -d storage https://remote.dvc.org/get-started
 
+cp $HERE/code/README.md $REPO_PATH
+
 git add .
-git commit -m "Configure default HTTP remote (read-only)"
+git commit -m "Configure default HTTP remote (read-only), add README"
 git tag -a "2-remote" -m "Read-only remote storage configured."
 
-mkdir data
-wget https://data.dvc.org/get-started/data.xml -O data/data.xml
-dvc add data/data.xml
+# https://dvc.org/doc/get-started/add-files
+
+mkdir data && cd data
+dvc import https://github.com/iterative/dataset-registry \
+           get-started/data.xml
+cd ..
 git add data/.gitignore data/data.xml.dvc
 git commit -m "Add raw data to project"
 git tag -a "3-add-file" -m "Data file added."
-dvc push
+dvc push  # https://dvc.org/doc/get-started/share-data
+
+# https://dvc.org/doc/get-started/connect-code-and-data
 
 wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
-cp $HERE/code/README.md $REPO_PATH
 git add .
 git commit -m "Add source code files to repo"
 git tag -a "4-sources" -m "Source code added."
 
 pip install -r src/requirements.txt
+
+# https://dvc.org/doc/get-started/connect-code-and-data#create-a-first-data-transformation-stage
 
 dvc run -f prepare.dvc \
         -d src/prepare.py -d data/data.xml \
@@ -70,6 +87,8 @@ git add data/.gitignore prepare.dvc
 git commit -m "Create data preparation stage"
 git tag -a "5-preparation" -m "First pipeline stage (data preparation) created."
 dvc push
+
+# https://dvc.org/doc/get-started/pipeline
 
 dvc run -f featurize.dvc \
         -d src/featurization.py -d data/prepared \
@@ -90,6 +109,8 @@ git commit -m "Create training stage"
 git tag -a "7-train" -m "Training stage created."
 dvc push
 
+# https://dvc.org/doc/get-started/metrics
+
 dvc run -f evaluate.dvc \
         -d src/evaluate.py -d model.pkl -d data/features \
         -M auc.metric \
@@ -100,12 +121,16 @@ git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 dvc push
 
+# https://dvc.org/doc/get-started/experiments
+
 sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
     src/featurization.py
 
 dvc repro train.dvc
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
+
+# https://dvc.org/doc/get-started/compare-experiments
 
 dvc repro evaluate.dvc
 git commit -am "Evaluate bigrams model"
@@ -132,9 +157,10 @@ cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
 git push --force origin master
 git push --force origin --tags
+cd ../..
 
 You may remove the generated repo with:
 
-rm -fR build/
+rm -fR build
 
 `"

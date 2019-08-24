@@ -23,7 +23,11 @@ $ cd example-get-started
 $ ./deploy.sh
 ```
 
-<!-- ### dataset-registry -->
+### dataset-registry
+
+- `generate.sh`: Generates the `dataset-registry` DVC project from scratch. This
+  project is used by **example-get-started** below, so it should be generated
+  first.
 
 ### example-get-started
 
