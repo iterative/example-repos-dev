@@ -58,9 +58,10 @@ git tag -a "2-remote" -m "Read-only remote storage configured."
 # https://dvc.org/doc/get-started/add-files
 
 mkdir data && cd data
-dvc import https://github.com/iterative/dataset-registry \
-           get-started/data.xml
+dvc get https://github.com/iterative/dataset-registry \
+        get-started/data.xml
 cd ..
+dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
 git commit -m "Add raw data to project"
 git tag -a "3-add-file" -m "Data file added."

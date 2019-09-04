@@ -6,7 +6,7 @@ Please report any issues in its source project,
 
 ![](https://dvc.org/static/img/example-flow-2x.png)
 
-_Get Started_ is a step by step introduction into basic DVC concepts. It doesn't
+_Get Started_ is a step-by-step introduction into basic DVC concepts. It doesn't
 go into details much, but provides links and expandable sections to learn more.
 
 > Note that this project
@@ -51,7 +51,7 @@ storage https://remote.dvc.org/get-started
 You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 
 ```console
-$ dvc pull -r storage
+$ dvc pull
 ```
 
 ## Running in your environment
