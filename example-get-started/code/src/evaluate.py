@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 from sklearn.metrics import precision_recall_curve
 import sklearn.metrics as metrics
@@ -35,5 +36,4 @@ precision, recall, thresholds = precision_recall_curve(labels, predictions)
 auc = metrics.auc(recall, precision)
 
 with open(metrics_file, 'w') as fd:
-    fd.write('{:4f}\n'.format(auc))
-
+    json.dump({"AUC": auc}, fd)

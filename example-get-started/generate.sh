@@ -1,10 +1,10 @@
 #!/bin/sh
+# See https://dvc.org/doc/tutorials/get-started
 
-# Setup script env
-
-# e Exit immediately if a command exits with a non-zero exit status.
-# u Treat unset variables as an error when substituting.
-# x Print commands and their arguments as they are executed.
+# Setup script env:
+#   e   Exit immediately if a command exits with a non-zero exit status.
+#   u   Treat unset variables as an error when substituting.
+#   x   Print commands and their arguments as they are executed.
 set -eux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -12,73 +12,84 @@ REPO_NAME="example-get-started"
 REPO_PATH="$HERE/build/$REPO_NAME"
 
 if [ -d "$REPO_PATH" ]; then
-    echo "Repo $REPO_PATH already exists, remove it first."
+    echo "Repo $REPO_PATH already exists, please remove it first."
     exit 1
 fi
 
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
-# Initialize Git repo
+# (https://dvc.org/doc/install)
 
-virtualenv -p python3 .env
+virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
-source .env/bin/activate
-echo '.env/' >> .gitignore
+source .venv/bin/activate
+echo '.venv/' > .gitignore
+
+pip install "dvc[s3]"
+
+# https://dvc.org/doc/tutorials/get-started#initialize
 
 git init
 git add .
 git commit -m  "Initialize Git repository"
-git tag -a "0-empty" -m "Git initialized"
-
-# https://dvc.org/doc/get-started/install
-
-pip install dvc[s3]
-
-# https://dvc.org/doc/get-started/initialize
+git tag -a "0-git-init" -m "Git initialized."
 
 dvc init
 git commit -m "Initialize DVC project"
-git tag -a "1-initialize" -m "DVC initialized."
+git tag -a "1-dvc-init" -m "DVC initialized."
 
-# https://dvc.org/doc/get-started/configure
+# https://dvc.org/doc/tutorials/get-started#configure
 
-# Remote active on this environment only for writing to HTTP redirect above.
+# Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
 
-# Actual remote for generated project (read-only). Redirect of S3 bucket below.
+# Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started
 
-cp $HERE/code/README.md $REPO_PATH
-
 git add .
-git commit -m "Configure default HTTP remote (read-only), add README"
-git tag -a "2-remote" -m "Read-only remote storage configured."
+git commit -m "Configure default HTTP remote (read-only)"
+git tag -a "2-config-remote" -m "Read-only remote storage configured."
 
-# https://dvc.org/doc/get-started/add-files
+# https://dvc.org/doc/tutorials/get-started/versioning-basics
 
-mkdir data && cd data
+mkdir data
 dvc get https://github.com/iterative/dataset-registry \
-        get-started/data.xml
-cd ..
+        get-started/data.xml -o data/data.xml
+
+# https://dvc.org/doc/tutorials/get-started/versioning-basics#start-tracking-data
+
 dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
-git commit -m "Add raw data to project"
-git tag -a "3-add-file" -m "Data file added."
-dvc push  # https://dvc.org/doc/get-started/share-data
+git commit -m "Add raw data"
+git tag -a "3-track-data" -m "Data file added."
 
-# https://dvc.org/doc/get-started/connect-code-and-data
+# https://dvc.org/doc/tutorials/get-started/versioning-basics#store-and-share-data
+
+dvc push
+
+# https://dvc.org/doc/tutorials/get-started/versioning-basics#import-data
+
+dvc import https://github.com/iterative/dataset-registry \
+           get-started/data.xml -o data/data.xml
+git add data/data.xml.dvc
+git commit -m "Import raw data (overwrite)"
+dvc push
+git tag -a "4-import-data" -m "Data file overwritten with an import."
+
+# http://dvc.org/doc/tutorials/get-started/data-pipelines#connect-code-and-data
 
 wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
+
+pip install -r src/requirements.txt
+
 git add .
 git commit -m "Add source code files to repo"
 git tag -a "4-sources" -m "Source code added."
 
-pip install -r src/requirements.txt
-
-# https://dvc.org/doc/get-started/connect-code-and-data#create-a-first-data-transformation-stage
+# https://dvc.org/doc/get-started/data-pipelines#stages
 
 dvc run -f prepare.dvc \
         -d src/prepare.py -d data/data.xml \
@@ -89,7 +100,7 @@ git commit -m "Create data preparation stage"
 git tag -a "5-preparation" -m "First pipeline stage (data preparation) created."
 dvc push
 
-# https://dvc.org/doc/get-started/pipeline
+# https://dvc.org/doc/get-started/data-pipelines#pipelines
 
 dvc run -f featurize.dvc \
         -d src/featurization.py -d data/prepared \
@@ -99,7 +110,6 @@ dvc run -f featurize.dvc \
 git add data/.gitignore featurize.dvc
 git commit -m "Create featurization stage"
 git tag -a "6-featurization" -m "Featurization stage created."
-dvc push
 
 dvc run -f train.dvc \
         -d src/train.py -d data/features \
@@ -110,7 +120,7 @@ git commit -m "Create training stage"
 git tag -a "7-train" -m "Training stage created."
 dvc push
 
-# https://dvc.org/doc/get-started/metrics
+# https://dvc.org/doc/get-started/experiment-management#experiments
 
 dvc run -f evaluate.dvc \
         -d src/evaluate.py -d model.pkl -d data/features \
@@ -122,7 +132,7 @@ git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 dvc push
 
-# https://dvc.org/doc/get-started/experiments
+# https://dvc.org/doc/get-started/experiment-management#experiments
 
 sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
     src/featurization.py
@@ -131,13 +141,18 @@ dvc repro train.dvc
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
-# https://dvc.org/doc/get-started/compare-experiments
+# https://dvc.org/doc/get-started/experiment-management#compare-experiments
 
 dvc repro evaluate.dvc
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
+
+cp $HERE/code/README.md $REPO_PATH
+
+git commit -am "Add README"
+git tag -a "11-readme" -m "README file added."
 
 popd
 
