@@ -33,13 +33,29 @@ pip install "dvc[s3]"
 git init
 git add .
 git commit -m  "Initialize Git repository"
+
 git tag -a "0-git-init" -m "Git initialized."
 
 dvc init
 git commit -m "Initialize DVC project"
+
 git tag -a "1-dvc-init" -m "DVC initialized."
 
-# https://dvc.org/doc/tutorials/get-started#configure
+# https://dvc.org/doc/tutorials/get-started/data-versioning
+
+mkdir data
+dvc get https://github.com/iterative/dataset-registry \
+        get-started/data.xml -o data/data.xml
+
+# https://dvc.org/doc/tutorials/get-started/data-versioning#start-tracking-data
+
+dvc add data/data.xml
+git add data/.gitignore data/data.xml.dvc
+git commit -m "Add raw data"
+
+git tag -a "2-track-data" -m "Data file added."
+
+# https://dvc.org/doc/tutorials/get-started/data-versioning#configure-remote-storage
 
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
@@ -49,47 +65,34 @@ dvc remote add -d storage https://remote.dvc.org/get-started
 
 git add .
 git commit -m "Configure default HTTP remote (read-only)"
-git tag -a "2-config-remote" -m "Read-only remote storage configured."
 
-# https://dvc.org/doc/tutorials/get-started/versioning-basics
+git tag -a "3-config-remote" -m "Read-only remote storage configured."
 
-mkdir data
-dvc get https://github.com/iterative/dataset-registry \
-        get-started/data.xml -o data/data.xml
-
-# https://dvc.org/doc/tutorials/get-started/versioning-basics#start-tracking-data
-
-dvc add data/data.xml
-git add data/.gitignore data/data.xml.dvc
-git commit -m "Add raw data"
-git tag -a "3-track-data" -m "Data file added."
-
-# https://dvc.org/doc/tutorials/get-started/versioning-basics#store-and-share-data
+# https://dvc.org/doc/tutorials/get-started/data-versioning#store-and-retrieve-data
 
 dvc push
 
-# https://dvc.org/doc/tutorials/get-started/versioning-basics#import-data
+# https://dvc.org/doc/tutorials/get-started/data-versioning#accessing-data
+# http://localhost:8000/doc/tutorials/get-started/data-versioning#import-the-dataset
 
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml
 git add data/data.xml.dvc
 git commit -m "Import raw data (overwrite)"
 dvc push
+
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 
-# http://dvc.org/doc/tutorials/get-started/data-pipelines#connect-code-and-data
+# https://dvc.org/doc/get-started/data-pipelines#stages
 
 wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
-
 pip install -r src/requirements.txt
-
 git add .
 git commit -m "Add source code files to repo"
-git tag -a "4-sources" -m "Source code added."
 
-# https://dvc.org/doc/get-started/data-pipelines#stages
+git tag -a "4-source-code" -m "Source code added."
 
 dvc run -f prepare.dvc \
         -d src/prepare.py -d data/data.xml \
@@ -97,8 +100,9 @@ dvc run -f prepare.dvc \
         python src/prepare.py data/data.xml
 git add data/.gitignore prepare.dvc
 git commit -m "Create data preparation stage"
-git tag -a "5-preparation" -m "First pipeline stage (data preparation) created."
 dvc push
+
+git tag -a "5-prep-stage" -m "First pipeline stage (data preparation) created."
 
 # https://dvc.org/doc/get-started/data-pipelines#pipelines
 
@@ -108,19 +112,19 @@ dvc run -f featurize.dvc \
         python src/featurization.py \
                data/prepared data/features
 git add data/.gitignore featurize.dvc
-git commit -m "Create featurization stage"
-git tag -a "6-featurization" -m "Featurization stage created."
 
 dvc run -f train.dvc \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
 git add .gitignore train.dvc
-git commit -m "Create training stage"
-git tag -a "7-train" -m "Training stage created."
+
+git commit -m "Create ML pipeline stages"
 dvc push
 
-# https://dvc.org/doc/get-started/experiment-management#experiments
+git tag -a "7-ml-pipeline" -m "ML pipeline created."
+
+# http://localhost:8000/doc/tutorials/get-started/experiments#project-metrics
 
 dvc run -f evaluate.dvc \
         -d src/evaluate.py -d model.pkl -d data/features \
@@ -128,11 +132,12 @@ dvc run -f evaluate.dvc \
         python src/evaluate.py model.pkl data/features auc.metric
 git add .gitignore evaluate.dvc auc.metric
 git commit -m "Create evaluation stage"
-git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
-git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 dvc push
+git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 
-# https://dvc.org/doc/get-started/experiment-management#experiments
+git tag -a "8-evaluation" -m "Baseline evaluation stage created."
+
+# http://localhost:8000/doc/tutorials/get-started/experiments#experiment-parameters
 
 sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
     src/featurization.py
@@ -141,7 +146,7 @@ dvc repro train.dvc
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
-# https://dvc.org/doc/get-started/experiment-management#compare-experiments
+# https://dvc.org/doc/get-started/experiments#compare-experiments
 
 dvc repro evaluate.dvc
 git commit -am "Evaluate bigrams model"
