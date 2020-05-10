@@ -26,7 +26,9 @@ export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
 
-pip install "dvc[s3]"
+
+pip install gitpython
+pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
 # https://dvc.org/doc/tutorials/get-started#initialize
 
@@ -94,11 +96,11 @@ git commit -m "Add source code files to repo"
 
 git tag -a "4-source-code" -m "Source code added."
 
-dvc run -f prepare.dvc \
+dvc run -n prepare \
         -d src/prepare.py -d data/data.xml \
         -o data/prepared \
         python src/prepare.py data/data.xml
-git add data/.gitignore prepare.dvc
+git add data/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
 
@@ -106,18 +108,18 @@ git tag -a "5-prep-stage" -m "First pipeline stage (data preparation) created."
 
 # https://dvc.org/doc/get-started/data-pipelines#pipelines
 
-dvc run -f featurize.dvc \
+dvc run -n featurize \
         -d src/featurization.py -d data/prepared \
         -o data/features \
         python src/featurization.py \
                data/prepared data/features
-git add data/.gitignore featurize.dvc
+git add data/.gitignore dvc.yaml dvc.lock
 
-dvc run -f train.dvc \
+dvc run -n train \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
-git add .gitignore train.dvc
+git add .gitignore dvc.yaml dvc.lock
 
 git commit -m "Create ML pipeline stages"
 dvc push
@@ -126,11 +128,11 @@ git tag -a "7-ml-pipeline" -m "ML pipeline created."
 
 # http://localhost:8000/doc/tutorials/get-started/experiments#project-metrics
 
-dvc run -f evaluate.dvc \
+dvc run -n evaluate \
         -d src/evaluate.py -d model.pkl -d data/features \
         -M auc.metric \
         python src/evaluate.py model.pkl data/features auc.metric
-git add .gitignore evaluate.dvc auc.metric
+git add .gitignore dvc.yaml dvc.lock auc.metric
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
@@ -142,13 +144,13 @@ git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
     src/featurization.py
 
-dvc repro train.dvc
+dvc repro dvc.yaml:train
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
 # https://dvc.org/doc/get-started/experiments#compare-experiments
 
-dvc repro evaluate.dvc
+dvc repro dvc.yaml:evaluate
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
@@ -156,7 +158,8 @@ dvc push
 
 cp $HERE/code/README.md $REPO_PATH
 
-git commit -am "Add README"
+git add README.md
+git commit README.md -m "Add README"
 git tag -a "11-readme" -m "README file added."
 
 popd
