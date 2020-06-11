@@ -1,23 +1,20 @@
 import sys
 import os
+import pickle
 import json
 
 from sklearn.metrics import precision_recall_curve
 import sklearn.metrics as metrics
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
-if len(sys.argv) != 4:
+if len(sys.argv) != 5:
     sys.stderr.write('Arguments error. Usage:\n')
-    sys.stderr.write('\tpython evaluate.py model features output\n')
+    sys.stderr.write('\tpython evaluate.py model features scores plots\n')
     sys.exit(1)
 
 model_file = sys.argv[1]
 matrix_file = os.path.join(sys.argv[2], 'test.pkl')
-metrics_file = sys.argv[3]
+scores_file = sys.argv[3]
+plots_file = sys.argv[4]
 
 with open(model_file, 'rb') as fd:
     model = pickle.load(fd)
@@ -35,5 +32,13 @@ precision, recall, thresholds = precision_recall_curve(labels, predictions)
 
 auc = metrics.auc(recall, precision)
 
-with open(metrics_file, 'w') as fd:
-    json.dump({"AUC": auc}, fd)
+with open(scores_file, 'w') as fd:
+    json.dump({'auc': auc}, fd)
+
+with open(plots_file, 'w') as fd:
+    json.dump({'prc': [{
+            'precision': p,
+            'recall': r,
+            'threshold': t
+        } for p, r, t in zip(precision, recall, thresholds)
+    ]}, fd)

@@ -1,12 +1,9 @@
 #!/bin/sh
 
-# e Exit immediately if a command exits with a non-zero exit status.
-# u Treat unset variables as an error when substituting.
-# x Print commands and their arguments as they are executed.
 set -eux
 
 PACKAGE_DIR=code
-PACKAGE=code.zip
+PACKAGE="code-1.0.zip"
 TEST_DIR=tmp
 TEST_PACKAGE=$TEST_DIR/$PACKAGE
 
@@ -15,7 +12,7 @@ rm -rf $TEST_DIR
 mkdir $TEST_DIR
 
 pushd $PACKAGE_DIR
-zip -r $PACKAGE src/*
+zip -r $PACKAGE params.yaml src/*
 popd
 
 # Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
@@ -33,3 +30,4 @@ rm -f $TEST_PACKAGE
 cp -f $PACKAGE_DIR/README.md $TEST_DIR
 diff -r $PACKAGE_DIR $TEST_DIR  # Expected output: nothing
 rm -fR $TEST_DIR
+

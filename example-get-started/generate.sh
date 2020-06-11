@@ -19,96 +19,73 @@ fi
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
-# (https://dvc.org/doc/install)
-
 virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
 
-
 pip install gitpython
 pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
-# https://dvc.org/doc/tutorials/get-started#initialize
-
 git init
+cp $HERE/code/README.md .
 git add .
 git commit -m  "Initialize Git repository"
-
 git tag -a "0-git-init" -m "Git initialized."
+
 
 dvc init
 git commit -m "Initialize DVC project"
-
 git tag -a "1-dvc-init" -m "DVC initialized."
 
-# https://dvc.org/doc/tutorials/get-started/data-versioning
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
         get-started/data.xml -o data/data.xml
-
-# https://dvc.org/doc/tutorials/get-started/data-versioning#start-tracking-data
-
 dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
 git commit -m "Add raw data"
-
 git tag -a "2-track-data" -m "Data file added."
 
-# https://dvc.org/doc/tutorials/get-started/data-versioning#configure-remote-storage
 
-# Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
-
-# Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started
-
 git add .
 git commit -m "Configure default HTTP remote (read-only)"
-
 git tag -a "3-config-remote" -m "Read-only remote storage configured."
-
-# https://dvc.org/doc/tutorials/get-started/data-versioning#store-and-retrieve-data
-
 dvc push
 
-# https://dvc.org/doc/tutorials/get-started/data-versioning#accessing-data
-# http://localhost:8000/doc/tutorials/get-started/data-versioning#import-the-dataset
 
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml
 git add data/data.xml.dvc
 git commit -m "Import raw data (overwrite)"
 dvc push
-
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 
-# https://dvc.org/doc/get-started/data-pipelines#stages
 
-wget https://code.dvc.org/get-started/code.zip
-unzip code.zip
-rm -f code.zip
+wget https://code.dvc.org/get-started/code-1.0.zip
+unzip code-1.0.zip
+rm -f code-1.0.zip
 pip install -r src/requirements.txt
 git add .
 git commit -m "Add source code files to repo"
+git tag -a "5-source-code" -m "Source code added."
 
-git tag -a "4-source-code" -m "Source code added."
 
 dvc run -n prepare \
+        -p prepare.seed,prepare.split \
         -d src/prepare.py -d data/data.xml \
         -o data/prepared \
         python src/prepare.py data/data.xml
 git add data/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
+git tag -a "6-prep-stage" -m "First pipeline stage (data preparation) created."
 
-git tag -a "5-prep-stage" -m "First pipeline stage (data preparation) created."
-
-# https://dvc.org/doc/get-started/data-pipelines#pipelines
 
 dvc run -n featurize \
+        -p featurize.max_features,featurize.ngrams \
         -d src/featurization.py -d data/prepared \
         -o data/features \
         python src/featurization.py \
@@ -116,51 +93,43 @@ dvc run -n featurize \
 git add data/.gitignore dvc.yaml dvc.lock
 
 dvc run -n train \
+        -p train.seed,train.n_estimators \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
 git add .gitignore dvc.yaml dvc.lock
-
 git commit -m "Create ML pipeline stages"
 dvc push
+git tag -a "8-ml-pipeline" -m "ML pipeline created."
 
-git tag -a "7-ml-pipeline" -m "ML pipeline created."
-
-# http://localhost:8000/doc/tutorials/get-started/experiments#project-metrics
 
 dvc run -n evaluate \
         -d src/evaluate.py -d model.pkl -d data/features \
-        -M auc.metric \
-        python src/evaluate.py model.pkl data/features auc.metric
-git add .gitignore dvc.yaml dvc.lock auc.metric
+        -M scores.json \
+        --plots-no-cache prc.json \
+        python src/evaluate.py model.pkl data/features scores.json prc.json
+dvc plots modify prc.json -x recall -y precision
+git add .gitignore dvc.yaml dvc.lock prc.json scores.json
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
+git tag -a "9-evaluation" -m "Baseline evaluation stage created."
 
-git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 
-# http://localhost:8000/doc/tutorials/get-started/experiments#experiment-parameters
+sed -e "s/max_features: 500/max_features: 1500/" -i "" params.yaml
+sed -e "s/ngrams: 1/ngrams: 2/" -i "" params.yaml
 
-sed -e s/max_features=5000\)/max_features=6000\,\ ngram_range=\(1\,\ 2\)\)/ -i "" \
-    src/featurization.py
 
-dvc repro dvc.yaml:train
+dvc repro train
 git commit -am "Reproduce model using bigrams"
-git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
+git tag -a "10-bigrams-model" -m "Model retrained using bigrams."
 
-# https://dvc.org/doc/get-started/experiments#compare-experiments
 
-dvc repro dvc.yaml:evaluate
+dvc repro evaluate
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
-git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
+git tag -a "11-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
-
-cp $HERE/code/README.md $REPO_PATH
-
-git add README.md
-git commit README.md -m "Add README"
-git tag -a "11-readme" -m "README file added."
 
 popd
 
@@ -188,3 +157,4 @@ You may remove the generated repo with:
 rm -fR build
 
 `"
+
