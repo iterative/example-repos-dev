@@ -48,7 +48,9 @@ git commit -m "Add raw data"
 git tag -a "2-track-data" -m "Data file added."
 
 
+# Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
+# Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started
 git add .
 git commit -m "Configure default HTTP remote (read-only)"
