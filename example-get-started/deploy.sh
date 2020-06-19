@@ -3,7 +3,7 @@
 set -eux
 
 PACKAGE_DIR=code
-PACKAGE="code-1.0.zip"
+PACKAGE="code.zip"
 TEST_DIR=tmp
 TEST_PACKAGE=$TEST_DIR/$PACKAGE
 

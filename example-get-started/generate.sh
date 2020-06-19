@@ -66,9 +66,9 @@ dvc push
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 
 
-wget https://code.dvc.org/get-started/code-1.0.zip
-unzip code-1.0.zip
-rm -f code-1.0.zip
+wget https://code.dvc.org/get-started/code.zip
+unzip code.zip
+rm -f code.zip
 pip install -r src/requirements.txt
 git add .
 git commit -m "Add source code files to repo"
