@@ -33,10 +33,9 @@ $ source .env/bin/activate
 $ pip install -r src/requirements.txt
 ```
 
-> This instruction assumes that DVC is already installed, as it is frequently 
-used as a global tool like Git. If DVC is not installed, see the 
-[DVC installation guide](https://dvc.org/doc/install) on how to install DVC.
-
+> This instruction assumes that DVC is already installed, as it is frequently
+> used as a global tool like Git. If DVC is not installed, see the
+> [DVC installation guide](https://dvc.org/doc/install) on how to install DVC.
 
 This DVC project comes with a preconfigured DVC
 [remote storage](https://dvc.org/doc/commands-reference/remote) that holds raw
