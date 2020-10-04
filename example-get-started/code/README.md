@@ -33,10 +33,17 @@ $ source .env/bin/activate
 $ pip install -r src/requirements.txt
 ```
 
+Note that dvc is not installed by the requirements file, 
+as it is supposed to be used as a global tool like git. If dvc is not installed,
+use the following command to install it:
+```console
+$ pip install dvc
+```
+
 This DVC project comes with a preconfigured DVC
 [remote storage](https://dvc.org/doc/commands-reference/remote) that holds raw
 data (input), intermediate, and final results that are produced. This is a
-read-only HTTP remote.
+read-only HTTP remote. 
 
 ```console
 $ dvc remote list
