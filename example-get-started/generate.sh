@@ -53,7 +53,7 @@ dvc remote add -d --local storage s3://dvc-public/remote/get-started
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started
 git add .
-git commit -m "Configure default HTTP remote (read-only)"
+git commit -m "Configure default remote"
 git tag -a "3-config-remote" -m "Read-only remote storage configured."
 dvc push
 
@@ -83,7 +83,7 @@ dvc run -n prepare \
 git add data/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
-git tag -a "6-prep-stage" -m "First pipeline stage (data preparation) created."
+git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created."
 
 
 dvc run -n featurize \
@@ -102,7 +102,7 @@ dvc run -n train \
 git add .gitignore dvc.yaml dvc.lock
 git commit -m "Create ML pipeline stages"
 dvc push
-git tag -a "8-ml-pipeline" -m "ML pipeline created."
+git tag -a "7-ml-pipeline" -m "ML pipeline created."
 
 
 dvc run -n evaluate \
@@ -115,7 +115,7 @@ git add .gitignore dvc.yaml dvc.lock prc.json scores.json
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
-git tag -a "9-evaluation" -m "Baseline evaluation stage created."
+git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 
 
 sed -e "s/max_features: 500/max_features: 1500/" -i "" params.yaml
@@ -124,13 +124,13 @@ sed -e "s/ngrams: 1/ngrams: 2/" -i "" params.yaml
 
 dvc repro train
 git commit -am "Reproduce model using bigrams"
-git tag -a "10-bigrams-model" -m "Model retrained using bigrams."
+git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
 
 dvc repro evaluate
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
-git tag -a "11-bigrams-experiment" -m "Evaluated bigrams model."
+git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
 popd
