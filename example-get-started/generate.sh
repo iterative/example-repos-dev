@@ -95,7 +95,8 @@ dvc run -n featurize \
 git add data/.gitignore dvc.yaml dvc.lock
 
 dvc run -n train \
-        -p train.seed,train.n_estimators \
+        -p
+        train.random_state,train.n_estimators,train.min_samples_split \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
@@ -109,7 +110,8 @@ dvc run -n evaluate \
         -d src/evaluate.py -d model.pkl -d data/features \
         -M scores.json \
         --plots-no-cache prc.json \
-        python src/evaluate.py model.pkl data/features scores.json prc.json
+        --plots-no-cache roc.json \
+        python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
 dvc plots modify prc.json -x recall -y precision
 git add .gitignore dvc.yaml dvc.lock prc.json scores.json
 git commit -m "Create evaluation stage"
@@ -131,6 +133,19 @@ dvc repro evaluate
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
+dvc push
+
+dvc exp run --params featurize.max_features=3000
+dvc exp run --queue --params train.min_samples_split=8
+dvc exp run --queue --params train.min_samples_split=64
+dvc exp run --queue --params train.min_samples_split=2 --params train.n_estimators=100
+dvc exp run --queue --params train.min_samples_split=8
+dvc exp run --queue --params train.min_samples_split=64
+dvc exp run --run-all -j 2
+dvc exp apply exp-98a96
+git commit -am "Run experiments tuning random forest params"
+git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
+git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
 
 popd
