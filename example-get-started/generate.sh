@@ -58,6 +58,7 @@ git tag -a "3-config-remote" -m "Read-only remote storage configured."
 dvc push
 
 
+rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml
 git add data/data.xml.dvc
@@ -139,8 +140,8 @@ dvc exp run --set-param featurize.max_features=3000
 dvc exp run --queue --set-param train.min_samples_split=8
 dvc exp run --queue --set-param train.min_samples_split=64
 dvc exp run --queue --set-param train.min_samples_split=2 --set-param train.n_estimators=100
-dvc exp run --queue --set-param train.min_samples_split=8
-dvc exp run --queue --set-param train.min_samples_split=64
+dvc exp run --queue --set-param train.min_samples_split=8 --set-param train.n_estimators=100
+dvc exp run --queue --set-param train.min_samples_split=64 --set-param train.n_estimators=100
 dvc exp run --run-all -j 2
 # Apply best experiment.
 dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
