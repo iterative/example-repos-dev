@@ -95,8 +95,7 @@ dvc run -n featurize \
 git add data/.gitignore dvc.yaml dvc.lock
 
 dvc run -n train \
-        -p
-        train.random_state,train.n_estimators,train.min_samples_split \
+        -p train.random_state,train.n_estimators,train.min_samples_split \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
