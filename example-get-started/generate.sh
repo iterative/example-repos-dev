@@ -135,18 +135,21 @@ git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
-dvc exp run --params featurize.max_features=3000
-dvc exp run --queue --params train.min_samples_split=8
-dvc exp run --queue --params train.min_samples_split=64
-dvc exp run --queue --params train.min_samples_split=2 --params train.n_estimators=100
-dvc exp run --queue --params train.min_samples_split=8
-dvc exp run --queue --params train.min_samples_split=64
+
+dvc exp run --set-param featurize.max_features=3000
+dvc exp run --queue --set-param train.min_samples_split=8
+dvc exp run --queue --set-param train.min_samples_split=64
+dvc exp run --queue --set-param train.min_samples_split=2 --set-param train.n_estimators=100
+dvc exp run --queue --set-param train.min_samples_split=8
+dvc exp run --queue --set-param train.min_samples_split=64
 dvc exp run --run-all -j 2
-dvc exp apply exp-98a96
+# Apply best experiment.
+dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
 git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
 git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
+
 
 popd
 
