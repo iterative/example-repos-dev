@@ -2,8 +2,8 @@ prepare:
   split: 0.20
   seed: 20170428
 
-fr:
-  max_fr: 500
+featurize:
+  max_features: 500
   ngrams: 1
 
 train:
