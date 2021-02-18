@@ -31,7 +31,7 @@ predictions = predictions_by_class[:, 1]
 precision, recall, prc_thresholds = metrics.precision_recall_curve(labels, predictions)
 fpr, tpr, roc_thresholds = metrics.roc_curve(labels, predictions)
 
-avg_prec = metrics.average_precision(labels, predictions)
+avg_prec = metrics.average_precision_score(labels, predictions)
 roc_auc = metrics.roc_auc_score(labels, predictions)
 
 with open(scores_file, 'w') as fd:
