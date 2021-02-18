@@ -87,7 +87,7 @@ git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created
 
 
 dvc run -n featurize \
-        -p featurize.max_features,featurize.ngrams \
+        -p fr.max_fr,fr.ngrams \
         -d src/featurization.py -d data/prepared \
         -o data/features \
         python src/featurization.py \
@@ -119,7 +119,7 @@ git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 
 
-sed -e "s/max_features: 500/max_features: 1500/" -i "" params.yaml
+sed -e "s/max_fr: 500/max_fr: 1500/" -i "" params.yaml
 sed -e "s/ngrams: 1/ngrams: 2/" -i "" params.yaml
 
 
@@ -135,12 +135,12 @@ git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
 
-dvc exp run --set-param featurize.max_features=3000
-dvc exp run --queue --set-param train.min_samples_split=8
-dvc exp run --queue --set-param train.min_samples_split=64
-dvc exp run --queue --set-param train.min_samples_split=2 --set-param train.n_estimators=100
-dvc exp run --queue --set-param train.min_samples_split=8
-dvc exp run --queue --set-param train.min_samples_split=64
+dvc exp run --set-param fr.max_fr=3000
+dvc exp run --queue --set-param train.min_split=8
+dvc exp run --queue --set-param train.min_split=64
+dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
+dvc exp run --queue --set-param train.min_split=8
+dvc exp run --queue --set-param train.min_split=64
 dvc exp run --run-all -j 2
 # Apply best experiment.
 dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')

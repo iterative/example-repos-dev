@@ -15,8 +15,8 @@ if len(sys.argv) != 3:
 input = sys.argv[1]
 output = sys.argv[2]
 seed = params['seed']
-n_estimators = params['n_estimators']
-min_samples_split = params['min_samples_split']
+n_est = params['n_est']
+min_split = params['min_split']
 
 with open(os.path.join(input, 'train.pkl'), 'rb') as fd:
     matrix = pickle.load(fd)
@@ -29,8 +29,8 @@ sys.stderr.write('X matrix size {}\n'.format(x.shape))
 sys.stderr.write('Y matrix size {}\n'.format(labels.shape))
 
 clf = RandomForestClassifier(
-    n_estimators=n_estimators,
-    min_samples_split=min_samples_split,
+    n_estimators=n_est,
+    min_samples_split=min_split,
     n_jobs=2,
     random_state=seed
 )
