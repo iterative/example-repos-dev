@@ -9,7 +9,7 @@ import yaml
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
-params = yaml.safe_load(open('params.yaml'))['featurize']
+params = yaml.safe_load(open('params.yaml'))['fr']
 
 np.set_printoptions(suppress=True)
 
@@ -25,7 +25,7 @@ test_input = os.path.join(sys.argv[1], 'test.tsv')
 train_output = os.path.join(sys.argv[2], 'train.pkl')
 test_output = os.path.join(sys.argv[2], 'test.pkl')
 
-max_features = params['max_features']
+max_fr = params['max_fr']
 ngrams = params['ngrams']
 
 
@@ -63,7 +63,7 @@ train_words = np.array(df_train.text.str.lower().values.astype('U'))
 
 bag_of_words = CountVectorizer(
     stop_words='english',
-    max_features=max_features,
+    max_features=max_fr,
     ngram_range=(1, ngrams)
 )
 

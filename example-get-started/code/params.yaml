@@ -2,11 +2,11 @@ prepare:
   split: 0.20
   seed: 20170428
 
-featurize:
-  max_features: 500
+fr:
+  max_fr: 500
   ngrams: 1
 
 train:
   seed: 20170428
-  n_estimators: 50
-  min_samples_split: 2
+  n_est: 50
+  min_split: 2
