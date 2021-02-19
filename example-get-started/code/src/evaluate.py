@@ -7,7 +7,7 @@ import sklearn.metrics as metrics
 
 if len(sys.argv) != 6:
     sys.stderr.write('Arguments error. Usage:\n')
-    sys.stderr.write('\tpython evaluate.py model features scores plots\n')
+    sys.stderr.write('\tpython evaluate.py model features scores prc roc\n')
     sys.exit(1)
 
 model_file = sys.argv[1]
