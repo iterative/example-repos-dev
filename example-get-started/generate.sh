@@ -113,7 +113,8 @@ dvc run -n evaluate \
         --plots-no-cache roc.json \
         python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
 dvc plots modify prc.json -x recall -y precision
-git add .gitignore dvc.yaml dvc.lock prc.json scores.json
+dvc plots modify roc.json -x fpr -y tpr
+git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
