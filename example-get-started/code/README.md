@@ -98,27 +98,31 @@ playground ready.
 - `4-import-data`: Use `dvc import` to get the same `data.xml` from the DVC data
   registry.
 - `5-source-code`: Source code downloaded and put into Git.
-- `6-prep-stage`: Create `dvc.yaml` and the first pipeline stage with
+- `6-prepare-stage`: Create `dvc.yaml` and the first pipeline stage with
   [`dvc run`](https://man.dvc.org/run). It transforms XML data into TSV.
-- `8-ml-pipeline`: Feature extraction and train stages created. It takes data in
+- `7-ml-pipeline`: Feature extraction and train stages created. It takes data in
   TSV format and produces two `.pkl` files that contain serialized feature
   matrices. Tain runs random forest classifier and creates the `model.pkl` file.
-- `9-evaluate`: Evaluation stage. Runs the model on a test dataset to produce
+- `8-evaluation`: Evaluation stage. Runs the model on a test dataset to produce
   its performance AUC value. The result is dumped into a DVC metric file so that
   we can compare it with other experiments later.
-- `10-bigrams-model`: Bigrams experiment, code has been modified to extract more
+- `9-bigrams-model`: Bigrams experiment, code has been modified to extract more
   features. We run [`dvc repro`](https://man.dvc.org/repro) for the first time
   to illustrate how DVC can reuse cached files and detect changes along the
   computational graph, regenerating the model with the updated data.
-- `11-bigrams-experiment`: Reproduce the evaluation stage with the bigrams based
+- `10-bigrams-experiment`: Reproduce the evaluation stage with the bigrams based
   model.
+- `11-random-forest-experiments`: Reproduce experiments to tune the random
+  forest classifier parameters and select the best experiment.
 
-There are two additional tags:
+There are three additional tags:
 
 - `baseline-experiment`: First end-to-end result that we have performance metric
   for.
 - `bigrams-experiment`: Second experiment (model trained using bigrams
   features).
+- `random-forest-experiments`: Best of additional experiments tuning random
+  forest parameters.
 
 These tags can be used to illustrate `-a` or `-T` options across different
 [DVC commands](https://man.dvc.org/).
@@ -147,6 +151,7 @@ $ tree
 ├── model.pkl             # <-- Trained model file
 ├── params.yaml           # <-- Parameters file
 ├── prc.json              # <-- Precision-recall curve data points
+├── roc.json              # <-- ROC curve data points
 ├── scores.json           # <-- Binary classifier final metrics (e.g. AUC)
 └── src                   # <-- Source code to run the pipeline stages
     ├── evaluate.py
