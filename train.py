@@ -38,12 +38,11 @@ def transform(dataset):
     return x, y
 
 
-def train(model, x, y, lr, weight_decay):
+def train(model, x, y):
     """Train a single epoch."""
     model.train()
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr,
-                                 weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(model.parameters())
     y_pred = model(x)
     loss = criterion(y_pred, y)
     optimizer.zero_grad()
@@ -72,12 +71,6 @@ def evaluate(model, x, y):
     """Evaluate model and save metrics."""
     scores = predict(model, x)
     _, labels = torch.max(scores, 1)
-    predictions = [{
-                    "actual": int(actual),
-                    "predicted": int(predicted)
-                   } for actual, predicted in zip(y, labels)]
-    with open("predictions.json", "w") as f:
-        json.dump(predictions, f)
     metrics = get_metrics(y, scores, labels)
     with open("metrics.json", "w") as f:
         json.dump(metrics, f)
@@ -89,17 +82,14 @@ def main():
     # Load model.
     if os.path.exists("model.pt"):
         model.load_state_dict(torch.load("model.pt"))
-    # Load params.
-    with open("params.yaml") as f:
-        params = yaml.safe_load(f)
     # Load train and test data.
-    mnist_train = torchvision.datasets.MNIST("data")
+    mnist_train = torchvision.datasets.MNIST("data", download=True)
     x_train, y_train = transform(mnist_train)
-    mnist_test = torchvision.datasets.MNIST("data", train=False)
+    mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
     # Iterate over training epochs.
     for i in range(1, EPOCHS+1):
-        train(model, x_train, y_train, params["lr"], params["weight_decay"])
+        train(model, x_train, y_train)
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
         evaluate(model, x_test, y_test)
