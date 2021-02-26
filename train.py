@@ -62,7 +62,6 @@ def get_metrics(y, y_pred, y_pred_label):
     """Get loss and accuracy metrics."""
     metrics = {}
     criterion = torch.nn.CrossEntropyLoss()
-    metrics["loss"] = criterion(y_pred, y).item()
     metrics["acc"] = (y_pred_label == y).sum().item()/len(y)
     return metrics
 
