@@ -58,6 +58,7 @@ git tag -a "3-config-remote" -m "Read-only remote storage configured."
 dvc push
 
 
+rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml
 git add data/data.xml.dvc
@@ -95,7 +96,7 @@ dvc run -n featurize \
 git add data/.gitignore dvc.yaml dvc.lock
 
 dvc run -n train \
-        -p train.seed,train.n_estimators \
+        -p train.seed,train.n_est,train.min_split \
         -d src/train.py -d data/features \
         -o model.pkl \
         python src/train.py data/features model.pkl
@@ -109,9 +110,11 @@ dvc run -n evaluate \
         -d src/evaluate.py -d model.pkl -d data/features \
         -M scores.json \
         --plots-no-cache prc.json \
-        python src/evaluate.py model.pkl data/features scores.json prc.json
+        --plots-no-cache roc.json \
+        python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
 dvc plots modify prc.json -x recall -y precision
-git add .gitignore dvc.yaml dvc.lock prc.json scores.json
+dvc plots modify roc.json -x fpr -y tpr
+git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
@@ -132,6 +135,22 @@ git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
+
+
+dvc exp run --set-param featurize.max_features=3000
+dvc exp run --queue --set-param train.min_split=8
+dvc exp run --queue --set-param train.min_split=64
+dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
+dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
+dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
+dvc exp run --run-all -j 2
+# Apply best experiment.
+dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+git commit -am "Run experiments tuning random forest params"
+git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
+git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
+dvc push
+
 
 popd
 

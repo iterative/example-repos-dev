@@ -1,5 +1,4 @@
 pandas
-sklearn
 pyaml
 scikit-learn
 scipy
