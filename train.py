@@ -5,6 +5,7 @@ import os
 import torch
 import torch.nn.functional as F
 import torchvision
+import dvclive
 from dvc.api import make_checkpoint
 
 
@@ -81,6 +82,7 @@ def evaluate(model, x, y):
     metrics = get_metrics(y, scores, labels)
     with open("metrics.json", "w") as f:
         json.dump(metrics, f)
+    return metrics
 
 
 def main():
@@ -102,7 +104,10 @@ def main():
         train(model, x_train, y_train, params["lr"], params["weight_decay"])
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
-        evaluate(model, x_test, y_test)
+        metrics = evaluate(model, x_test, y_test)
+        for k, v in metrics.items():
+            dvclive.log(k, v)
+        dvclive.next_step()
         make_checkpoint()
 
 
