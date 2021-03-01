@@ -6,7 +6,6 @@ import torch
 import torch.nn.functional as F
 import torchvision
 import dvclive
-from dvc.api import make_checkpoint
 
 
 EPOCHS = 10
@@ -80,8 +79,6 @@ def evaluate(model, x, y):
     with open("predictions.json", "w") as f:
         json.dump(predictions, f)
     metrics = get_metrics(y, scores, labels)
-    with open("metrics.json", "w") as f:
-        json.dump(metrics, f)
     return metrics
 
 
@@ -108,7 +105,6 @@ def main():
         for k, v in metrics.items():
             dvclive.log(k, v)
         dvclive.next_step()
-        make_checkpoint()
 
 
 if __name__ == "__main__":
