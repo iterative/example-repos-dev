@@ -16,9 +16,6 @@ stages:
     outs:
     - model.pt:
         checkpoint: true
-    metrics:
-    - metrics.json:
-        cache: false
     plots:
     - predictions.json:
         cache: false
