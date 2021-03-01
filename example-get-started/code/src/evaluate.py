@@ -35,7 +35,7 @@ avg_prec = metrics.average_precision_score(labels, predictions)
 roc_auc = metrics.roc_auc_score(labels, predictions)
 
 with open(scores_file, 'w') as fd:
-    json.dump({'avg_prec': avg_prec, 'roc_auc': roc_auc}, fd)
+    json.dump({'avg_prec': avg_prec, 'roc_auc': roc_auc}, fd, indent=4)
 
 with open(prc_file, 'w') as fd:
     json.dump({'prc': [{
@@ -43,7 +43,7 @@ with open(prc_file, 'w') as fd:
             'recall': r,
             'threshold': t
         } for p, r, t in zip(precision, recall, prc_thresholds)
-    ]}, fd)
+    ]}, fd, indent=4)
 
 with open(roc_file, 'w') as fd:
     json.dump({'roc': [{
@@ -51,4 +51,4 @@ with open(roc_file, 'w') as fd:
             'tpr': tp,
             'threshold': t
         } for fp, tp, t in zip(fpr, tpr, roc_thresholds)
-    ]}, fd)
+    ]}, fd, indent=4)
