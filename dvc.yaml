@@ -25,3 +25,7 @@ stages:
         template: confusion
         x: actual
         y: predicted
+    live:
+      logs:
+        summary: true
+        html: true
