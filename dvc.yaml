@@ -6,6 +6,7 @@ stages:
     outs:
     - model.pt:
         checkpoint: true
-    metrics:
-    - metrics.json:
-        cache: false
+    live:
+      logs:
+        summary: true
+        html: true

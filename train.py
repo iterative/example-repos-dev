@@ -5,7 +5,7 @@ import os
 import torch
 import torch.nn.functional as F
 import torchvision
-from dvc.api import make_checkpoint
+import dvclive
 
 
 EPOCHS = 10
@@ -71,12 +71,12 @@ def evaluate(model, x, y):
     scores = predict(model, x)
     _, labels = torch.max(scores, 1)
     metrics = get_metrics(y, scores, labels)
-    with open("metrics.json", "w") as f:
-        json.dump(metrics, f)
+    return metrics
 
 
 def main():
     """Train model and evaluate on test data."""
+    torch.manual_seed(0)
     model = ConvNet()
     # Load model.
     if os.path.exists("model.pt"):
@@ -91,8 +91,10 @@ def main():
         train(model, x_train, y_train)
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
-        evaluate(model, x_test, y_test)
-        make_checkpoint()
+        metrics = evaluate(model, x_test, y_test)
+        for metric, value in metrics.items():
+            dvclive.log(metric, value)
+        dvclive.next_step()
 
 
 if __name__ == "__main__":
