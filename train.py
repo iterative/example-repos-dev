@@ -91,6 +91,7 @@ def main():
     # Load params.
     with open("params.yaml") as f:
         params = yaml.safe_load(f)
+    torch.manual_seed(params["seed"])
     # Load train and test data.
     mnist_train = torchvision.datasets.MNIST("data")
     x_train, y_train = transform(mnist_train)
