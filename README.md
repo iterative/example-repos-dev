@@ -24,22 +24,16 @@ with:
 
 ```bash
 $ dvc exp show
-┏━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━┓
-┃ Experiment    ┃ Created  ┃    acc ┃
-┡━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━┩
-│ workspace     │ -        │ 0.5633 │
-│ minimal       │ 04:37 PM │      - │
-│ │ ╓ exp-ef310 │ 04:40 PM │ 0.5633 │
-│ │ ╟ ba076b6   │ 04:40 PM │ 0.5315 │
-│ │ ╟ 9cf2f6e   │ 04:40 PM │  0.535 │
-│ │ ╟ 354d175   │ 04:40 PM │ 0.5652 │
-│ │ ╟ d3b5f6b   │ 04:40 PM │ 0.5418 │
-│ │ ╟ 0b83b74   │ 04:39 PM │ 0.6222 │
-│ │ ╟ 9ef0fa3   │ 04:39 PM │ 0.5687 │
-│ │ ╟ ab414d0   │ 04:39 PM │ 0.5839 │
-│ │ ╟ 1a0780d   │ 04:39 PM │ 0.3916 │
-│ ├─╨ 6e313d1   │ 04:38 PM │ 0.1894 │
-└───────────────┴──────────┴────────┘
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━┓
+┃ Experiment      ┃ Created  ┃    acc ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━┩
+│ workspace       │ -        │ 0.4115 │
+│ python_agnostic │ 02:59 PM │      - │
+│ │ ╓ exp-c61e2   │ 03:01 PM │ 0.4115 │
+│ │ ╟ 1d97417     │ 03:01 PM │ 0.2973 │
+│ │ ╟ e8dc64d     │ 03:00 PM │ 0.1282 │
+│ ├─╨ d28a6fd     │ 02:59 PM │  0.101 │
+└─────────────────┴──────────┴────────┘
 ```
 
 You can also:
@@ -50,7 +44,11 @@ You can also:
 
 ## How to add checkpoints to your DVC project
 
-In `dvc.yaml`, add the `checkpoint: true` option to your model output:
+By default, DVC will delete the outputs before running a stage. To read in the
+weights from the previously trained model output, this behavior must be
+disabled.
+
+To do so, in `dvc.yaml`, add the `checkpoint: true` option to your model output:
 
 ```diff
      outs:
