@@ -5,10 +5,6 @@ import os
 import torch
 import torch.nn.functional as F
 import torchvision
-from dvc.api import make_checkpoint
-
-
-EPOCHS = 10
 
 
 class ConvNet(torch.nn.Module):
@@ -86,13 +82,11 @@ def main():
     x_train, y_train = transform(mnist_train)
     mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
-    # Iterate over training epochs.
-    for i in range(1, EPOCHS+1):
-        train(model, x_train, y_train)
-        torch.save(model.state_dict(), "model.pt")
-        # Evaluate and checkpoint.
-        evaluate(model, x_test, y_test)
-        make_checkpoint()
+    # Train model.
+    train(model, x_train, y_train)
+    torch.save(model.state_dict(), "model.pt")
+    # Evaluate.
+    evaluate(model, x_test, y_test)
 
 
 if __name__ == "__main__":
