@@ -82,6 +82,11 @@ def evaluate(model, x, y):
 
 def main():
     """Train model and evaluate on test data."""
+<<<<<<< HEAD
+=======
+    dvclive.init("logs", summary=True, html=True)
+    torch.manual_seed(0)
+>>>>>>> 5ede80b (minibatch training)
     model = ConvNet()
     # Load model.
     if os.path.exists("model.pt"):
@@ -91,8 +96,13 @@ def main():
     x_train, y_train = transform(mnist_train)
     mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
-    # Train model.
-    train(model, x_train, y_train)
+    # Train model in batches.
+    train_loader = torch.utils.data.DataLoader(
+            dataset=list(zip(x_train, y_train)),
+            batch_size=512,
+            shuffle=True)
+    for x_batch, y_batch in train_loader:
+        train(model, x_batch, y_batch)
     torch.save(model.state_dict(), "model.pt")
     # Evaluate.
     evaluate(model, x_test, y_test)
