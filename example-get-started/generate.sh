@@ -171,6 +171,7 @@ cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
 git push --force origin master
 git push --force origin --tags
+dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 cd ../..
 
 You may remove the generated repo with:
