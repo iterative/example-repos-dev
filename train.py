@@ -85,7 +85,6 @@ def evaluate(model, x, y):
 
 def main():
     """Train model and evaluate on test data."""
-    dvclive.init("logs", summary=True, html=True)
     torch.manual_seed(0)
     model = ConvNet()
     # Load model.
