@@ -85,6 +85,7 @@ def evaluate(model, x, y):
 
 def main():
     """Train model and evaluate on test data."""
+    dvclive.init("logs", summary=True, html=True)
     torch.manual_seed(0)
     model = ConvNet()
     # Load model.
@@ -97,7 +98,13 @@ def main():
     x_test, y_test = transform(mnist_test)
     # Iterate over training epochs.
     for i in range(1, EPOCHS+1):
-        train(model, x_train, y_train)
+        # Train in batches.
+        train_loader = torch.utils.data.DataLoader(
+                dataset=list(zip(x_train, y_train)),
+                batch_size=512,
+                shuffle=True)
+        for x_batch, y_batch in train_loader:
+            train(model, x_batch, y_batch)
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
         metrics = evaluate(model, x_test, y_test)
