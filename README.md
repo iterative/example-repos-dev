@@ -58,14 +58,12 @@ You can also:
 
 Adding checkpoints to a DVC project requires a few additional lines of code.
 
-In your training script, add the following to record a checkpoint (see
+In your training script (`train.py` here), add the following to record a
+checkpoint (see
 [docs](https://dvc.org/doc/api-reference/make_checkpoint#description) for
 details):
 
 ```diff
---- a/train.py
-+++ b/train.py
-@@ -108,7 +107,15 @@ def main():
          torch.save(model.state_dict(), "model.pt")
          # Evaluate and checkpoint.
          evaluate(model, x_test, y_test)
