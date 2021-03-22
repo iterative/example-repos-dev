@@ -69,7 +69,6 @@ details):
          torch.save(model.state_dict(), "model.pt")
          # Evaluate and checkpoint.
          evaluate(model, x_test, y_test)
--        make_checkpoint()
 +        # Generate dvc checkpoint.
 +        dvc_root = os.getenv("DVC_ROOT") # Root dir of dvc project.
 +        if dvc_root: # Skip if not running via dvc.
@@ -82,7 +81,6 @@ details):
 
 
  if __name__ == "__main__":
-```diff
 ```
 
 This code creates an empty file in `$DVC_ROOT/.dvc/tmp/DVC_CHECKPOINT` and waits
