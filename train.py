@@ -115,7 +115,7 @@ def main():
                 batch_size=512,
                 shuffle=True)
         for x_batch, y_batch in train_loader:
-            train(model, x_batch, y_batch)
+            train(model, x_batch, y_batch, params["lr"], params["weight_decay"])
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
         metrics = evaluate(model, x_test, y_test)
