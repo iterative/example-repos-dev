@@ -5,7 +5,6 @@ import os
 import torch
 import torch.nn.functional as F
 import torchvision
-from dvc.api import make_checkpoint
 
 
 EPOCHS = 10
@@ -108,7 +107,15 @@ def main():
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
         evaluate(model, x_test, y_test)
-        make_checkpoint()
+        # Generate dvc checkpoint.
+        dvc_root = os.getenv("DVC_ROOT") # Root dir of dvc project.
+        if dvc_root: # Skip if not running via dvc.
+            signal_file = os.path.join(dvc_root, ".dvc", "tmp",
+                "DVC_CHECKPOINT")
+            with open(signal_file, "w") as f: # Write empty file.
+                f.write("")
+            while os.path.exists(signal_file): # Wait until dvc deletes file.
+                pass
 
 
 if __name__ == "__main__":
