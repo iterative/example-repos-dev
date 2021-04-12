@@ -51,7 +51,7 @@ def save_matrix(df, matrix, output):
     sys.stderr.write(msg.format(output, result.shape, result.dtype))
 
     with open(output, 'wb') as fd:
-        pickle.dump(result, fd, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(result, fd)
     pass
 
 
