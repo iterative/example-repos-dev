@@ -60,7 +60,8 @@ dvc push
 
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
-           get-started/data.xml -o data/data.xml
+           get-started/data.xml -o data/data.xml \
+           --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
 git commit -m "Import raw data (overwrite)"
 dvc push
