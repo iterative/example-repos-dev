@@ -7,6 +7,6 @@ stages:
     - model.pt:
         checkpoint: true
     live:
-      logs:
+      dvclive:
         summary: true
         html: true
