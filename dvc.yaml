@@ -24,6 +24,6 @@ stages:
         x: actual
         y: predicted
     live:
-      logs:
+      dvclive:
         summary: true
         html: true
