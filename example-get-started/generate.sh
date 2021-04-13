@@ -42,7 +42,7 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
         get-started/data.xml -o data/data.xml
-dvc add data/data.xml
+dvc add data/data.xml --desc "Initial XML StackOverflow dataset (raw data)"
 git add data/.gitignore data/data.xml.dvc
 git commit -m "Add raw data"
 git tag -a "2-track-data" -m "Data file added."
@@ -61,7 +61,7 @@ dvc push
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml \
-           --desc "Initial XML StackOverflow dataset (raw data)"
+           --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
 git commit -m "Import raw data (overwrite)"
 dvc push
