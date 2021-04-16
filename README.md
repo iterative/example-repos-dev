@@ -19,8 +19,7 @@ To try it out for yourself:
 Start training the model with `dvc exp run`, which will train for a single
 epoch. Run `dvc exp run` as many times as you want to train for more epochs.
 
-Once the training script completes, you can view the results of each checkpoint
-with:
+You can view the results of each checkpoint with:
 
 ```bash
 $ dvc exp show
