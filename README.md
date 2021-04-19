@@ -1,10 +1,44 @@
 # dvc-checkpoints-mnist
 
-This example DVC project uses [dvclive](https://dvc.org/doc/dvclive) to generate
+This example DVC project demonstrates the different ways to employ
+[Checkpoint Experiments](https://dvc.org/doc/user-guide/experiment-management#checkpoints-in-source-code)
+with DVC.
+
+This scenario uses [DVCLive](https://dvc.org/doc/dvclive) to generate
 [checkpoints](https://dvc.org/doc/api-reference/make_checkpoint) for iterative
 model training. The model is a simple convolutional neural network (CNN)
 classifier trained on the [MNIST](http://yann.lecun.com/exdb/mnist/) data of
 handwritten digits to predict the digit (0-9) in each image.
+
+<details>
+
+<summary>🔄 Switch between scenarios</summary>
+<br/>
+
+This repo has several
+[branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) to this
+that show different methods for using checkpoints on a similar pipeline:
+
+- The [live](https://github.com/iterative/dvc-checkpoints-mnist/edit/live)
+  scenario introduces full-featured checkpoint usage — integrating with
+  [DVCLive](https://github.com/iterative/dvclive).
+- The [basic](https://github.com/iterative/dvc-checkpoints-mnist/tree/basic)
+  scenario uses single-checkpoint experiments to illustrate how checkpoints work
+  in a simple way.
+- The
+  [Python-only](https://github.com/iterative/dvc-checkpoints-mnist/tree/make_checkpoint)
+  variation features the
+  [make_checkpoint](https://dvc.org/doc/api-reference/make_checkpoint) function
+  from DVC's Python API.
+- Contrastingly, the
+  [signal file](https://github.com/iterative/dvc-checkpoints-mnist/tree/signal_file)
+  scenario shows how to make your own signal files (applicable to any
+  programming language).
+- Finally, our
+  [full pipeline](https://github.com/iterative/dvc-checkpoints-mnist/tree/full_pipeline)
+  scenario elaborates on the full-featured usage with a more advanced process.
+
+</details>
 
 ## Setup
 
