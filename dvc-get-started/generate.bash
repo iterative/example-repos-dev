@@ -41,8 +41,8 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
 dvc import https://github.com/iterative/dataset-registry \
-           mnist/raw -o data/raw
-git add data/raw
+           get-started-mnist/raw -o data/raw
+git add data/raw.dvc data/.gitignore
 git commit -m "Add raw MNIST data"
 git tag -a "2-track-data" -m "Data file added."
 
@@ -68,6 +68,7 @@ dvc push
 
 cp -r ${HERE}/code/src .
 cp ${HERE}/code/requirements.txt .
+cp ${HERE}/code/params.yaml .
 pip install -r ${REPO_PATH}/requirements.txt
 git add .
 git commit -m "Add source code files to repo"
@@ -106,6 +107,7 @@ dvc push
 git add data/.gitignore dvc.yaml dvc.lock
 git tag -a "6-preprocess-stage" -m "Second pipeline stage (data preprocessing) created."
 
+mkdir models
 dvc stage add -n train \
               -p train.seed \
               -p train.validation_split \
@@ -130,7 +132,7 @@ dvc stage add -n train \
 
 
 dvc repro
-git add .gitignore dvc.yaml dvc.lock
+git add .gitignore dvc.yaml dvc.lock models/.gitignore
 git commit -m "Created training stage"
 dvc push
 git tag -a "7-training" -m "Training stage created."
@@ -142,7 +144,7 @@ dvc stage add -n evaluate \
               python3 src/evaluate.py
 dvc repro
 
-git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
+git add .gitignore dvc.yaml dvc.lock metrics.json
 git commit -m "Create evaluation stage"
 dvc push
 git tag -a "8-evaluation" -m "Evaluation stage created."

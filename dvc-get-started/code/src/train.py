@@ -23,7 +23,7 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    m = model.get_model()
+    m = models.get_model()
     m.summary()
 
     whole_train_img, whole_train_labels = load_npz_data("data/preprocessed/mnist-train.npz")
@@ -51,7 +51,7 @@ def main():
                   verbose=1,
                   validation_data = (x_valid, y_valid))
 
-    with open("train.log.csv", "w") as f:
+    with open("logs.csv", "w") as f:
         f.write(history_to_csv(history))
 
     m.save("models/model.h5")
