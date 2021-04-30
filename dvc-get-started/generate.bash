@@ -7,10 +7,10 @@
 #   x   Print commands and their arguments as they are executed.
 set -eux
 
-HERE="$( cd "$(dirname "$0")" ; pwd -P )"
-REPO_NAME="dvc-get-started-$(date +%F-%H-%M-%S)"
-REPO_PATH="${HERE}/build/${REPO_NAME}"
-PUSH_SCRIPT="${HERE}/build/push-${REPO_NAME}.sh"
+export HERE="$( cd "$(dirname "$0")" ; pwd -P )"
+export REPO_NAME="dvc-get-started-$(date +%F-%H-%M-%S)"
+export REPO_PATH="${HERE}/build/${REPO_NAME}"
+export PUSH_SCRIPT="${HERE}/build/push-${REPO_NAME}.sh"
 
 if [ -d "$REPO_PATH" ]; then
     echo "Repo $REPO_PATH already exists, please remove it first."
@@ -25,27 +25,20 @@ export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
 
-pip install gitpython
 pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
+
 git init
-cp $HERE/code/README.md .
+git checkout -b base
+cp $HERE/code-main/README.md .
 git add .
 git commit -m  "Initialize Git repository"
-git tag -a "0-git-init" -m "Git initialized."
+git tag -a "base-0-git-init" -m "Git initialized."
 
 
 dvc init
 git commit -m "Initialize DVC project"
-git tag -a "1-dvc-init" -m "DVC initialized."
-
-
-mkdir data
-dvc import https://github.com/iterative/dataset-registry \
-           mnist/raw -o data/raw
-git add data/raw.dvc data/.gitignore
-git commit -m "Add raw MNIST data"
-git tag -a "2-track-data" -m "Data file added."
+git tag -a "base-1-dvc-init" -m "DVC initialized."
 
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
@@ -53,102 +46,13 @@ dvc remote add -d --local storage s3://dvc-public/remote/get-started
 dvc remote add -d storage https://remote.dvc.org/get-started
 git add .
 git commit -m "Configure default remote"
-git tag -a "3-config-remote" -m "Read-only remote storage configured."
-dvc push
+git tag -a "base-2-config-remote" -m "Read-only remote storage configured."
 
+# Create the checkpoints branch
+exec ${HERE}/generate-checkpoints.bash
+# Create the main branch 
+exec ${HERE}/generate-main.bash
 
-# rm data/data.xml data/data.xml.dvc
-# dvc import https://github.com/iterative/dataset-registry \
-#            get-started/data.xml -o data/data.xml \
-#            --desc "Imported raw data (tracks source updates)"
-# git add data/data.xml.dvc
-# git commit -m "Import raw data (overwrite)"
-# dvc push
-# git tag -a "4-import-data" -m "Data file overwritten with an import."
-#
-
-cp -r ${HERE}/code/src .
-cp ${HERE}/code/requirements.txt .
-cp ${HERE}/code/params.yaml .
-pip install -r ${REPO_PATH}/requirements.txt
-git add .
-git commit -m "Add source code files to repo"
-git tag -a "4-source-code" -m "Source code added."
-
-dvc stage add -n prepare \
-              -p prepare.seed \
-              -p prepare.remix \
-              -p prepare.remix_split \
-              -d data/raw/ \
-              -d src/prepare.py \
-              -o data/prepared \
-              python3 src/prepare.py
-
-dvc repro prepare 
-
-git add data/.gitignore dvc.yaml dvc.lock
-git commit -m "Create data preparation stage"
-dvc push
-git tag -a "5-prepare-stage" -m "First pipeline stage (data preparation) created."
-
-dvc stage add -n preprocess \
-    -p preprocess.seed \
-    -p preprocess.normalize \
-    -p preprocess.shuffle \
-    -p preprocess.add_noise \
-    -p preprocess.noise_amount \
-    -p preprocess.noise_s_vs_p \
-    -d data/prepared/ \
-    -d src/preprocess.py \
-    -o data/preprocessed/ \
-    python3 src/preprocess.py
-
-dvc repro
-dvc push
-git add data/.gitignore dvc.yaml dvc.lock
-git tag -a "6-preprocess-stage" -m "Second pipeline stage (data preprocessing) created."
-
-mkdir models
-dvc stage add -n train \
-              -p train.seed \
-              -p train.validation_split \
-              -p train.epochs \
-              -p train.batch_size \
-              -p model.name \
-              -p model.optimizer \
-              -p model.mlp.units \
-              -p model.mlp.activation \
-              -p model.cnn.dense_units \
-              -p model.cnn.conv_kernel_size \
-              -p model.cnn.conv_units \
-              -p model.cnn.dropout \
-              -d src/train.py \
-              -d src/models.py \
-              -d data/preprocessed/ \
-              -o models/model.h5 \
-              --plots-no-cache logs.csv \
-              python3 src/train.py
-
-# TODO: We may need to add some `dvc plots modify` commands here!
-
-
-dvc repro
-git add .gitignore dvc.yaml dvc.lock models/.gitignore
-git commit -m "Created training stage"
-dvc push
-git tag -a "7-training" -m "Training stage created."
-
-dvc stage add -n evaluate \
-              -d src/evaluate.py \
-              -d models/model.h5 \
-              -M metrics.json \
-              python3 src/evaluate.py
-dvc repro
-
-git add .gitignore dvc.yaml dvc.lock metrics.json
-git commit -m "Create evaluation stage"
-dvc push
-git tag -a "8-evaluation" -m "Evaluation stage created."
 
 popd
 
@@ -181,3 +85,9 @@ echo "$ chmod u+x ${PUSH_SCRIPT}"
 echo "$ ${PUSH_SCRIPT}"
 echo "You may remove the generated repo with:"
 echo "$ rm -fR ${REPO_PATH}"
+
+
+unset HERE
+unset REPO_NAME
+unset REPO_PATH
+unset PUSH_SCRIPT
