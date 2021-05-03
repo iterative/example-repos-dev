@@ -1,0 +1,92 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python3 src/prepare.py
+    deps:
+    - path: data/raw/
+      md5: b6c29e96813679dd8c451c9b5ca86e2c.dir
+      size: 11594722
+      nfiles: 4
+    - path: src/prepare.py
+      md5: 21e57d729047c4e7a38871e98d011590
+      size: 3834
+    params:
+      params.yaml:
+        prepare.remix: false
+        prepare.remix_split: 0.2
+        prepare.seed: 20210428
+    outs:
+    - path: data/prepared
+      md5: cd35e4ee1528a9e57daf4f7affdb7fe6.dir
+      size: 54951020
+      nfiles: 2
+  preprocess:
+    cmd: python3 src/preprocess.py
+    deps:
+    - path: data/prepared/
+      md5: cd35e4ee1528a9e57daf4f7affdb7fe6.dir
+      size: 54951020
+      nfiles: 2
+    - path: src/preprocess.py
+      md5: b50c340172d6ac47b2840ca7a9184d9e
+      size: 2337
+    params:
+      params.yaml:
+        preprocess.add_noise: false
+        preprocess.noise_amount: 0.0004
+        preprocess.noise_s_vs_p: 0.5
+        preprocess.normalize: true
+        preprocess.seed: 20210428
+        preprocess.shuffle: false
+    outs:
+    - path: data/preprocessed/
+      md5: 6b4943a36fba46ed1183f2c1970e7f5f.dir
+      size: 441841020
+      nfiles: 2
+  train:
+    cmd: python3 src/train.py
+    deps:
+    - path: data/preprocessed/
+      md5: 6b4943a36fba46ed1183f2c1970e7f5f.dir
+      size: 441841020
+      nfiles: 2
+    - path: src/models.py
+      md5: d4244eec75abaa311a9a7282efab492a
+      size: 3915
+    - path: src/train.py
+      md5: 330f6d2c1f9f3f8f35b0fb50cff0aba3
+      size: 1913
+    params:
+      params.yaml:
+        model.cnn.conv_kernel_size: 3
+        model.cnn.conv_units: 32
+        model.cnn.dense_units: 128
+        model.cnn.dropout: 0.5
+        model.mlp.activation: relu
+        model.mlp.units: 16
+        model.name: mlp
+        model.optimizer: Adam
+        train.batch_size: 128
+        train.epochs: 10
+        train.seed: 20210428
+        train.validation_split: 0.2
+    outs:
+    - path: logs.csv
+      md5: 3fc302579717d2a6b5be4b678b58ddb4
+      size: 1736
+    - path: models/model.h5
+      md5: 502bfd12e4bff21910c86c400c94e0c1
+      size: 178776
+  evaluate:
+    cmd: python3 src/evaluate.py
+    deps:
+    - path: models/model.h5
+      md5: 502bfd12e4bff21910c86c400c94e0c1
+      size: 178776
+    - path: src/evaluate.py
+      md5: 7abfb34c007a39e9697400a7f5dd3b7a
+      size: 697
+    outs:
+    - path: metrics.json
+      md5: 29dde77936570a6c1fbfc7428fef9675
+      size: 136

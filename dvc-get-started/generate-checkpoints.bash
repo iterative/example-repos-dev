@@ -24,15 +24,22 @@ dvc push
 cp -r ${HERE}/code-cp-2-basic/* ${REPO_PATH}/
 pip install -r ${REPO_PATH}/requirements.txt
 git add .
-git commit -m "Added checkpoint: true to the params file"
+git commit -m "Added 'checkpoint: true' to the params file"
 git tag -a "cp-2-basic" -m "checkpoint: true example"
 
-git add data/.gitignore dvc.yaml dvc.lock
-git commit -m "Create data preparation stage"
-dvc push
+cp -r ${HERE}/code-cp-3-signal-file/* ${REPO_PATH}/
+git add .
+git commit -m "Modified train.py for signal files"
 git tag -a "cp-3-signal-file" -m "Checkpoints: Signal file example"
 
-git add data/.gitignore dvc.yaml dvc.lock
+cp -r ${HERE}/code-cp-4-python-api/* ${REPO_PATH}/
+git add .
+git commit -m "Using make_checkpoint() in the callback"
 git tag -a "cp-4-python-api" -m "Checkpoints: Python API example"
+
+
+cp -r ${HERE}/code-cp-5-dvclive/* ${REPO_PATH}/
+git add .
+git commit -m "DVClive modifications"
 git tag -a "cp-5-dvclive" -m "Checkpoints: DVClive stage added"
 
