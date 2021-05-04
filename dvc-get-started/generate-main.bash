@@ -10,9 +10,11 @@ set -eux
 git checkout base
 git checkout -b main
 
-mkdir data
+test -d data || mkdir data
+
 dvc import https://github.com/iterative/dataset-registry \
            mnist/raw -o data/raw
+
 git add data/raw.dvc data/.gitignore
 git commit -m "Add raw MNIST data"
 git tag -a "main-1-track-data" -m "Data file added."
@@ -54,7 +56,7 @@ dvc stage add -n preprocess \
     -o data/preprocessed/ \
     python3 src/preprocess.py
 
-dvc repro
+dvc repro preprocess
 dvc push
 git add data/.gitignore dvc.yaml dvc.lock
 git tag -a "main-4-preprocess-stage" -m "Second pipeline stage (data preprocessing) created."
@@ -82,8 +84,7 @@ dvc stage add -n train \
 
 # TODO: We may need to add some `dvc plots modify` commands here!
 
-
-dvc repro
+dvc repro train
 git add .gitignore dvc.yaml dvc.lock models/.gitignore
 git commit -m "Created training stage"
 dvc push
@@ -94,7 +95,7 @@ dvc stage add -n evaluate \
               -d models/model.h5 \
               -M metrics.json \
               python3 src/evaluate.py
-dvc repro
+dvc repro evaluate
 
 git add .gitignore dvc.yaml dvc.lock metrics.json
 git commit -m "Create evaluation stage"

@@ -16,7 +16,7 @@ train:
   validation_split: 0.2
   epochs: 1
   batch_size: 128
-  continue: true
+  resume: true
 
 model:
   name: mlp

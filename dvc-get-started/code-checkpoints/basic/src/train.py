@@ -26,7 +26,7 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    if params["continue"] and os.path.exists(MODEL_FILE):
+    if params["resume"] and os.path.exists(MODEL_FILE):
         m = tf.keras.models.load_model(MODEL_FILE)
     else:
         m = models.get_model()

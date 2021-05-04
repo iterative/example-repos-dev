@@ -48,11 +48,10 @@ git add .
 git commit -m "Configure default remote"
 git tag -a "base-2-config-remote" -m "Read-only remote storage configured."
 
-# Create the checkpoints branch
-exec ${HERE}/generate-checkpoints.bash
 # Create the main branch 
-exec ${HERE}/generate-main.bash
-
+${HERE}/generate-main.bash
+# Create the checkpoints branch
+${HERE}/generate-checkpoints.bash
 
 popd
 
