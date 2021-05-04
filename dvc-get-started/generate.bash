@@ -56,7 +56,7 @@ ${HERE}/generate-checkpoints.bash
 popd
 
 cat > ${PUSH_SCRIPT} <<EOF
-#!/bin/sh
+#!/bin/bash
 
 set -eux
 
@@ -67,13 +67,18 @@ set -eux
 # If the Github repo already exists, run these commands to rewrite it:
 cd ${HERE}/build/${REPO_NAME} 
 git remote add origin git@github.com:iterative/dvc-get-started.git
-git push --force origin --all
-git push --force origin --tags
+# Delete all tags in the remote
+for tag in \$(git ls-remote --tags origin | grep -v '{}$' | cut -c 52-) ; do 
+    git push -v origin --delete \${tag}
+done
+git push --force origin --all --follow-tags
 # dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 cd -
 
 
 EOF
+
+chmod u+x ${PUSH_SCRIPT}
 
 cat << EOF
 ##################################
@@ -82,8 +87,7 @@ cat << EOF
 
 Push script is written to: ${PUSH_SCRIPT}
 You can run it with"
-$ chmod u+x ${PUSH_SCRIPT}
-$ ./${PUSH_SCRIPT}
+$ ${PUSH_SCRIPT}
 You may remove the generated repo with:
 $ rm -fR ${REPO_PATH}
 EOF
