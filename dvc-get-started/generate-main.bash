@@ -42,7 +42,7 @@ dvc repro prepare
 git add data/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
-git tag -a "main-3-prepare-stage" -m "First pipeline stage (data preparation) created."
+git tag -a "main-3-prepare" -m "First pipeline stage (data preparation) created."
 
 dvc stage add -n preprocess \
     -p preprocess.seed \
@@ -59,7 +59,7 @@ dvc stage add -n preprocess \
 dvc repro preprocess
 dvc push
 git add data/.gitignore dvc.yaml dvc.lock
-git tag -a "main-4-preprocess-stage" -m "Second pipeline stage (data preprocessing) created."
+git tag -a "main-4-preprocess" -m "Second pipeline stage (data preprocessing) created."
 
 mkdir models
 dvc stage add -n train \
