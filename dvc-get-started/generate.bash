@@ -65,10 +65,9 @@ set -eux
 # exists first and that you have appropriate write permissions.
 
 # If the Github repo already exists, run these commands to rewrite it:
-
-cd ${HERE}/build/${REPO_NAME}
+cd ${HERE}/build/${REPO_NAME} 
 git remote add origin git@github.com:iterative/dvc-get-started.git
-git push --force origin master
+git push --force origin --all
 git push --force origin --tags
 # dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 cd -
@@ -76,15 +75,18 @@ cd -
 
 EOF
 
-cat ${PUSH_SCRIPT}
-echo "##########################"
-echo "Push script is written to: ${PUSH_SCRIPT}"
-echo "You can run it with"
-echo "$ chmod u+x ${PUSH_SCRIPT}"
-echo "$ ${PUSH_SCRIPT}"
-echo "You may remove the generated repo with:"
-echo "$ rm -fR ${REPO_PATH}"
+cat << EOF
+##################################
+### REPOSITORY GENERATION DONE ###
+##################################
 
+Push script is written to: ${PUSH_SCRIPT}
+You can run it with"
+$ chmod u+x ${PUSH_SCRIPT}
+$ ./${PUSH_SCRIPT}
+You may remove the generated repo with:
+$ rm -fR ${REPO_PATH}
+EOF
 
 unset HERE
 unset REPO_NAME
