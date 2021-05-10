@@ -2,11 +2,7 @@ import struct
 import numpy as np
 import gzip
 import os
-import yaml
-
-
-def load_params():
-    return yaml.safe_load(open("params.yaml"))["prepare"]
+from util import load_params
 
 def mnist_images_idx_to_array(images_filename):
     images_f = gzip.open(images_filename, mode="rb")
@@ -60,7 +56,7 @@ def remix(images1, images2, labels1, labels2, seed, split):
 
 
 def main():
-    params = load_params()
+    params = load_params()["prepare"]
     print(params)
 
     training_images = mnist_images_idx_to_array("data/raw/train-images-idx3-ubyte.gz")

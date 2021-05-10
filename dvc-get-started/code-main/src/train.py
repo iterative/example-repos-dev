@@ -1,15 +1,12 @@
 import tensorflow as tf
 import numpy as np
-import yaml
+from util import load_params
 
 import models
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile['images'], npzfile['labels'])
-
-def load_params():
-    return yaml.safe_load(open("params.yaml"))["train"]
 
 def history_to_csv(history):
     keys = list(history.history.keys())
@@ -22,7 +19,7 @@ def history_to_csv(history):
     return csv_string
 
 def main():
-    params = load_params()
+    params = load_params()["train"]
     m = models.get_model()
     m.summary()
 

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import yaml
+from util import load_params
 
 def mlp(dense_units=128, activation="relu"):
     return tf.keras.models.Sequential([
@@ -22,11 +22,8 @@ def cnn(dense_units=128, conv_kernel=(3,3), conv_units=32, dropout=0.5, activati
         tf.keras.layers.Dense(10, activation="softmax")])
 
 
-def load_params():
-    return yaml.safe_load(open("params.yaml"))[""]
-
 def get_model():
-    model_params = yaml.safe_load(open("params.yaml"))["model"]
+    model_params = load_params()["model"]
 
     if model_params["name"].lower() == "mlp":
         p = model_params["mlp"]

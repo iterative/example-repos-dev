@@ -1,14 +1,11 @@
 import tensorflow as tf
 import numpy as np
 import json
-import yaml
+from util import load_params
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile['images'], npzfile['labels'])
-
-def load_params():
-    return yaml.safe_load(open("params.yaml"))
 
 def main():
     params = load_params()

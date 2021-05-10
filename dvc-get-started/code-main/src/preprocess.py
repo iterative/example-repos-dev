@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
-import yaml
 import os
+from util import load_params
 
 
 def normalize(images_array):
@@ -28,9 +28,6 @@ def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile['images'], npzfile['labels'])
 
-def load_params():
-    return yaml.safe_load(open("params.yaml"))["preprocess"]
-
 def shuffle_in_parallel(seed, array1, array2):
     np.random.seed(seed)
     np.random.shuffle(array1)
@@ -40,7 +37,7 @@ def shuffle_in_parallel(seed, array1, array2):
     return array1, array2
 
 def main():
-    params = load_params()
+    params = load_params()["preprocess"]
     print(params)
 
     training_images, training_labels = load_npz_data("data/prepared/mnist-train.npz")

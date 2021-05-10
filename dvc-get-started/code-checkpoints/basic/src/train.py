@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
-import yaml
 import os
+from util import load_params
 
 import models
 
@@ -10,9 +10,6 @@ MODEL_FILE = "models/model.h5"
 def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile['images'], npzfile['labels'])
-
-def load_params():
-    return yaml.safe_load(open("params.yaml"))["train"]
 
 def history_to_csv(history):
     keys = list(history.history.keys())
@@ -25,7 +22,7 @@ def history_to_csv(history):
     return csv_string
 
 def main():
-    params = load_params()
+    params = load_params()["train"]
     if params["resume"] and os.path.exists(MODEL_FILE):
         m = tf.keras.models.load_model(MODEL_FILE)
     else:
