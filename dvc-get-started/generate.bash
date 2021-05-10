@@ -25,7 +25,7 @@ export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
 
-pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
+pip install 'dvc[all]'
 
 
 git init
