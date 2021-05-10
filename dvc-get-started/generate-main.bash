@@ -5,10 +5,28 @@
 #   e   Exit immediately if a command exits with a non-zero exit status.
 #   u   Treat unset variables as an error when substituting.
 #   x   Print commands and their arguments as they are executed.
+
 set -eux
 
-git checkout base
+git init
 git checkout -b main
+cp $HERE/code-main/README.md .
+git add .
+git commit -m  "Initialize Git repository"
+git tag -a "git-init" -m "Git initialized."
+
+
+dvc init
+git commit -m "Initialize DVC project"
+git tag -a "dvc-init" -m "DVC initialized."
+
+# Remote active on this env only, for writing to HTTP redirect below.
+dvc remote add -d --local storage s3://dvc-public/remote/get-started
+# Actual remote for generated project (read-only). Redirect of S3 bucket above.
+dvc remote add -d storage https://remote.dvc.org/get-started
+git add .
+git commit -m "Configure default remote"
+git tag -a "config-remote" -m "Read-only remote storage configured."
 
 test -d data || mkdir data
 
@@ -17,7 +35,7 @@ dvc import https://github.com/iterative/dataset-registry \
 
 git add data/raw.dvc data/.gitignore
 git commit -m "Add raw MNIST data"
-git tag -a "main-1-track-data" -m "Data file added."
+git tag -a "import-mnist-data" -m "MNIST data file added."
 dvc push
 
 cp -r ${HERE}/code-main/src .
@@ -26,7 +44,7 @@ cp ${HERE}/code-main/params.yaml .
 pip install -r ${REPO_PATH}/requirements.txt
 git add .
 git commit -m "Add source code files to repo"
-git tag -a "main-2-source-code" -m "Source code added."
+git tag -a "source-code" -m "Source code added."
 
 dvc stage add -n prepare \
               -p prepare.seed \
@@ -42,7 +60,7 @@ dvc repro prepare
 git add data/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
-git tag -a "main-3-prepare" -m "First pipeline stage (data preparation) created."
+git tag -a "prepare" -m "First pipeline stage (data preparation) created."
 
 dvc stage add -n preprocess \
     -p preprocess.seed \
@@ -59,7 +77,7 @@ dvc stage add -n preprocess \
 dvc repro preprocess
 dvc push
 git add data/.gitignore dvc.yaml dvc.lock
-git tag -a "main-4-preprocess" -m "Second pipeline stage (data preprocessing) created."
+git tag -a "preprocess" -m "Second pipeline stage (data preprocessing) created."
 
 mkdir models
 dvc stage add -n train \
@@ -88,7 +106,7 @@ dvc repro train
 git add .gitignore dvc.yaml dvc.lock models/.gitignore
 git commit -m "Created training stage"
 dvc push
-git tag -a "main-5-training" -m "Training stage created."
+git tag -a "training" -m "Training stage created."
 
 dvc stage add -n evaluate \
               -d src/evaluate.py \
@@ -100,5 +118,5 @@ dvc repro evaluate
 git add .gitignore dvc.yaml dvc.lock metrics.json
 git commit -m "Create evaluation stage"
 dvc push
-git tag -a "main-6-evaluation" -m "Evaluation stage created."
+git tag -a "evaluation" -m "Evaluation stage created."
 

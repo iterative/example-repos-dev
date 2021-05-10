@@ -27,27 +27,6 @@ echo '.venv/' > .gitignore
 
 pip install 'dvc[all]'
 
-
-git init
-git checkout -b base
-cp $HERE/code-main/README.md .
-git add .
-git commit -m  "Initialize Git repository"
-git tag -a "base-0-git-init" -m "Git initialized."
-
-
-dvc init
-git commit -m "Initialize DVC project"
-git tag -a "base-1-dvc-init" -m "DVC initialized."
-
-# Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://dvc-public/remote/get-started
-# Actual remote for generated project (read-only). Redirect of S3 bucket above.
-dvc remote add -d storage https://remote.dvc.org/get-started
-git add .
-git commit -m "Configure default remote"
-git tag -a "base-2-config-remote" -m "Read-only remote storage configured."
-
 # Create the main branch 
 ${HERE}/generate-main.bash
 # Create the checkpoints branch
