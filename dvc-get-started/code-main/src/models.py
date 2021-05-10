@@ -59,27 +59,16 @@ def get_model():
 
     loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-    metrics_p = model_params["metrics"]
-    metrics = []
-
-    if "categorical_accuracy" in metrics_p and metrics_p["categorical_accuracy"]:
-        metrics.append(tf.keras.metrics.CategoricalAccuracy())
-    if "precision" in metrics_p and metrics_p["precision"]:
-        metrics.append(tf.keras.metrics.Precision())
-    if "recall" in metrics_p and metrics_p["recall"]:
-        metrics.append(tf.keras.metrics.Recall())
-    if "roc" in metrics_p and metrics_p["auc-roc"]:
-        metrics.append(tf.keras.metrics.AUC(curve="ROC", name="ROC", multi_label=True))
-    if "pr" in metrics_p and metrics_p["auc-pr"]:
-        metrics.append(tf.keras.metrics.AUC(curve="PR", name="PR", multi_label=True))
-    if "tp" in metrics_p and metrics_p["tp"]:
-        metrics.append(tf.keras.metrics.TruePositives())
-    if "tn" in metrics_p and metrics_p["tn"]:
-        metrics.append(tf.keras.metrics.TrueNegatives())
-    if "fp" in metrics_p and metrics_p["fp"]:
-        metrics.append(tf.keras.metrics.FalsePositives())
-    if "fn" in metrics_p and metrics_p["fn"]: 
-        metrics.append(tf.keras.metrics.FalseNegatives())
+    metrics = [
+        tf.keras.metrics.CategoricalAccuracy(),
+        tf.keras.metrics.Precision(),
+        tf.keras.metrics.Recall(),
+        tf.keras.metrics.AUC(curve="ROC", name="ROC", multi_label=True),
+        tf.keras.metrics.AUC(curve="PR", name="PR", multi_label=True),
+        tf.keras.metrics.TruePositives(),
+        tf.keras.metrics.TrueNegatives(),
+        tf.keras.metrics.FalsePositives(),
+        tf.keras.metrics.FalseNegatives()]
 
     model.compile(
         optimizer=optimizer,
