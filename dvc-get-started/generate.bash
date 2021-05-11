@@ -12,6 +12,14 @@ export REPO_NAME="dvc-get-started-$(date +%F-%H-%M-%S)"
 export REPO_PATH="${HERE}/build/${REPO_NAME}"
 export PUSH_SCRIPT="${HERE}/build/push-${REPO_NAME}.sh"
 
+TOTAL_TAGS=20
+export STEP_TIME=100000
+export TAG_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
+export GIT_AUTHOR_NAME="Dee Vee"
+export GIT_AUTHOR_EMAIL="dee@dvc.org"
+export GIT_COMMITTER_NAME="Dee Vee"
+export GIT_COMMITTER_EMAIL="dee@dvc.org"
+
 if [ -d "$REPO_PATH" ]; then
     echo "Repo $REPO_PATH already exists, please remove it first."
     exit 1
@@ -75,3 +83,9 @@ unset HERE
 unset REPO_NAME
 unset REPO_PATH
 unset PUSH_SCRIPT
+unset STEP_TIME
+unset TAG_TIME
+unset GIT_AUTHOR_NAME
+unset GIT_AUTHOR_EMAIL
+unset GIT_COMMITTER_NAME
+unset GIT_COMMITTER_EMAIL
