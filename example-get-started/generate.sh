@@ -20,8 +20,10 @@ TOTAL_TAGS=15
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 TAG_TIME=${BEGIN_TIME}
-AUTHOR="Dee Vee"
-EMAIL="dee@dvc.org"
+export GIT_AUTHOR_NAME="Dee Vee"
+export GIT_AUTHOR_EMAIL="dee@dvc.org"
+export GIT_COMMITTER_NAME="Dee Vee"
+export GIT_COMMITTER_EMAIL="dee@dvc.org"
 
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
@@ -37,71 +39,65 @@ pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 git init
 cp $HERE/code/README.md .
 git add .
-GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m  "Initialize Git repository"
-git tag -a "0-git-init" -m "Git initialized."
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
-
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit -m  "Initialize Git repository"
+git tag -a "0-git-init" -m "Git initialized."
 
 dvc init
-GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Initialize DVC project"
-git tag -a "1-dvc-init" -m "DVC initialized."
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit -m "Initialize DVC project"
+git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
         get-started/data.xml -o data/data.xml
 dvc add data/data.xml --desc "Initial XML StackOverflow dataset (raw data)"
 git add data/.gitignore data/data.xml.dvc
-GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Add raw data"
-git tag -a "2-track-data" -m "Data file added."
+
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Add raw data"
+git tag -a "2-track-data" -m "Data file added."
 
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started
 git add .
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Configure default remote"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Configure default remote"
 git tag -a "3-config-remote" -m "Read-only remote storage configured."
 dvc push
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
            get-started/data.xml -o data/data.xml \
            --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Import raw data (overwrite)"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Import raw data (overwrite)"
 dvc push
 git tag -a "4-import-data" -m "Data file overwritten with an import."
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
 pip install -r src/requirements.txt
 git add .
-GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Add source code files to repo"
-git tag -a "5-source-code" -m "Source code added."
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Add source code files to repo"
+git tag -a "5-source-code" -m "Source code added."
 
 
 dvc run -n prepare \
@@ -110,13 +106,12 @@ dvc run -n prepare \
         -o data/prepared \
         python src/prepare.py data/data.xml
 git add data/.gitignore dvc.yaml dvc.lock
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Create data preparation stage"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Create data preparation stage"
 dvc push
 git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created."
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 
 dvc run -n featurize \
@@ -133,13 +128,14 @@ dvc run -n train \
         -o model.pkl \
         python src/train.py data/features model.pkl
 git add .gitignore dvc.yaml dvc.lock
+
+
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Create ML pipeline stages"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Create ML pipeline stages"
 dvc push
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 dvc run -n evaluate \
         -d src/evaluate.py -d model.pkl -d data/features \
@@ -150,36 +146,36 @@ dvc run -n evaluate \
 dvc plots modify prc.json -x recall -y precision
 dvc plots modify roc.json -x fpr -y tpr
 git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
+
+
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -m "Create evaluation stage"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -m "Create evaluation stage"
 dvc push
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 sed -e "s/max_features: 500/max_features: 1500/" -i params.yaml
 sed -e "s/ngrams: 1/ngrams: 2/" -i params.yaml
 
-
 dvc repro train
-GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -am "Reproduce model using bigrams"
-git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
+
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -am "Reproduce model using bigrams"
+git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
 dvc repro evaluate
+
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -am "Evaluate bigrams model"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 dvc exp run --set-param featurize.max_features=3000
 dvc exp run --queue --set-param train.min_split=8
@@ -190,16 +186,20 @@ dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment.
 dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
-GIT_AUTHOR_NAME="${AUTHOR}" \
-GIT_AUTHOR_EMAIL=${EMAIL} \
-git commit --date=${TAG_TIME} -am "Run experiments tuning random forest params"
+GIT_COMMITTER_DATE=${TAG_TIME} \
+git commit  -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
 git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
-TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
 popd
+
+unset GIT_AUTHOR_NAME
+unset GIT_AUTHOR_EMAIL
+unset GIT_COMMITTER_NAME
+unset GIT_COMMITTER_EMAIL
 
 echo "`cat <<EOF-
 
