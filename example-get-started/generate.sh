@@ -20,10 +20,11 @@ TOTAL_TAGS=15
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 TAG_TIME=${BEGIN_TIME}
-export GIT_AUTHOR_NAME="Dee Vee"
-export GIT_AUTHOR_EMAIL="dee@dvc.org"
-export GIT_COMMITTER_NAME="Dee Vee"
-export GIT_COMMITTER_EMAIL="dee@dvc.org"
+
+export GIT_AUTHOR_NAME="Olivaw Owlet"
+export GIT_AUTHOR_EMAIL="64868532+iterative-olivaw@users.noreply.github.com"
+export GIT_COMMITTER_NAME="Olivaw Owlet"
+export GIT_COMMITTER_EMAIL="64868532+iterative-olivaw@users.noreply.github.com"
 
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
