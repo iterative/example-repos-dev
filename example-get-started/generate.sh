@@ -159,8 +159,8 @@ git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 
-sed -e "s/max_features: 500/max_features: 1500/" -i "" params.yaml
-sed -e "s/ngrams: 1/ngrams: 2/" -i "" params.yaml
+sed -e "s/max_features: 500/max_features: 1500/" -i params.yaml
+sed -e "s/ngrams: 1/ngrams: 2/" -i params.yaml
 
 
 dvc repro train
