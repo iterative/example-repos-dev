@@ -43,6 +43,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit -m  "Initialize Git repository"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "0-git-init" -m "Git initialized."
 
 dvc init
@@ -50,6 +52,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit -m "Initialize DVC project"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
@@ -62,6 +66,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Add raw data"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "2-track-data" -m "Data file added."
 
 # Remote active on this env only, for writing to HTTP redirect below.
@@ -73,6 +79,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Configure default remote"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "3-config-remote" -m "Read-only remote storage configured."
 dvc push
 
@@ -86,6 +94,8 @@ GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Import raw data (overwrite)"
 dvc push
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 
 wget https://code.dvc.org/get-started/code.zip
@@ -97,6 +107,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Add source code files to repo"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "5-source-code" -m "Source code added."
 
 
@@ -111,6 +123,8 @@ GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Create data preparation stage"
 dvc push
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created."
 
 
@@ -135,6 +149,8 @@ GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Create ML pipeline stages"
 dvc push
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
 
 dvc run -n evaluate \
@@ -153,7 +169,11 @@ GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -m "Create evaluation stage"
 dvc push
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 
 sed -e "s/max_features: 500/max_features: 1500/" -i params.yaml
@@ -165,6 +185,8 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -am "Reproduce model using bigrams"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 
 dvc repro evaluate
@@ -173,7 +195,11 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -am "Evaluate bigrams model"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
@@ -190,7 +216,11 @@ TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -am "Run experiments tuning random forest params"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
+GIT_AUTHOR_DATE=${TAG_TIME} \
+GIT_COMMITTER_DATE=${TAG_TIME} \
 git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
 
