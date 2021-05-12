@@ -214,6 +214,7 @@ dvc exp run --run-all -j 2
 # Apply best experiment.
 dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
 TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+git add .github/workflows/cml.yaml
 GIT_AUTHOR_DATE=${TAG_TIME} \
 GIT_COMMITTER_DATE=${TAG_TIME} \
 git commit  -am "Run experiments tuning random forest params"
@@ -257,4 +258,3 @@ You may remove the generated repo with:
 rm -fR build
 
 `"
-
