@@ -16,8 +16,8 @@ handwritten digits to predict the digit (0-9) in each image.
 <br/>
 
 This repo has several
-[branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) to this
-that show different methods for using checkpoints on a similar pipeline:
+[branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) that
+show different methods for using checkpoints (using a similar pipeline):
 
 - The [live](https://github.com/iterative/dvc-checkpoints-mnist/edit/live)
   scenario introduces full-featured checkpoint usage — integrating with
