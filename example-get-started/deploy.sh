@@ -30,4 +30,3 @@ rm -f $TEST_PACKAGE
 cp -f $PACKAGE_DIR/README.md $TEST_DIR
 diff -r $PACKAGE_DIR $TEST_DIR  # Expected output: nothing
 rm -fR $TEST_DIR
-

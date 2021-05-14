@@ -58,7 +58,7 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
-        get-started/data.xml -o data/data.xml
+  get-started/data.xml -o data/data.xml
 dvc add data/data.xml --desc "Initial XML StackOverflow dataset (raw data)"
 git add data/.gitignore data/data.xml.dvc
 tick
@@ -77,8 +77,8 @@ dvc push
 
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
-           get-started/data.xml -o data/data.xml \
-           --desc "Imported raw data (tracks source updates)"
+  get-started/data.xml -o data/data.xml \
+  --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
 tick
 git commit -m "Import raw data (overwrite)"
@@ -96,10 +96,10 @@ git tag -a "5-source-code" -m "Source code added."
 
 
 dvc run -n prepare \
-        -p prepare.seed,prepare.split \
-        -d src/prepare.py -d data/data.xml \
-        -o data/prepared \
-        python src/prepare.py data/data.xml
+  -p prepare.seed,prepare.split \
+  -d src/prepare.py -d data/data.xml \
+  -o data/prepared \
+  python src/prepare.py data/data.xml
 git add data/.gitignore dvc.yaml dvc.lock
 tick
 git commit -m "Create data preparation stage"
@@ -108,17 +108,17 @@ dvc push
 
 
 dvc run -n featurize \
-        -p featurize.max_features,featurize.ngrams \
-        -d src/featurization.py -d data/prepared \
-        -o data/features \
-        python src/featurization.py \
-               data/prepared data/features
+  -p featurize.max_features,featurize.ngrams \
+  -d src/featurization.py -d data/prepared \
+  -o data/features \
+  python src/featurization.py \
+  data/prepared data/features
 git add data/.gitignore dvc.yaml dvc.lock
 dvc run -n train \
-        -p train.seed,train.n_est,train.min_split \
-        -d src/train.py -d data/features \
-        -o model.pkl \
-        python src/train.py data/features model.pkl
+  -p train.seed,train.n_est,train.min_split \
+  -d src/train.py -d data/features \
+  -o model.pkl \
+  python src/train.py data/features model.pkl
 git add .gitignore dvc.yaml dvc.lock
 tick
 git commit -m "Create ML pipeline stages"
@@ -126,11 +126,11 @@ git tag -a "7-ml-pipeline" -m "ML pipeline created."
 dvc push
 
 dvc run -n evaluate \
-        -d src/evaluate.py -d model.pkl -d data/features \
-        -M scores.json \
-        --plots-no-cache prc.json \
-        --plots-no-cache roc.json \
-        python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
+  -d src/evaluate.py -d model.pkl -d data/features \
+  -M scores.json \
+  --plots-no-cache prc.json \
+  --plots-no-cache roc.json \
+  python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
 dvc plots modify prc.json -x recall -y precision
 dvc plots modify roc.json -x fpr -y tpr
 git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
