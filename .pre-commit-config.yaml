@@ -1,0 +1,51 @@
+default_language_version:
+  python: python3
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.4.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-case-conflict
+  - id: check-docstring-first
+  - id: check-executables-have-shebangs
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: debug-statements
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  - id: sort-simple-yaml
+  - id: trailing-whitespace
+- repo: local
+  hooks:
+  - id: todo
+    name: Check TODO
+    language: pygrep
+    entry: WIP
+    args: [-i]
+    types: [text]
+    exclude: ^.pre-commit-config.yaml$
+- repo: https://github.com/lovesegfault/beautysh
+  rev: v6.1.0
+  hooks:
+  - id: beautysh
+    args: [-i, '2']
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 3.9.2
+  hooks:
+  - id: flake8
+    args: [-j8, --max-line-length=99, --extend-ignore=P1]
+    additional_dependencies:
+    - flake8-bugbear
+    - flake8-comprehensions
+    - flake8-debugger
+    - flake8-string-format
+- repo: https://github.com/PyCQA/isort
+  rev: 5.8.0
+  hooks:
+  - id: isort
+    args: [--profile=black, -l=99]
+- repo: https://github.com/ambv/black
+  rev: 21.5b1
+  hooks:
+  - id: black
+    args: [-l, '99']
