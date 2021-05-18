@@ -40,8 +40,8 @@ def main():
     params = load_params()["preprocess"]
     print(params)
 
-    training_images, training_labels = load_npz_data("data/prepared/mnist-train.npz")
-    testing_images, testing_labels = load_npz_data("data/prepared/mnist-test.npz")
+    training_images, training_labels = load_npz_data("data/mnist/prepared/mnist-train.npz")
+    testing_images, testing_labels = load_npz_data("data/mnist/prepared/mnist-test.npz")
 
     seed = params["seed"]
 
@@ -59,10 +59,10 @@ def main():
     print(f"Training Images: {training_images.shape} - {training_images.dtype}")
     print(f"Testing Images: {testing_images.shape} - {testing_images.dtype}")
     
-    if not os.path.exists("data/preprocessed"):
-        os.makedirs("data/preprocessed")
-    np.savez("data/preprocessed/mnist-train.npz", images=training_images, labels=training_labels)
-    np.savez("data/preprocessed/mnist-test.npz", images=testing_images, labels=testing_labels)
+    if not os.path.exists("data/mnist/preprocessed"):
+        os.makedirs("data/mnist/preprocessed")
+    np.savez("data/mnist/preprocessed/mnist-train.npz", images=training_images, labels=training_labels)
+    np.savez("data/mnist/preprocessed/mnist-test.npz", images=testing_images, labels=testing_labels)
 
 if __name__ == "__main__":
     main()

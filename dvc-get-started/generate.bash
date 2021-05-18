@@ -12,16 +12,16 @@ export HERE
 REPO_NAME="dvc-get-started-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
-export REPO_PATH="${HERE}/build/${REPO_NAME}"
+export REPO_ROOT="${HERE}/build/${REPO_NAME}"
 export PUSH_SCRIPT="${HERE}/build/push-${REPO_NAME}.sh"
 
 # Count the number of git tag calls in this repository
-NUM_TAGS=$(grep -c 'git tag' ${HERE}/generate-*)
+NUM_TAGS=$(grep 'git tag' ${HERE}/generate-* | wc -l)
 # Start a bit more in the past
 TOTAL_TAGS=$(( NUM_TAGS + 10 ))
 
-export STEP_TIME=${RANDOM} + 50000
-export TAG_TIME=$(( $(date +%s) - ( TOTAL_TAGS * STEP_TIME) ))
+export STEP_TIME=$(( RANDOM + 50000 ))
+export TAG_TIME=$(( $(date +%s) - ( TOTAL_TAGS * STEP_TIME ) ))
 
 export GIT_AUTHOR_NAME="Olivaw Owlet"
 export GIT_AUTHOR_EMAIL="64868532+iterative-olivaw@users.noreply.github.com"
@@ -34,24 +34,21 @@ tag_tick() {
   export GIT_COMMITTER_DATE=${TAG_TIME}
 }
 
+export -f tag_tick
 
-if [ -d "$REPO_PATH" ]; then
-    echo "Repo $REPO_PATH already exists, please remove it first."
+
+if [ -d "$REPO_ROOT" ]; then
+    echo "Repo $REPO_ROOT already exists, please remove it first."
     exit 1
 fi
 
-mkdir -p "${REPO_PATH}"
-pushd "${REPO_PATH}"
+mkdir -p "${REPO_ROOT}"
+pushd "${REPO_ROOT}"
 
-virtualenv -p python3 .venv
-export VIRTUAL_ENV_DISABLE_PROMPT=true
-source .venv/bin/activate
-echo '.venv/' > .gitignore
-
-pip install 'dvc[all]'
-
+# Create experiments branch
+"${HERE}"/generate-experiments.bash
 # Create the main branch 
-"${HERE}"/generate-main.bash
+"${HERE}"/generate-pipelines.bash
 # Create checkpoints branch
 "${HERE}"/generate-checkpoints.bash
 
@@ -93,12 +90,12 @@ $ ${PUSH_SCRIPT}
 
 You may remove the generated repo with:
 
-$ rm -fR ${REPO_PATH}
+$ rm -fR ${REPO_ROOT}
 EOF
 
 unset HERE
 unset REPO_NAME
-unset REPO_PATH
+unset REPO_ROOT
 unset PUSH_SCRIPT
 unset STEP_TIME
 unset TAG_TIME
@@ -108,3 +105,4 @@ unset GIT_AUTHOR_DATE
 unset GIT_COMMITTER_NAME
 unset GIT_COMMITTER_EMAIL
 unset GIT_COMMITTER_DATE
+unset tag_tick

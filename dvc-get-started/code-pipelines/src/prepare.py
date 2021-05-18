@@ -59,13 +59,13 @@ def main():
     params = load_params()["prepare"]
     print(params)
 
-    training_images = mnist_images_idx_to_array("data/raw/train-images-idx3-ubyte.gz")
+    training_images = mnist_images_idx_to_array("data/mnist/raw/train-images-idx3-ubyte.gz")
     # print(f"Read training data: {training_images}")
-    training_labels = mnist_labels_idx_to_array("data/raw/train-labels-idx1-ubyte.gz")
+    training_labels = mnist_labels_idx_to_array("data/mnist/raw/train-labels-idx1-ubyte.gz")
     # print(f"Read training labels: {training_labels}")
-    testing_images = mnist_images_idx_to_array("data/raw/t10k-images-idx3-ubyte.gz")
+    testing_images = mnist_images_idx_to_array("data/mnist/raw/t10k-images-idx3-ubyte.gz")
     # print(f"Read testing data: {testing_images}")
-    testing_labels = mnist_labels_idx_to_array("data/raw/t10k-labels-idx1-ubyte.gz")
+    testing_labels = mnist_labels_idx_to_array("data/mnist/raw/t10k-labels-idx1-ubyte.gz")
     # print(f"Read testing labels: {testing_labels}")
 
     if params["remix"]:
@@ -84,10 +84,10 @@ def main():
     print(f"Training Labels: {training_labels}")
     print(f"Testing Labels: {testing_labels}")
 
-    os.makedirs("data/prepared")
+    os.makedirs("data/mnist/prepared")
 
-    np.savez("data/prepared/mnist-train.npz", images=training_images, labels=training_labels)
-    np.savez("data/prepared/mnist-test.npz", images=testing_images, labels=testing_labels)
+    np.savez("data/mnist/prepared/mnist-train.npz", images=training_images, labels=training_labels)
+    np.savez("data/mnist/prepared/mnist-test.npz", images=testing_images, labels=testing_labels)
 
 
 if __name__ == "__main__":

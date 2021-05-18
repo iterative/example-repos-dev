@@ -23,8 +23,8 @@ def main():
     m = models.get_model()
     m.summary()
 
-    whole_train_img, whole_train_labels = load_npz_data("data/preprocessed/mnist-train.npz")
-    test_img, test_labels = load_npz_data("data/preprocessed/mnist-test.npz")
+    whole_train_img, whole_train_labels = load_npz_data("data/mnist/preprocessed/mnist-train.npz")
+    test_img, test_labels = load_npz_data("data/mnist/preprocessed/mnist-test.npz")
     validation_split_index = int((1 - params["validation_split"]) * whole_train_img.shape[0])
     if validation_split_index == whole_train_img.shape[0]:
         x_train = whole_train_img
@@ -51,7 +51,7 @@ def main():
     with open("logs.csv", "w") as f:
         f.write(history_to_csv(history))
 
-    m.save("models/model.h5")
+    m.save("models/mnist/model.h5")
 
 if __name__ == "__main__":
     main()

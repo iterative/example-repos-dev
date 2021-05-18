@@ -6,11 +6,22 @@
 #   u   Treat unset variables as an error when substituting.
 #   x   Print commands and their arguments as they are executed.
 
-set -eux
+set -veux
+
+export REPO_PATH="${REPO_ROOT}"/pipelines
+
+mkdir -p "$REPO_PATH"
+pushd "${REPO_PATH}"
+
+virtualenv -p python3 .venv
+export VIRTUAL_ENV_DISABLE_PROMPT=true
+source .venv/bin/activate
+echo '.venv/' > .gitignore
+pip install 'dvc[all]'
 
 git init
-git checkout -b main
-cp $HERE/code-main/README.md .
+git checkout -b pipelines
+cp $HERE/code-pipelines/README.md .
 
 tag_tick
 git add .
@@ -33,20 +44,20 @@ git add .
 git commit -m "Configure default remote"
 git tag -a "config-remote" -m "Read-only remote storage configured."
 
-test -d data || mkdir data
+test -d data/mnist || mkdir -p data/mnist
 
 dvc import https://github.com/iterative/dataset-registry \
-           mnist/raw -o data/raw
+           mnist/raw -o data/mnist/raw
 
 tag_tick
-git add data/raw.dvc data/.gitignore
+git add data/mnist/raw.dvc data/mnist/.gitignore
 git commit -m "Add raw MNIST data"
 git tag -a "import-mnist-data" -m "MNIST data file added."
 dvc push
 
-cp -r "${HERE}"/code-main/src .
-cp "${HERE}"/code-main/requirements.txt .
-cp "${HERE}"/code-main/params.yaml .
+cp -r "${HERE}"/code-pipelines/src .
+cp "${HERE}"/code-pipelines/requirements.txt .
+cp "${HERE}"/code-pipelines/params.yaml .
 pip install -r "${REPO_PATH}"/requirements.txt
 
 tag_tick
@@ -58,15 +69,15 @@ dvc stage add -n prepare \
               -p prepare.seed \
               -p prepare.remix \
               -p prepare.remix_split \
-              -d data/raw/ \
+              -d data/mnist/raw \
               -d src/prepare.py \
-              -o data/prepared \
+              -o data/mnist/prepared \
               python3 src/prepare.py
 
 dvc repro prepare 
 
 tag_tick
-git add data/.gitignore dvc.yaml dvc.lock
+git add data/mnist/.gitignore dvc.yaml dvc.lock
 git commit -m "Create data preparation stage"
 dvc push
 git tag -a "prepare" -m "First pipeline stage (data preparation) created."
@@ -78,15 +89,15 @@ dvc stage add -n preprocess \
     -p preprocess.add_noise \
     -p preprocess.noise_amount \
     -p preprocess.noise_s_vs_p \
-    -d data/prepared/ \
+    -d data/mnist/prepared/ \
     -d src/preprocess.py \
-    -o data/preprocessed/ \
+    -o data/mnist/preprocessed/ \
     python3 src/preprocess.py
 
 dvc repro preprocess
 dvc push
-git add data/.gitignore dvc.yaml dvc.lock
 tag_tick
+git add data/mnist/.gitignore dvc.yaml dvc.lock
 git commit -m "Second pipeline stage (preprocessing) created"
 git tag -a "preprocess" -m "Second pipeline stage (data preprocessing) created."
 
@@ -106,8 +117,8 @@ dvc stage add -n train \
               -p model.cnn.dropout \
               -d src/train.py \
               -d src/models.py \
-              -d data/preprocessed/ \
-              -o models/model.h5 \
+              -d data/mnist/preprocessed/ \
+              -o models/mnist/model.h5 \
               --plots-no-cache logs.csv \
               python3 src/train.py
 
@@ -115,14 +126,15 @@ dvc stage add -n train \
 
 tag_tick
 dvc repro train
-git add .gitignore dvc.yaml dvc.lock models/.gitignore
+git add .gitignore dvc.yaml dvc.lock
+git status  -s
 git commit -m "Created training stage"
 dvc push
 git tag -a "training" -m "Training stage created."
 
 dvc stage add -n evaluate \
               -d src/evaluate.py \
-              -d models/model.h5 \
+              -d models/mnist/model.h5 \
               -M metrics.json \
               python3 src/evaluate.py
 dvc repro evaluate
