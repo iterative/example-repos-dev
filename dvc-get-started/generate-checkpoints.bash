@@ -1,16 +1,28 @@
 #!/bin/bash
-# See https://dvc.org/doc/start
 
 # Setup script env:
 #   e   Exit immediately if a command exits with a non-zero exit status.
 #   u   Treat unset variables as an error when substituting.
 #   x   Print commands and their arguments as they are executed.
-set -eux
+set -veux
 
-git checkout evaluation
+export REPO_PATH="${REPO_ROOT}"/checkpoints
+
+mkdir -p "$REPO_PATH"
+pushd "${REPO_PATH}"
+
+virtualenv -p python3 .venv
+export VIRTUAL_ENV_DISABLE_PROMPT=true
+source .venv/bin/activate
+echo '.venv/' > .gitignore
+
+git init
 git checkout -b checkpoints
 
+cp -r "${HERE}"/code-checkpoints/common/* "${REPO_PATH}"/
 tag_tick
+git add "${REPO_PATH}/"*
+git commit -m "Added common files for checkpoints"
 git tag -a "checkpoints-base" -m "checkpoints baseline"
 
 # We'll use the main code and modify the parts of it
@@ -46,3 +58,6 @@ git add .
 git commit -m "DVClive modifications"
 git tag -a "dvclive" -m "Checkpoints: DVClive stage added"
 
+popd
+
+unset REPO_PATH
