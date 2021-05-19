@@ -30,13 +30,3 @@ model:
     conv_kernel_size: 3
     conv_units: 32
     dropout: 0.5
-  metrics:
-    categorical_accuracy: true
-    recall: true
-    precision: true
-    auc-roc: true
-    auc-prc: true
-    fp: false
-    fn: false
-    tp: false
-    tn: false

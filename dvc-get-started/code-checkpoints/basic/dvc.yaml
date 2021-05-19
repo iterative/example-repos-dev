@@ -2,18 +2,18 @@ stages:
   prepare:
     cmd: python3 src/prepare.py
     deps:
-    - data/raw/
+    - data/fashion-mnist/raw/
     - src/prepare.py
     params:
     - prepare.remix
     - prepare.remix_split
     - prepare.seed
     outs:
-    - data/prepared
+    - data/fashion-mnist/prepared
   preprocess:
     cmd: python3 src/preprocess.py
     deps:
-    - data/prepared/
+    - data/fashion-mnist/prepared/
     - src/preprocess.py
     params:
     - preprocess.add_noise
@@ -23,11 +23,11 @@ stages:
     - preprocess.seed
     - preprocess.shuffle
     outs:
-    - data/preprocessed/
+    - data/fashion-mnist/preprocessed/
   train:
     cmd: python3 src/train.py
     deps:
-    - data/preprocessed/
+    - data/fashion-mnist/preprocessed/
     - src/models.py
     - src/train.py
     params:
@@ -44,7 +44,7 @@ stages:
     - train.seed
     - train.validation_split
     outs:
-      - models/model.h5:
+      - models/fashion-mnist/model.h5:
           checkpoint: true
     plots:
     - logs.csv:
@@ -52,7 +52,7 @@ stages:
   evaluate:
     cmd: python3 src/evaluate.py
     deps:
-    - models/model.h5
+    - models/fashion-mnist/model.h5
     - src/evaluate.py
     metrics:
     - metrics.json:

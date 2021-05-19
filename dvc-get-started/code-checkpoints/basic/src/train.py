@@ -5,21 +5,29 @@ from util import load_params
 
 import models
 
-MODEL_FILE = "models/model.h5"
+MODEL_FILE = "models/fashion-mnist/model.h5"
+
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
-    return (npzfile['images'], npzfile['labels'])
+    return (npzfile["images"], npzfile["labels"])
+
 
 def history_to_csv(history):
     keys = list(history.history.keys())
     csv_string = ", ".join(["epoch"] + keys) + "\n"
     list_len = len(history.history[keys[0]])
     for i in range(list_len):
-        row = str(i+1) + ", " + ", ".join([str(history.history[k][i]) for k in keys]) + "\n"
+        row = (
+            str(i + 1)
+            + ", "
+            + ", ".join([str(history.history[k][i]) for k in keys])
+            + "\n"
+        )
         csv_string += row
 
     return csv_string
+
 
 def main():
     params = load_params()["train"]
@@ -29,9 +37,13 @@ def main():
         m = models.get_model()
     m.summary()
 
-    whole_train_img, whole_train_labels = load_npz_data("data/preprocessed/mnist-train.npz")
+    whole_train_img, whole_train_labels = load_npz_data(
+        "data/preprocessed/mnist-train.npz"
+    )
     test_img, test_labels = load_npz_data("data/preprocessed/mnist-test.npz")
-    validation_split_index = int((1 - params["validation_split"]) * whole_train_img.shape[0])
+    validation_split_index = int(
+        (1 - params["validation_split"]) * whole_train_img.shape[0]
+    )
     if validation_split_index == whole_train_img.shape[0]:
         x_train = whole_train_img
         x_valid = test_img
@@ -48,16 +60,20 @@ def main():
     print(f"y_train: {y_train.shape}")
     print(f"y_valid: {y_valid.shape}")
 
-    history = m.fit(x_train, y_train,
-                  batch_size = params["batch_size"],
-                  epochs = params["epochs"],
-                  verbose=1,
-                  validation_data = (x_valid, y_valid))
+    history = m.fit(
+        x_train,
+        y_train,
+        batch_size=params["batch_size"],
+        epochs=params["epochs"],
+        verbose=1,
+        validation_data=(x_valid, y_valid),
+    )
 
     with open("logs.csv", "w") as f:
         f.write(history_to_csv(history))
 
     m.save(MODEL_FILE)
+
 
 if __name__ == "__main__":
     main()
