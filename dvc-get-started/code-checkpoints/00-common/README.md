@@ -4,6 +4,8 @@ This project is a showcase for checkpoints features in DVC 2.0 and
 [`dvclive`][dvcl]. It shows how to use checkpoints in various ways with the
 provided Git tags. 
 
+[dvcl]: https://dvc.org/doc/dvclive
+
 All four tags are cloned and installed similarly: 
 
 ```console
@@ -19,11 +21,12 @@ all the tags and use `git checkout` to navigate among them.
 
 ### Tags
 
-- `basic`: Shows how to use checkpoints by modifying `dvc.yaml`. 
+- [`basic`][basict]: Shows how to use checkpoints by modifying `dvc.yaml`. 
 
 In `dvc.yaml`, the following changes are done. You can also specify this by
 using `--checkpoints/-c` option to `dvc stage add`.
 
+[basict]: https://github.com/iterative/get-started-checkpoints/releases/tag/basic
 
 ```yaml
     outs:
@@ -31,9 +34,11 @@ using `--checkpoints/-c` option to `dvc stage add`.
           checkpoint: true
 ```
 
-- `dvclive`: Uses [dvclive][dvcl] in a custom Tensorflow callback, in
+- [`dvclive`][dvclivet]: Uses [dvclive][dvcl] in a custom Tensorflow callback, in
   `train.py`. Note that `requirements.txt` for this tag contains `dvclive` as
    well. 
+
+[dvclivet]: https://github.com/iterative/get-started-checkpoints/releases/tag/dvclive
 
 ```python
     def on_epoch_end(self, epoch, logs=None):
@@ -43,8 +48,11 @@ using `--checkpoints/-c` option to `dvc stage add`.
         dvclive.next_step()
 ```
 
-- `python-api`: Uses [make_checkpoint()][apicp] API call in a custom Tensorflow
+- [`python-api`][pythonapit]: Uses [make_checkpoint()][apicp] API call in a custom Tensorflow
   callback to record a checkpoint in `train.py`.
+
+[pythonapit]: https://github.com/iterative/get-started-checkpoints/releases/tag/python-api
+[apicp]: https://dvc.org/doc/api-reference/make_checkpoint#dvcapimake_checkpoint
 
 ```python
     def on_epoch_end(self, epoch, logs=None):
@@ -52,9 +60,11 @@ using `--checkpoints/-c` option to `dvc stage add`.
             make_checkpoint()
 ```
 
-- `signal-file`: This tag shows language-independent way of
+- [`signal-file`][signalfilet]: This tag shows language-independent way of
   producing checkpoints. Instead of using DVC Python API or DVClive, a signal
   file is created to set the checkpoint. 
+
+[signalfilet]: https://github.com/iterative/get-started-checkpoints/releases/tag/signal-file
 
 ```python
     def dvc_signal(self):
