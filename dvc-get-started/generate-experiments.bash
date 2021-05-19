@@ -1,10 +1,4 @@
 #!/bin/bash
-# See https://dvc.org/doc/start
-
-# Setup script env:
-#   e   Exit immediately if a command exits with a non-zero exit status.
-#   u   Treat unset variables as an error when substituting.
-#   x   Print commands and their arguments as they are executed.
 
 set -veux
 
@@ -20,8 +14,9 @@ echo '.venv/' > .gitignore
 pip install 'dvc[all]'
 
 git init
-git checkout -b experiments
-cp $HERE/code-experiments/README.md .
+git checkout -b main
+cp $HERE/code-experiments/README.md "${REPO_PATH}" 
+cp $HERE/code-experiments/.gitignore "${REPO_PATH}"
 dvc init
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started
@@ -30,7 +25,7 @@ dvc remote add -d storage https://remote.dvc.org/get-started
 tag_tick
 git add .
 git commit -m "Initialized DVC and Configured Remote"
-git tag -a "experiments-init" -m "Initialized DVC and Remote"
+git tag -a "init" -m "Initialized DVC and Remote"
 
 test -d data/fashion-mnist || mkdir -p data/fashion-mnist
 
@@ -40,7 +35,7 @@ dvc import https://github.com/iterative/dataset-registry \
 tag_tick
 git add data/fashion-mnist/raw.dvc data/fashion-mnist/.gitignore
 git commit -m "Add Fashion-MNIST data"
-git tag -a "experiments-data" -m "Fashion-MNIST data file added."
+git tag -a "data" -m "Fashion-MNIST data file added."
 dvc push
 
 cp -r "${HERE}"/code-experiments/src .
@@ -51,18 +46,19 @@ pip install -r "${REPO_PATH}"/requirements.txt
 tag_tick
 git add .
 git commit -m "Add source code for the experiments"
-git tag -a "experiments-source-code" -m "Source code for experiments added."
+git tag -a "source-code" -m "Source code for experiments added."
 
 cp "${HERE}"/code-experiments/dvc.yaml .
-
 tag_tick
 git add dvc.yaml 
 git commit -m "Added experiments pipeline"
-git tag -a "experiments-pipeline" -m "Experiments pipeline added."
+git tag -a "pipeline" -m "Experiments pipeline added."
 
-
-
-
+dvc exp run
+tag_tick
+git add data/fashion-mnist/.gitignore models/fashion-mnist/.gitignore dvc.lock logs.csv metrics.json 
+git commit -m "Baseline experiment run"
+git tag -a "baseline" -m "Baseline experiment"
 
 popd 
 unset REPO_PATH

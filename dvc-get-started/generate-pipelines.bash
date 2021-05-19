@@ -1,14 +1,10 @@
 #!/bin/bash
-# See https://dvc.org/doc/start
-
-# Setup script env:
-#   e   Exit immediately if a command exits with a non-zero exit status.
-#   u   Treat unset variables as an error when substituting.
-#   x   Print commands and their arguments as they are executed.
 
 set -veux
 
 export REPO_PATH="${REPO_ROOT}"/pipelines
+
+# Set the following to fashion-${DATASET} to change the project dataset 
 
 mkdir -p "$REPO_PATH"
 pushd "${REPO_PATH}"
@@ -20,7 +16,7 @@ echo '.venv/' > .gitignore
 pip install 'dvc[all]'
 
 git init
-git checkout -b pipelines
+git checkout -b main
 cp $HERE/code-pipelines/README.md .
 
 tag_tick
@@ -101,7 +97,7 @@ git add data/mnist/.gitignore dvc.yaml dvc.lock
 git commit -m "Second pipeline stage (preprocessing) created"
 git tag -a "preprocess" -m "Second pipeline stage (data preprocessing) created."
 
-mkdir models
+mkdir -p models/mnist
 dvc stage add -n train \
               -p train.seed \
               -p train.validation_split \
@@ -121,8 +117,6 @@ dvc stage add -n train \
               -o models/mnist/model.h5 \
               --plots-no-cache logs.csv \
               python3 src/train.py
-
-# TODO: We may need to add some `dvc plots modify` commands here!
 
 tag_tick
 dvc repro train
