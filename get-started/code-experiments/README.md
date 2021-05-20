@@ -20,6 +20,12 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
+Retrieve all the required data and model files:
+
+```console
+dvc pull
+```
+
 `params.yaml` defines many parameters to modify with `dvc exp run --set-param/-S`
 option. For example, to set the number of convolutional units in `cnn` model, you
 can use:
