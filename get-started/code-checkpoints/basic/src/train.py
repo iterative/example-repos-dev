@@ -12,6 +12,15 @@ def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile["images"], npzfile["labels"])
 
+def history_list_to_csv(history_list):
+    "Converts a list of history dicts to a CSV string"
+    keys = list(history.history.keys())
+    csv_string = ", ".join(["epoch"] + keys) + "\n"
+    list_len = len(history_list)
+    for i in range(list_len):
+        row = (str(i+1) + ", " + ", ".join([str(history_list[i].history[k][0]) for k in keys]) + "\n")
+        csv_string += row
+    return csv_string
 
 def history_to_csv(history):
     keys = list(history.history.keys())
@@ -60,19 +69,33 @@ def main():
     print(f"y_train: {y_train.shape}")
     print(f"y_valid: {y_valid.shape}")
 
-    history = m.fit(
-        x_train,
-        y_train,
-        batch_size=params["batch_size"],
-        epochs=params["epochs"],
-        verbose=1,
-        validation_data=(x_valid, y_valid),
-    )
-
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    m.save(MODEL_FILE)
+    if params["epochs"] == 0:
+        history_list = []
+        while True:
+            history = m.fit(
+                x_train,
+                y_train,
+                batch_size=params["batch_size"],
+                epochs=1,
+                verbose=1,
+                validation_data=(x_valid, y_valid),
+            )
+            history_list.append(history)
+            with open("logs.csv", "w") as f:
+                f.write(history_list_to_csv(history_list))
+            m.save(MODEL_FILE)
+    else:
+        history = m.fit(
+            x_train,
+            y_train,
+            batch_size=params["batch_size"],
+            epochs=params["epochs"],
+            verbose=1,
+            validation_data=(x_valid, y_valid),
+        )
+        with open("logs.csv", "w") as f:
+            f.write(history_to_csv(history))
+        m.save(MODEL_FILE)
 
 
 if __name__ == "__main__":
