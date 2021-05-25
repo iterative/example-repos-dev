@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import os
 
-from util import load_params
+from util import load_params, history_to_csv, history_list_to_csv
 import models
 from dvc.api import make_checkpoint
 
@@ -20,16 +20,6 @@ class DVCLiveCallback(tf.keras.callbacks.Callback):
 def load_npz_data(filename):
     npzfile = np.load(filename)
     return (npzfile['images'], npzfile['labels'])
-
-def history_to_csv(history):
-    keys = list(history.history.keys())
-    csv_string = ", ".join(["epoch"] + keys) + "\n"
-    list_len = len(history.history[keys[0]])
-    for i in range(list_len):
-        row = str(i+1) + ", " + ", ".join([str(history.history[k][i]) for k in keys]) + "\n"
-        csv_string += row
-
-    return csv_string
 
 def main():
     params = load_params()["train"]
