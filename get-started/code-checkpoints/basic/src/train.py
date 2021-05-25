@@ -5,8 +5,9 @@ from util import load_params
 
 import models
 
-MODEL_FILE = "models/fashion-mnist/model.h5"
-
+DATA_DIR = "data/fashion-mnist"
+MODEL_DIR = "models/fashion-mnist"
+MODEL_FILE = f"{MODEL_DIR}/model.h5"
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
@@ -46,10 +47,10 @@ def main():
         m = models.get_model()
     m.summary()
 
-    whole_train_img, whole_train_labels = load_npz_data(
-        "data/preprocessed/mnist-train.npz"
-    )
-    test_img, test_labels = load_npz_data("data/preprocessed/mnist-test.npz")
+    whole_train_img, whole_train_labels = load_npz_data( os.path.join(DATA_DIR,
+                                                                      "preprocessed/mnist-train.npz"))
+    test_img, test_labels = load_npz_data(os.path.join(DATA_DIR,
+                                                       "preprocessed/mnist-test.npz"))
     validation_split_index = int(
         (1 - params["validation_split"]) * whole_train_img.shape[0]
     )
