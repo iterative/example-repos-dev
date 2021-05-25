@@ -5,9 +5,7 @@ from util import load_params
 
 import models
 
-DATA_DIR = "data/fashion-mnist"
-MODEL_DIR = "models/fashion-mnist"
-MODEL_FILE = f"{MODEL_DIR}/model.h5"
+MODEL_FILE = "models/model.h5"
 
 class DVCCheckpointsCallback(tf.keras.callbacks.Callback):
 
@@ -26,10 +24,48 @@ class DVCCheckpointsCallback(tf.keras.callbacks.Callback):
                 # Wait 10 milliseconds
                 time.sleep(0.01)
 
+    def on_train_begin(self, logs=None):
+        pass
+
+    def on_train_end(self, logs=None):
+        pass
+
+    def on_epoch_begin(self, epoch, logs=None):
+        pass
+
     def on_epoch_end(self, epoch, logs=None):
         if (epoch % self.frequency) == 0:
             dvc_signal(self)
 
+    def on_test_begin(self, logs=None):
+        pass
+
+    def on_test_end(self, logs=None):
+        pass
+
+    def on_predict_begin(self, logs=None):
+        pass
+
+    def on_predict_end(self, logs=None):
+        pass
+
+    def on_train_batch_begin(self, batch, logs=None):
+        pass
+
+    def on_train_batch_end(self, batch, logs=None):
+        pass
+
+    def on_test_batch_begin(self, batch, logs=None):
+        pass
+
+    def on_test_batch_end(self, batch, logs=None):
+        pass
+
+    def on_predict_batch_begin(self, batch, logs=None):
+        pass
+
+    def on_predict_batch_end(self, batch, logs=None):
+        pass
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
@@ -53,11 +89,8 @@ def main():
         m = models.get_model()
     m.summary()
 
-    whole_train_img, whole_train_labels = load_npz_data(os.path.join(DATA_DIR,
-                                                                     "preprocessed/mnist-train.npz"))
-    test_img, test_labels = load_npz_data(os.path.join(DATA_DIR,
-                                                       "preprocessed/mnist-test.npz"))
-
+    whole_train_img, whole_train_labels = load_npz_data("data/preprocessed/mnist-train.npz")
+    test_img, test_labels = load_npz_data("data/preprocessed/mnist-test.npz")
     validation_split_index = int((1 - params["validation_split"]) * whole_train_img.shape[0])
     if validation_split_index == whole_train_img.shape[0]:
         x_train = whole_train_img
