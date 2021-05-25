@@ -54,9 +54,9 @@ def main():
     m.summary()
 
     whole_train_img, whole_train_labels = load_npz_data(os.path.join(DATA_DIR,
-                                                                     "mnist-train.npz"))
+                                                                     "preprocessed/mnist-train.npz"))
     test_img, test_labels = load_npz_data(os.path.join(DATA_DIR,
-                                                       "mnist-test.npz"))
+                                                       "preprocessed/mnist-test.npz"))
 
     validation_split_index = int((1 - params["validation_split"]) * whole_train_img.shape[0])
     if validation_split_index == whole_train_img.shape[0]:
