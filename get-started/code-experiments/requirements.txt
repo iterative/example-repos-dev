@@ -1,2 +1,2 @@
-tensorflow>=2.4,<2.5
+tensorflow>=2.5,<2.6
 ruamel.yaml>=0.17,<0.18
