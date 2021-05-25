@@ -14,7 +14,7 @@ preprocess:
 train:
   seed: 20210428
   validation_split: 0.2
-  epochs: 1
+  epochs: 0
   batch_size: 128
   resume: true
 
