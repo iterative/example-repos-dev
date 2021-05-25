@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import os
-from util import load_params
+import time
+from util import load_params, history_to_csv, history_list_to_csv
 
 import models
 
@@ -28,7 +29,7 @@ class DVCCheckpointsCallback(tf.keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         if (epoch % self.frequency) == 0:
-            dvc_signal(self)
+            self.dvc_signal()
 
 def load_npz_data(filename):
     npzfile = np.load(filename)
@@ -53,7 +54,7 @@ def main():
     m.summary()
 
     whole_train_img, whole_train_labels = load_npz_data(os.path.join(DATA_DIR,
-                                                                     "/preprocessed/mnist-train.npz"))
+                                                                     "preprocessed/mnist-train.npz"))
     test_img, test_labels = load_npz_data(os.path.join(DATA_DIR,
                                                        "preprocessed/mnist-test.npz"))
     validation_split_index = int((1 - params["validation_split"]) * whole_train_img.shape[0])
