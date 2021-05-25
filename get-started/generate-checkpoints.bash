@@ -36,7 +36,7 @@ git tag -a "data" -m "Fashion-MNIST data file added."
 dvc push
 
 cp -arf "${HERE}"/code-checkpoints/00-common/. "${REPO_PATH}"/
-cp -arf "${HERE}"/code-checkpoints/basic/* "${REPO_PATH}"/
+cp -arf "${HERE}"/code-checkpoints/basic/. "${REPO_PATH}"/
 pip install -r "${REPO_PATH}"/requirements.txt
 
 tag_tick
@@ -46,7 +46,7 @@ git tag -a "basic" -m "checkpoint: true example"
 
 
 cp -arf "${HERE}"/code-checkpoints/00-common/. "${REPO_PATH}"/
-cp -arf "${HERE}"/code-checkpoints/signal-file/* "${REPO_PATH}"/
+cp -arf "${HERE}"/code-checkpoints/signal-file/. "${REPO_PATH}"/
 
 tag_tick
 git add .
@@ -55,7 +55,7 @@ git tag -a "signal-file" -m "Checkpoints: Signal file example"
 
 
 cp -arf "${HERE}"/code-checkpoints/00-common/. "${REPO_PATH}"/
-cp -arf "${HERE}"/code-checkpoints/python-api/* "${REPO_PATH}"/
+cp -arf "${HERE}"/code-checkpoints/python-api/. "${REPO_PATH}"/
 tag_tick
 git add .
 git commit -m "Using make_checkpoint() in the callback"
@@ -63,7 +63,7 @@ git tag -a "python-api" -m "Checkpoints: Python API example"
 
 
 cp -arf "${HERE}"/code-checkpoints/00-common/. "${REPO_PATH}"/
-cp -arf "${HERE}"/code-checkpoints/dvclive/* "${REPO_PATH}"/
+cp -arf "${HERE}"/code-checkpoints/dvclive/. "${REPO_PATH}"/
 
 tag_tick
 git add .
