@@ -8,7 +8,7 @@ from dvc.api import make_checkpoint
 
 DATA_DIR = "data/fashion-mnist"
 MODEL_DIR = "models/fashion-mnist"
-MODEL_FILE = f"{MODEL_DIR}/model.h5"
+MODEL_FILE = os.path.join(MODEL_DIR, "model.h5")
 
 class DVCCheckpointsCallback(tf.keras.callbacks.Callback):
 
