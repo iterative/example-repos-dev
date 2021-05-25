@@ -52,18 +52,35 @@ def main():
 
     dvclive.init("training_metrics")
 
-    m.fit(x_train,
-                    y_train,
-                    batch_size = params["batch_size"],
-                    epochs = params["epochs"],
-                    verbose=1,
-                    validation_data = (x_valid, y_valid),
-                    callbacks=[DVCLiveCallback()])
-
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    m.save(MODEL_FILE)
+    if params["epochs"] == 0:
+        history_list = []
+        while True:
+            history = m.fit(
+                x_train,
+                y_train,
+                batch_size=params["batch_size"],
+                epochs=1,
+                verbose=1,
+                validation_data=(x_valid, y_valid),
+                callbacks=[DVCLiveCallback()]
+            )
+            history_list.append(history)
+            with open("logs.csv", "w") as f:
+                f.write(history_list_to_csv(history_list))
+            m.save(MODEL_FILE)
+    else:
+        history = m.fit(
+            x_train,
+            y_train,
+            batch_size=params["batch_size"],
+            epochs=params["epochs"],
+            verbose=1,
+            validation_data=(x_valid, y_valid),
+            callbacks=[DVCLiveCallback()]
+        )
+        with open("logs.csv", "w") as f:
+            f.write(history_to_csv(history))
+        m.save(MODEL_FILE)
 
 if __name__ == "__main__":
     main()
