@@ -5,6 +5,7 @@ import os
 from util import load_params, history_to_csv, history_list_to_csv
 import models
 from dvc.api import make_checkpoint
+import dvclive
 
 MODEL_DIR = "models/fashion-mnist/"
 MODEL_FILE = os.path.join(MODEL_DIR, "model.h5")
