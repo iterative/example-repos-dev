@@ -57,7 +57,7 @@ def get_model():
     else:
         raise Exception(f"No optimizer with the name {model_params['optimizer']} is defined")
 
-    loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+    loss = tf.keras.losses.CategoricalCrossentropy()
 
     metrics = [
         tf.keras.metrics.CategoricalAccuracy(),
