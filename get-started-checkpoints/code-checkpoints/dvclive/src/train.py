@@ -12,9 +12,14 @@ MODEL_FILE = os.path.join(MODEL_DIR, "model.h5")
 DATA_DIR = "data/fashion-mnist"
 
 class DVCLiveCallback(tf.keras.callbacks.Callback):
+    def __init__(self, model_file = None):
+        super().__init__()
+        self.model_file = model_file
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
+        if self.model_file:
+            self.model.save(self.model_file)
         for metric, value in logs.items():
             dvclive.log(metric, value)
         dvclive.next_step()
@@ -63,12 +68,8 @@ def main():
                 epochs=1,
                 verbose=1,
                 validation_data=(x_valid, y_valid),
-                callbacks=[DVCLiveCallback()]
+                callbacks=[DVCLiveCallback(model_file=MODEL_FILE)]
             )
-            history_list.append(history)
-            with open("logs.csv", "w") as f:
-                f.write(history_list_to_csv(history_list))
-            m.save(MODEL_FILE)
     else:
         history = m.fit(
             x_train,
@@ -77,11 +78,8 @@ def main():
             epochs=params["epochs"],
             verbose=1,
             validation_data=(x_valid, y_valid),
-            callbacks=[DVCLiveCallback()]
+            callbacks=[DVCLiveCallback(model_file=MODEL_FILE)]
         )
-        with open("logs.csv", "w") as f:
-            f.write(history_to_csv(history))
-        m.save(MODEL_FILE)
 
 if __name__ == "__main__":
     main()

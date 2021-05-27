@@ -31,3 +31,17 @@ def history_to_csv(history):
 
     return csv_string
 
+def logs_to_csv(logs):
+    keys = list(logs.keys())
+    csv_string = ", ".join(["epoch"] + keys) + "\n"
+    list_len = len(logs[keys[0]])
+    for i in range(list_len):
+        row = (
+            str(i + 1)
+            + ", "
+            + ", ".join([str(logs[k][i]) for k in keys])
+            + "\n"
+        )
+        csv_string += row
+
+    return csv_string

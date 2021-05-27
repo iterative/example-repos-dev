@@ -11,6 +11,8 @@ virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 
+python -m pip install 'dvc[all]'
+
 git init
 git checkout -b main
 dvc init

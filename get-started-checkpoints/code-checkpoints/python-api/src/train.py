@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
-from util import load_params, history_to_csv, history_list_to_csv
+from util import load_params, logs_to_csv
 
 import models
 from dvc.api import make_checkpoint
@@ -9,13 +9,47 @@ from dvc.api import make_checkpoint
 DATA_DIR = "data/fashion-mnist"
 MODEL_DIR = "models/fashion-mnist"
 MODEL_FILE = os.path.join(MODEL_DIR, "model.h5")
+LOGS_FILE = "logs.csv"
 
 class DVCCheckpointsCallback(tf.keras.callbacks.Callback):
 
-    def __init__(self, frequency = 1):
+    def __init__(self, model_file = None, logs_file = None, frequency = 1, append_logs = False):
+        super().__init__()
         self.frequency = frequency
+        self.model_file = model_file
+        self.logs_file = logs_file
+        self.append_logs = append_logs
+        self.previous_logs = {}
+
+    def _write_logs_to_file(self, logs):
+        logs_csv = logs_to_csv(self._logs_to_list(logs))
+        with open(self.logs_file, "w") as f:
+            f.write(logs_csv)
+
+    def _append_logs_to_file(self, logs):
+        logs = self._logs_to_list(logs)
+        if self.previous_logs == {}:
+            self.previous_logs = logs
+        else:
+            for k in self.previous_logs:
+                self.previous_logs[k] += logs[k]
+        logs_csv = logs_to_csv(self.previous_logs)
+        with open(self.logs_file, "w") as f:
+            f.write(logs_csv)
+
+    def _logs_to_list(self, logs):
+        return {k: [v] for k, v in logs.items()}
+
 
     def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        if self.model_file:
+            self.model.save(self.model_file)
+        if self.logs_file:
+            if self.append_logs:
+                self._append_logs_to_file(logs)
+            else:
+                self._write_logs_to_file(logs)
         if (epoch % self.frequency) == 0:
             make_checkpoint()
 
@@ -51,7 +85,10 @@ def main():
     print(f"y_valid: {y_valid.shape}")
 
     if params["epochs"] == 0:
-        history_list = []
+        callback = DVCCheckpointsCallback(logs_file=LOGS_FILE,
+                                          model_file=MODEL_FILE,
+                                          append_logs=True,
+                                          frequency=1)
         while True:
             history = m.fit(
                 x_train,
@@ -60,13 +97,13 @@ def main():
                 epochs=1,
                 verbose=1,
                 validation_data=(x_valid, y_valid),
-                callbacks=[DVCCheckpointsCallback(frequency=1)]
+                callbacks=[callback]
             )
-            history_list.append(history)
-            with open("logs.csv", "w") as f:
-                f.write(history_list_to_csv(history_list))
-            m.save(MODEL_FILE)
     else:
+        callback = DVCCheckpointsCallback(logs_file=LOGS_FILE,
+                                          model_file=MODEL_FILE,
+                                          append_logs=False,
+                                          frequency=1)
         history = m.fit(
             x_train,
             y_train,
@@ -74,11 +111,8 @@ def main():
             epochs=params["epochs"],
             verbose=1,
             validation_data=(x_valid, y_valid),
-            callbacks=[DVCCheckpointsCallback(frequency=1)]
+            callbacks=[callback]
         )
-        with open("logs.csv", "w") as f:
-            f.write(history_to_csv(history))
-        m.save(MODEL_FILE)
 
 
 if __name__ == "__main__":
