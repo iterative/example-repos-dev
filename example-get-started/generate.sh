@@ -140,8 +140,8 @@ git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 dvc push
 
-sed -e "s/max_features: 500/max_features: 1500/" -i params.yaml
-sed -e "s/ngrams: 1/ngrams: 2/" -i params.yaml
+sed -e "s/max_features: 500/max_features: 1500/" -i".bkp" params.yaml
+sed -e "s/ngrams: 1/ngrams: 2/" -i".bkp" params.yaml
 dvc repro train
 tick
 git commit -am "Reproduce model using bigrams"
