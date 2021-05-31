@@ -42,7 +42,8 @@ with open(prc_file, "w") as fd:
         {
             "prc": [
                 {"precision": p, "recall": r, "threshold": t}
-                for p, r, t in zip(precision, recall, prc_thresholds)
+                # Use every other point to reduce file size.
+                for p, r, t in list(zip(precision, recall, prc_thresholds))[::2]
             ]
         },
         fd,
