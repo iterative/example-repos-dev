@@ -197,7 +197,14 @@ cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
 git push --force origin master
 git push --force origin --tags
+
+Run these to drop and then rewrite the experiment references on the repo:
+
+git ls-remote origin "refs/exps/*" | awk '{print $2}' | xargs -n 1 git push -d origin
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
+
+Finally, return to the directory where you started:
+
 cd ../..
 
 You may remove the generated repo with:
