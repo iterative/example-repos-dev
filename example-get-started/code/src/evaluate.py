@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import pickle
 import sys
@@ -37,13 +38,17 @@ roc_auc = metrics.roc_auc_score(labels, predictions)
 with open(scores_file, "w") as fd:
     json.dump({"avg_prec": avg_prec, "roc_auc": roc_auc}, fd, indent=4)
 
+# ROC has a drop_intermediate arg that reduces the number of points.
+# https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve.
+# PRC lacks this arg, so we manually reduce to 1000 points as a rough estimate.
+nth_point = math.ceil(len(prc_thresholds) / 1000)
+prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
 with open(prc_file, "w") as fd:
     json.dump(
         {
             "prc": [
                 {"precision": p, "recall": r, "threshold": t}
-                # Use every other point to reduce file size.
-                for p, r, t in list(zip(precision, recall, prc_thresholds))[::2]
+                for p, r, t in prc_points
             ]
         },
         fd,
