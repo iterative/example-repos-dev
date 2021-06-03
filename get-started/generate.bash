@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-REPO_NAME="dvc-get-started-$(date +%F-%H-%M-%S)"
+REPO_NAME="get-started-experiments-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
 export REPO_ROOT="${HERE}/build/${REPO_NAME}"
