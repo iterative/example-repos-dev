@@ -1,21 +1,23 @@
 import tensorflow as tf
 from util import load_params
 
+
 def mlp(dense_units=128, activation="relu"):
     return tf.keras.models.Sequential([
-      tf.keras.layers.Flatten(input_shape=(28, 28)),
-      tf.keras.layers.Dense(dense_units, activation=activation),
-      tf.keras.layers.Dense(10, activation="softmax")
-])
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
+        tf.keras.layers.Dense(dense_units, activation=activation),
+        tf.keras.layers.Dense(10, activation="softmax")
+    ])
 
-def cnn(dense_units=128, conv_kernel=(3,3), conv_units=32, dropout=0.5, activation="relu"):
+
+def cnn(dense_units=128, conv_kernel=(3, 3), conv_units=32, dropout=0.5, activation="relu"):
     return tf.keras.models.Sequential([
         tf.keras.layers.Reshape(input_shape=(28, 28),
                                 target_shape=(28, 28, 1)),
         tf.keras.layers.Conv2D(conv_units,
                                kernel_size=conv_kernel,
                                activation=activation),
-        tf.keras.layers.MaxPooling2D(pool_size=(2,2)),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
         tf.keras.layers.Dropout(dropout),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(dense_units, activation=activation),
@@ -36,7 +38,8 @@ def get_model():
                     dropout=p["dropout"],
                     activation=p["activation"])
     else:
-        raise Exception(f"No Model with the name {model_params['name']} is defined")
+        raise Exception(
+            f"No Model with the name {model_params['name']} is defined")
 
     if model_params["optimizer"].lower() == "adam":
         optimizer = tf.keras.optimizers.Adam()
@@ -55,20 +58,21 @@ def get_model():
     elif model_params["optimizer"].lower() == "ftrl":
         optimizer = tf.keras.optimizers.Ftrl()
     else:
-        raise Exception(f"No optimizer with the name {model_params['optimizer']} is defined")
+        raise Exception(
+            f"No optimizer with the name {model_params['optimizer']} is defined")
 
     loss = tf.keras.losses.CategoricalCrossentropy()
 
     metrics = [
-        tf.keras.metrics.CategoricalAccuracy(),
+        tf.keras.metrics.CategoricalAccuracy(name="acc"),
         tf.keras.metrics.Precision(),
         tf.keras.metrics.Recall(),
         tf.keras.metrics.AUC(curve="ROC", name="ROC", multi_label=True),
         tf.keras.metrics.AUC(curve="PR", name="PR", multi_label=True),
-        tf.keras.metrics.TruePositives(),
-        tf.keras.metrics.TrueNegatives(),
-        tf.keras.metrics.FalsePositives(),
-        tf.keras.metrics.FalseNegatives()]
+        tf.keras.metrics.TruePositives(name="tp"),
+        tf.keras.metrics.TrueNegatives(name="tn"),
+        tf.keras.metrics.FalsePositives(name="fp"),
+        tf.keras.metrics.FalseNegatives(name="fn")]
 
     model.compile(
         optimizer=optimizer,
@@ -77,5 +81,3 @@ def get_model():
     )
 
     return model
-
-
