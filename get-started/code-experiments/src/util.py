@@ -59,11 +59,9 @@ def update_param_values(current, update):
 
 
 def load_params():
-    "Updates params.FULL_PARAMS with the values in params.yaml and returns"
+    "Updates params.FULL_PARAMS with the values in params.yaml and returns all as a dictionary"
     yaml = YAML(typ="safe")
     with open("params.yaml") as f:
         loaded_params = yaml.load(f)
-    print("Loaded Params:", loaded_params)
     params = update_param_values(FULL_PARAMS, loaded_params)
-    print("Params:", params)
     return params
