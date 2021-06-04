@@ -2,6 +2,53 @@
 
 set -veux
 
+add_main_pipeline() {
+    dvc stage add -n prepare \
+                  -d src/prepare.py \
+                  -d data/fashion-mnist/raw/ \
+                  -p prepare.remix \
+                  -p prepare.remix_split \
+                  -p prepare.seed \
+                  --outs-no-cache data/fashion-mnist/prepared \
+                  python3 src/prepare.py
+
+    echo "prepared/" >> data/fashion-mnist/.gitignore
+
+    dvc stage add -n preprocess \
+                  -d data/fashion-mnist/prepared/ \
+                  -d src/preprocess.py \
+                  --outs-no-cache data/fashion-mnist/preprocessed \
+                  python3 src/preprocess.py
+    echo "preprocessed/" >> data/fashion-mnist/.gitignore
+
+    dvc stage add -n train \
+                -d data/fashion-mnist/preprocessed/ \
+                -d src/models.py \
+                -d src/train.py \
+                -p model.cnn.conv_kernel_size \
+                -p model.cnn.conv_units \
+                -p model.cnn.dense_units \
+                -p model.cnn.dropout \
+                -p model.mlp.activation \
+                -p model.mlp.units \
+                -p model.name \
+                -p model.optimizer \
+                -p train.batch_size \
+                -p train.epochs \
+                -p train.seed \
+                -p train.validation_split \
+                --outs-no-cache models/fashion-mnist/model.h5 \
+                --plots-no-cache logs.csv \
+                python3 src/train.py
+
+    dvc stage add -n evaluate \
+                  -d models/fashion-mnist/model.h5 \
+                  -d src/evaluate.py \
+                  --metrics-no-cache metrics.json \
+                  python3 src/evaluate.py 
+
+}
+
 export REPO_PATH="${REPO_ROOT}"/experiments
 
 mkdir -p "$REPO_PATH"
@@ -48,17 +95,20 @@ git add .
 git commit -m "Add source code for the experiments"
 git tag -a "source-code" -m "Source code for experiments added."
 
-cp "${HERE}"/code-experiments/dvc.yaml .
 tag_tick
+add_main_pipeline
 git add dvc.yaml 
 git commit -m "Added experiments pipeline"
 git tag -a "pipeline" -m "Experiments pipeline added."
 
 dvc exp run
 tag_tick
-git add data/fashion-mnist/.gitignore models/fashion-mnist/.gitignore dvc.lock logs.csv metrics.json 
+echo "model.h5" >> models/fashion-mnist/.gitignore
+git add models/fashion-mnist/.gitignore data/fashion-mnist/.gitignore dvc.lock logs.csv metrics.json 
 git commit -m "Baseline experiment run"
 git tag -a "baseline" -m "Baseline experiment"
+
+git status 
 
 popd 
 unset REPO_PATH
