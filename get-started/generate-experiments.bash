@@ -6,9 +6,6 @@ add_main_pipeline() {
     dvc stage add -n prepare \
                   -d src/prepare.py \
                   -d data/fashion-mnist/raw/ \
-                  -p prepare.remix \
-                  -p prepare.remix_split \
-                  -p prepare.seed \
                   --outs-no-cache data/fashion-mnist/prepared \
                   python3 src/prepare.py
 
@@ -25,18 +22,10 @@ add_main_pipeline() {
                 -d data/fashion-mnist/preprocessed/ \
                 -d src/models.py \
                 -d src/train.py \
-                -p model.cnn.conv_kernel_size \
-                -p model.cnn.conv_units \
-                -p model.cnn.dense_units \
-                -p model.cnn.dropout \
-                -p model.mlp.activation \
-                -p model.mlp.units \
-                -p model.name \
-                -p model.optimizer \
-                -p train.batch_size \
-                -p train.epochs \
-                -p train.seed \
-                -p train.validation_split \
+                -p conv_units \
+                -p dense_units \
+                -p dropout \
+                -p epochs \
                 --outs-no-cache models/fashion-mnist/model.h5 \
                 --plots-no-cache logs.csv \
                 python3 src/train.py
