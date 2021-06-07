@@ -5,6 +5,8 @@ FULL_PARAMS = {
         "seed": 20210428,
         "remix": False,
         "remix_split": 0.20,
+        "raw_input_dir": "data/fashion-mnist/raw",
+        "prepared_output_dir": "data/fashion-mnist/prepared"
     },
     "preprocess":
     {
@@ -13,7 +15,9 @@ FULL_PARAMS = {
         "shuffle": False,
         "add_noise": False,
         "noise_amount": 0.0004,
-        "noise_s_vs_p": 0.5
+        "noise_s_vs_p": 0.5,
+        "prepared_input_dir": "data/fashion_mnist/prepared/",
+        "preprocessed_output_dir": "data/fashion-mnist/preprocessed/"
     },
 
     "train": {
@@ -22,6 +26,8 @@ FULL_PARAMS = {
         "epochs": 10,
         "batch_size": 128,
         "resume": True,
+        "preprocessed_input_dir": "data/fashion-mnist/preprocessed/",
+        "model_output_dir": "models/fashion-mnist/"
     },
     "model":
     {
@@ -37,6 +43,17 @@ FULL_PARAMS = {
             "conv_kernel_size": 3,
             "conv_units": 16,
             "dropout": 0.5
+        },
+        "metrics": {
+            "acc": True,
+            "precision": True,
+            "recall": True,
+            "roc": True,
+            "pr": True,
+            "tp": True,
+            "tn": True,
+            "fp": True,
+            "fn": True
         }
     }
 }
