@@ -1,4 +1,5 @@
 from ruamel.yaml import YAML
+import numpy as np
 
 FULL_PARAMS = {
     "prepare": {
@@ -16,7 +17,7 @@ FULL_PARAMS = {
         "add_noise": False,
         "noise_amount": 0.0004,
         "noise_s_vs_p": 0.5,
-        "prepared_input_dir": "data/fashion_mnist/prepared/",
+        "prepared_input_dir": "data/fashion-mnist/prepared/",
         "preprocessed_output_dir": "data/fashion-mnist/preprocessed/"
     },
 
@@ -82,3 +83,17 @@ def load_params():
         loaded_params = yaml.load(f)
     params = update_param_values(FULL_PARAMS, loaded_params)
     return params
+
+
+def load_npz_data(filename):
+    npzfile = np.load(filename)
+    return (npzfile['images'], npzfile['labels'])
+
+
+def shuffle_in_parallel(seed, array1, array2):
+    np.random.seed(seed)
+    np.random.shuffle(array1)
+    np.random.seed(seed)
+    np.random.shuffle(array2)
+
+    return array1, array2

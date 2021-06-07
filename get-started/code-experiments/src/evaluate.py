@@ -1,21 +1,19 @@
 import tensorflow as tf
 import numpy as np
 import json
-from util import load_params
-
-
-def load_npz_data(filename):
-    npzfile = np.load(filename)
-    return (npzfile["images"], npzfile["labels"])
+from util import load_params, load_npz_data
+import os
 
 
 def main():
     params = load_params()
 
     test_img, test_labels = load_npz_data(
-        "data/fashion-mnist/preprocessed/mnist-test.npz"
+        os.path.join(params["preprocess"]["preprocessed_output_dir"],
+                     "test.npz")
     )
-    model = tf.keras.models.load_model("models/fashion-mnist/model.h5")
+    model = tf.keras.models.load_model(os.path.join(params["train"]["model_output_dir"],
+                                                    "model.h5"))
 
     metrics_dict = model.evaluate(
         test_img,

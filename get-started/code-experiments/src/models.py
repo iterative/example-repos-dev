@@ -65,30 +65,30 @@ def get_model():
 
     metrics = []
     if model_params["metrics"]["acc"]:
-        metrics += tf.keras.metrics.CategoricalAccuracy(name="acc"),
+        metrics.append(tf.keras.metrics.CategoricalAccuracy(name="acc"))
     if model_params["metrics"]["precision"]:
-        metrics += tf.keras.metrics.Precision(),
+        metrics.append(tf.keras.metrics.Precision())
     if model_params["metrics"]["recall"]:
-        metrics += tf.keras.metrics.Recall(),
+        metrics.append(tf.keras.metrics.Recall())
     if model_params["metrics"]["roc"]:
-        metrics += tf.keras.metrics.AUC(curve="ROC",
-                                        name="ROC", multi_label=True),
+        metrics.append(tf.keras.metrics.AUC(curve="ROC",
+                                            name="ROC", multi_label=True))
     if model_params["metrics"]["pr"]:
-        metrics += tf.keras.metrics.AUC(curve="PR",
-                                        name="PR", multi_label=True),
+        metrics.append(tf.keras.metrics.AUC(curve="PR",
+                                            name="PR", multi_label=True))
     if model_params["metrics"]["tp"]:
-        metrics += tf.keras.metrics.TruePositives(name="tp"),
+        metrics.append(tf.keras.metrics.TruePositives(name="tp"))
     if model_params["metrics"]["tn"]:
-        metrics += tf.keras.metrics.TrueNegatives(name="tn"),
+        metrics.append(tf.keras.metrics.TrueNegatives(name="tn"))
     if model_params["metrics"]["fp"]:
-        metrics += tf.keras.metrics.FalsePositives(name="fp"),
+        metrics.append(tf.keras.metrics.FalsePositives(name="fp"))
     if model_params["metrics"]["fn"]:
-        metrics += tf.keras.metrics.FalseNegatives(name="fn")]
+        metrics.append(tf.keras.metrics.FalseNegatives(name="fn"))
 
     model.compile(
-        optimizer = optimizer,
-        loss = loss,
-        metrics = metrics,
+        optimizer=optimizer,
+        loss=loss,
+        metrics=metrics,
     )
 
     return model
