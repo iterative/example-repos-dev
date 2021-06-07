@@ -6,35 +6,25 @@ add_main_pipeline() {
     dvc stage add -n prepare \
                   -d src/prepare.py \
                   -d data/fashion-mnist/raw/ \
-                  --outs-no-cache data/fashion-mnist/prepared \
+                  -o data/fashion-mnist/prepared \
                   python3 src/prepare.py
 
     echo "prepared/" >> data/fashion-mnist/.gitignore
 
-    dvc stage add -n preprocess \
-                  -d data/fashion-mnist/prepared/ \
-                  -d src/preprocess.py \
-                  --outs-no-cache data/fashion-mnist/preprocessed \
-                  python3 src/preprocess.py
-    echo "preprocessed/" >> data/fashion-mnist/.gitignore
+    mkdir -p models/fashion-mnist
 
     dvc stage add -n train \
-                -d data/fashion-mnist/preprocessed/ \
+                -d data/fashion-mnist/prepared/ \
                 -d src/models.py \
                 -d src/train.py \
                 -p conv_units \
                 -p dense_units \
                 -p dropout \
                 -p epochs \
-                --outs-no-cache models/fashion-mnist/model.h5 \
+                -o models/fashion-mnist/model.h5 \
                 --plots-no-cache logs.csv \
+                --metrics-no-cache metrics.json \
                 python3 src/train.py
-
-    dvc stage add -n evaluate \
-                  -d models/fashion-mnist/model.h5 \
-                  -d src/evaluate.py \
-                  --metrics-no-cache metrics.json \
-                  python3 src/evaluate.py 
 
 }
 
