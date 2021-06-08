@@ -63,8 +63,9 @@ dvc exp show
 and limit the parameters and metrics to show with `--include-params` and
 `--include-metrics` options, respectively.  
 
-Experiments are given hash-names derived from their inputs and environment. It
-may be easier to review them when you give names with the `--name/-n` option.
+By default experiments are given auto-generated names derived from their inputs
+and environment. It may be easier to review them when you give names with the
+`--name/-n` option.
 
 ```console
 dvc exp run -n baseline-experiment
