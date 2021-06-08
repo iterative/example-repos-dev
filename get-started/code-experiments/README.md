@@ -8,7 +8,9 @@ commands to manage large number of experiments.
 
 <details>
 
+<summary>
 ### Installation Instructions
+</summary>
 
 After [installing DVC](https://dvc.org/doc/install) and cloning the repository, you can run:
 
@@ -92,12 +94,6 @@ You can clean up the unused experiments with:
 dvc exp gc --workspace
 ```
 
-### Pipeline and Parameters
-
-The pipeline defined in `dvc.yaml` consists of two stages: `prepare` and
-`train`. Prepare stage depends to imported Fashion-MNIST data found in
-`data/raw`, and the train stage depends on `data/prepared` and `models.py`. The former outputs the data in NumPy format and the latter consumes this, and produces the model and metrics. 
-
 ### Parameters
 
 Although the project has several parameters that can be changed from the code, we kept the number of parameters in `params.yaml` low for illustration purposes. 
@@ -119,6 +115,12 @@ There are two metrics produced by the training stage.
 
 - `loss`: Categorical Crosstentropy loss value 
 - `acc`: Categorical Accuracy metrics for the classes.
+
+### Pipeline 
+
+The pipeline defined in `dvc.yaml` consists of two stages: `prepare` and
+`train`. Prepare stage depends to imported Fashion-MNIST data found in
+`data/raw`, and the train stage depends on `data/prepared` and `models.py`. The former outputs the data in NumPy format and the latter consumes this, and produces the model and metrics. 
 
 ### Data Files
 
@@ -159,26 +161,6 @@ The source files are in the `src/` directory.
 
 - `models/model.h5`: The Tensorflow model produced by
   `src/train.py` in HDF5 format.
-
-### Metrics and Plots
-
-Following two files are tracked by DVC as plots and metrics files, respectively.
-
-- `logs.csv`: Training and validation metrics in each epoch produced in
-  `src/train.py` is written to this file.
-
-- `metrics.json`: Final metrics produced by the test set is output to this file.
-  
-
-### DVC Files
-
-The repository is a standard Git repository and contains the usual `.dvc` files:
-
-- `.dvc/config`: Contains a remote configuration to retrieve dataset from S3.
-
-- `dvc.yaml`: Contains the pipeline configuration.
-
-- `dvc.lock`: Parameters and dependency hashes are tracked with this file.
 
 ## Contributing
 
