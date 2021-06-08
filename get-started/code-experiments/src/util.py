@@ -6,8 +6,8 @@ FULL_PARAMS = {
         "seed": 20210428,
         "remix": False,
         "remix_split": 0.20,
-        "raw_input_dir": "data/fashion-mnist/raw",
-        "prepared_output_dir": "data/fashion-mnist/prepared"
+        "raw_input_dir": "data/raw",
+        "prepared_output_dir": "data/prepared"
     },
     "train": {
         "seed": 20210428,
@@ -20,8 +20,8 @@ FULL_PARAMS = {
         "noise_amount": 0.0004,
         "noise_s_vs_p": 0.5,
         "resume": True,
-        "prepared_input_dir": "data/fashion-mnist/prepared",
-        "model_output_dir": "models/fashion-mnist"
+        "prepared_input_dir": "data/prepared",
+        "model_output_dir": "models"
     },
     "model":
     {
@@ -40,14 +40,14 @@ FULL_PARAMS = {
         },
         "metrics": {
             "acc": True,
-            "precision": True,
-            "recall": True,
-            "roc": True,
-            "pr": True,
-            "tp": True,
-            "tn": True,
-            "fp": True,
-            "fn": True
+            "precision": False,
+            "recall": False,
+            "roc": False,
+            "pr": False,
+            "tp": False,
+            "tn": False,
+            "fp": False,
+            "fn": False
         }
     }
 }
@@ -70,7 +70,7 @@ def update_param_values(current, update):
 
 
 def load_params():
-    "Updates params.FULL_PARAMS with the values in params.yaml and returns all as a dictionary"
+    "Updates FULL_PARAMS with the values in params.yaml and returns all as a dictionary"
     yaml = YAML(typ="safe")
     with open("params.yaml") as f:
         loaded_params = yaml.load(f)

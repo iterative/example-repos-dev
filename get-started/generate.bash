@@ -44,23 +44,23 @@ pushd "${REPO_ROOT}"
 add_main_pipeline() {
     dvc stage add -n prepare \
                   -d src/prepare.py \
-                  -d data/fashion-mnist/raw/ \
-                  -o data/fashion-mnist/prepared \
+                  -d data/raw/ \
+                  -o data/prepared \
                   python3 src/prepare.py
 
-    echo "prepared/" >> data/fashion-mnist/.gitignore
+    echo "prepared/" >> data/.gitignore
 
-    mkdir -p models/fashion-mnist
+    mkdir -p models
 
     dvc stage add -n train \
-                -d data/fashion-mnist/prepared/ \
+                -d data/prepared/ \
                 -d src/models.py \
                 -d src/train.py \
                 -p conv_units \
                 -p dense_units \
                 -p dropout \
                 -p epochs \
-                -o models/fashion-mnist/model.h5 \
+                -o models/model.h5 \
                 --plots-no-cache logs.csv \
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
@@ -92,13 +92,13 @@ git add .
 git commit -m "Initialized DVC and Configured Remote"
 git tag -a "init" -m "Initialized DVC and Remote"
 
-test -d data/fashion-mnist || mkdir -p data/fashion-mnist
+test -d data/ || mkdir -p data/
 
 dvc import https://github.com/iterative/dataset-registry \
-           fashion-mnist/raw -o data/fashion-mnist/raw
+           fashion-mnist/raw -o data/raw
 
 tag_tick
-git add data/fashion-mnist/raw.dvc data/fashion-mnist/.gitignore
+git add data/raw.dvc data/.gitignore
 git commit -m "Add Fashion-MNIST data"
 git tag -a "data" -m "Fashion-MNIST data file added."
 dvc push
@@ -121,8 +121,8 @@ git tag -a "pipeline" -m "Experiments pipeline added."
 
 dvc exp run
 tag_tick
-echo "model.h5" >> models/fashion-mnist/.gitignore
-git add models/fashion-mnist/.gitignore data/fashion-mnist/.gitignore dvc.lock logs.csv metrics.json 
+echo "model.h5" >> models/.gitignore
+git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json 
 git commit -m "Baseline experiment run"
 git tag -a "baseline" -m "Baseline experiment"
 
