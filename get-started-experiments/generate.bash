@@ -31,8 +31,7 @@ tag_tick() {
 
 export -f tag_tick
 
-
-if [ -d "$REPO_ROOT" ]; then
+if [[ -d "$REPO_ROOT" ]]; then
     echo "Repo $REPO_ROOT already exists, please remove it first."
     exit 1
 fi
@@ -82,36 +81,49 @@ git init
 git checkout -b main
 cp $HERE/code-experiments/README.md "${REPO_PATH}" 
 cp $HERE/code-experiments/.gitignore "${REPO_PATH}"
-dvc init
-# Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://dvc-public/remote/get-started
-# Actual remote for generated project (read-only). Redirect of S3 bucket above.
-dvc remote add -d storage https://remote.dvc.org/get-started
+tag_tick
+git add .gitignore README.md
+git commit -m "Initialized Git"
+git tag -a "git-init" -m "Initialized Git"
+
+cp -r "${HERE}"/code-experiments/src .
+cp "${HERE}"/code-experiments/requirements.txt .
+cp "${HERE}"/code-experiments/params.yaml .
+pip install -r "${REPO_PATH}"/requirements.txt
 tag_tick
 git add .
-git commit -m "Initialized DVC and Configured Remote"
-git tag -a "init" -m "Initialized DVC and Remote"
+git commit -m "Added source and params"
+git tag -a "source-code" -m "Added source code and parameters"
 
 test -d data/ || mkdir -p data/
+dvc get https://github.com/iterative/dataset-registry \
+        fashion-mnist/images.tar.gz -o data/images.tar.gz
 
-dvc import https://github.com/iterative/dataset-registry \
-           fashion-mnist/raw -o data/raw
+pushd data
+tar -xvzf data/images.tar.gz 
+rm -f images.tar.gz 
+popd 
+
+# WARNING: We don't add images.tar.gz to neither Git nor DVC here
+# git add . operation will add all 70000 images to the repository
+
+dvc init
+
+# Tutorial should start here
+tag_tick
+git add .
+git commit -m "Initialized DVC"
+git tag -a "dvc-init" -m "Initialized DVC"
+
+
+dvc add data/images
+
 
 tag_tick
 git add data/raw.dvc data/.gitignore
 git commit -m "Add Fashion-MNIST data"
 git tag -a "data" -m "Fashion-MNIST data file added."
 dvc push
-
-cp -r "${HERE}"/code-experiments/src .
-cp "${HERE}"/code-experiments/requirements.txt .
-cp "${HERE}"/code-experiments/params.yaml .
-pip install -r "${REPO_PATH}"/requirements.txt
-
-tag_tick
-git add .
-git commit -m "Add source code for the experiments"
-git tag -a "source-code" -m "Source code for experiments added."
 
 tag_tick
 add_main_pipeline
