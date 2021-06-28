@@ -1,4 +1,5 @@
-epochs: 1
+epochs: 10
 conv_units: 16
 dense_units: 128
 dropout: 0.5
+
