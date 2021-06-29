@@ -1,8 +1,57 @@
+from re import A
 import struct
 import numpy as np
 import gzip
 import os
 from util import load_params
+from imageio import imread, mimread
+
+
+def get_images_from_directory(directory):
+    image_file_extensions = ['.png', '.jpg', '.bmp']
+    images = []
+    # we assume the images are 28x28 grayscale
+    shape_0, shape_1 = 28, 28
+    for f in os.listdir(directory):
+        if os.path.splitext(f)[1] in image_file_extensions:
+            current_img = imread(os.path.join(directory, f))
+            if (len(current_img.shape) != 2 or current_img.shape[0] != shape_0 or current_img.shape[1] != shape_1):
+                raise Exception("Works with 28x28 grayscale images")
+            images.append(current_img)
+    image_array = np.ndarray(shape=(len(images), shape_0, shape_1), dtype='uint8')
+    for i, img in enumerate(images):
+        image_array[i] = img
+    print(image_array.shape)
+    return image_array
+
+
+def read_labeled_images(directory):
+    """The structure of the directory should be like:
+.
+├── 0
+├── 1
+├── 2
+├── 3
+├── 4
+├── 5
+├── 6
+├── 7
+├── 8
+└── 9
+
+    and contain PNG images in each directory.
+"""
+    shape_0, shape_1 = 28, 28
+    label_array = np.ndarray(shape=0, dtype='uint8')
+    image_array = np.ndarray(shape=(0, shape_0, shape_1), dtype='uint8')
+    for label in range(0, 10):
+        images_dir = f"{directory}/{label}"
+        images = get_images_from_directory(images_dir)
+        labels = np.ones(shape=(images.shape[0]), dtype='uint8') * label
+        image_array = np.concatenate((image_array, images), axis=0)
+        label_array = np.concatenate((label_array, labels), axis=0)
+
+    return image_array, label_array
 
 
 def mnist_images_idx_to_array(images_filename):
@@ -64,17 +113,14 @@ def main():
     params = load_params()["prepare"]
     print(params)
 
-    input_dir = params["raw_input_dir"]
+    input_dir = params["images_input_dir"]
     output_dir = params["prepared_output_dir"]
 
-    training_images = mnist_images_idx_to_array(
-        os.path.join(input_dir, "train-images-idx3-ubyte.gz"))
-    training_labels = mnist_labels_idx_to_array(
-        os.path.join(input_dir, "train-labels-idx1-ubyte.gz"))
-    testing_images = mnist_images_idx_to_array(
-        os.path.join(input_dir, "t10k-images-idx3-ubyte.gz"))
-    testing_labels = mnist_labels_idx_to_array(
-        os.path.join(input_dir, "t10k-labels-idx1-ubyte.gz"))
+    training_images, training_labels = read_labeled_images(
+        os.path.join(input_dir, 'train/'))
+    testing_images, testing_labels = read_labeled_images(
+        os.path.join(input_dir, 'test/')
+    )
 
     if params["remix"]:
         (training_images,
