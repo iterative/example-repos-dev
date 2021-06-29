@@ -6,7 +6,7 @@ FULL_PARAMS = {
         "seed": 20210428,
         "remix": False,
         "remix_split": 0.20,
-        "raw_input_dir": "data/raw",
+        "images_input_dir": "data/images",
         "prepared_output_dir": "data/prepared"
     },
     "train": {
