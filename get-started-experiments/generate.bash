@@ -43,7 +43,7 @@ pushd "${REPO_ROOT}"
 add_main_pipeline() {
     dvc stage add -n prepare \
                   -d src/prepare.py \
-                  -d data/raw/ \
+                  -d data/images/ \
                   -o data/prepared \
                   python3 src/prepare.py
 
@@ -100,7 +100,7 @@ dvc get https://github.com/iterative/dataset-registry \
         fashion-mnist/images.tar.gz -o data/images.tar.gz
 
 pushd data
-tar -xvzf data/images.tar.gz 
+tar -xvzf images.tar.gz 
 rm -f images.tar.gz 
 popd 
 
@@ -111,32 +111,38 @@ dvc init
 
 # Tutorial should start here
 tag_tick
-git add .
+git add .dvc
 git commit -m "Initialized DVC"
 git tag -a "dvc-init" -m "Initialized DVC"
 
 
 dvc add data/images
-
-
 tag_tick
-git add data/raw.dvc data/.gitignore
-git commit -m "Add Fashion-MNIST data"
-git tag -a "data" -m "Fashion-MNIST data file added."
-dvc push
+git add data/images.dvc data/.gitignore
+git commit -m "Added Fashion-MNIST images"
+git tag -a "added-data" -m "Fashion-MNIST data file added."
 
 tag_tick
 add_main_pipeline
 git add dvc.yaml 
 git commit -m "Added experiments pipeline"
-git tag -a "pipeline" -m "Experiments pipeline added."
+git tag -a "created-pipeline" -m "Experiments pipeline added."
 
 dvc exp run
 tag_tick
 echo "model.h5" >> models/.gitignore
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json 
 git commit -m "Baseline experiment run"
-git tag -a "baseline" -m "Baseline experiment"
+git tag -a "baseline-experiment" -m "Baseline experiment"
+
+dvc exp run -n cnn-32 --queue -S conv_units=32
+dvc exp run -n cnn-64 --queue -S conv_units=64
+dvc exp run -n cnn-96 --queue -S conv_units=96
+dvc exp run -n cnn-128 --queue -S conv_units=128
+
+dvc exp run --run-all --jobs 2
+
+dvc exp show --no-pager
 
 git status 
 
@@ -152,6 +158,9 @@ set -veux
 # exists first and that you have appropriate write permissions.
 
 pushd ${REPO_PATH}
+
+dvc remote add storage s3://dvc-public/code/${PROJECT_NAME}/
+dvc push 
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
   # Delete all tags in the remote
