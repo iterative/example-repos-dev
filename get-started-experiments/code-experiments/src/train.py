@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from util import load_params, load_npz_data, shuffle_in_parallel
+from util import load_params, load_npz_data, shuffle_in_parallel, history_to_csv
 import os
 import json
 
@@ -27,22 +27,6 @@ def add_noise(images, s_vs_p=0.5, amount=0.0004):
     out[pepper_coords] = 0
 
     return out
-
-
-def history_to_csv(history):
-    keys = list(history.history.keys())
-    csv_string = ", ".join(["epoch"] + keys) + "\n"
-    list_len = len(history.history[keys[0]])
-    for i in range(list_len):
-        row = (
-            str(i + 1)
-            + ", "
-            + ", ".join([str(history.history[k][i]) for k in keys])
-            + "\n"
-        )
-        csv_string += row
-
-    return csv_string
 
 
 def main():

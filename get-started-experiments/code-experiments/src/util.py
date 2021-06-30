@@ -90,3 +90,19 @@ def shuffle_in_parallel(seed, array1, array2):
     np.random.shuffle(array2)
 
     return array1, array2
+
+
+def history_to_csv(history):
+    keys = list(history.history.keys())
+    csv_string = ", ".join(["epoch"] + keys) + "\n"
+    list_len = len(history.history[keys[0]])
+    for i in range(list_len):
+        row = (
+            str(i + 1)
+            + ", "
+            + ", ".join([str(history.history[k][i]) for k in keys])
+            + "\n"
+        )
+        csv_string += row
+
+    return csv_string
