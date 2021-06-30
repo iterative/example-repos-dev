@@ -23,9 +23,6 @@ $ cd example-get-started
 $ ./deploy.sh
 ```
 
-> NOTE: For the time being **example-get-started** is the only project managed
-> here.
-
 ### example-get-started
 
 - `deploy.sh`: Makes and deploys code archive from
@@ -39,3 +36,7 @@ $ ./deploy.sh
 
   > If you change the [source code](code/src/) files in this repo, run
   > `deploy.sh` first, to make sure that the `code.zip` archive is up to date.
+
+### get-started-experiments
+
+- `generate.sh`: Generates the [repository](https://github.com/iterative/get-started-experiments) for _Get Started with Experiments_.  It creates a new project in `get-started-experiments/build/YYYY-MM-DD-HH-MM-SS/get-started-experiments` and an accompanying script to push the repository to DVC and Git. The generated repository uses `s3://dvc-public/remote/get-started-experiments/` as a DVC remote.
