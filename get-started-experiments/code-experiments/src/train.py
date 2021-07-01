@@ -1,86 +1,106 @@
 import tensorflow as tf
 import numpy as np
-from util import load_params, load_npz_data, shuffle_in_parallel, history_to_csv
+from util import load_params, read_labeled_images
 import os
 import json
 
-import models
+INPUT_DIR = "data/images"
+RESUME_PREVIOUS_MODEL = False
+OUTPUT_DIR = "models"
+
+METRICS_FILE = "metrics.json"
+SEED = 20210715
+
+BATCH_SIZE = 128
+
+
+def get_model(dense_units=128,
+              conv_kernel=(3, 3),
+              conv_units=32,
+              dropout=0.5,
+              activation="relu"):
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Reshape(input_shape=(28, 28),
+                                target_shape=(28, 28, 1)),
+        tf.keras.layers.Conv2D(conv_units,
+                               kernel_size=conv_kernel,
+                               activation=activation),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Dropout(dropout),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(dense_units, activation=activation),
+        tf.keras.layers.Dense(10, activation="softmax")])
+
+    loss = tf.keras.losses.CategoricalCrossentropy()
+    metrics = [tf.keras.metrics.CategoricalAccuracy(name="acc")]
+    optimizer = "Adam"
+    model.compile(
+        optimizer=optimizer,
+        loss=loss,
+        metrics=metrics,
+    )
+
+    return model
 
 
 def normalize(images_array):
     return images_array / 255
 
 
-def add_noise(images, s_vs_p=0.5, amount=0.0004):
-    n_images, n_row, n_col = images.shape
-    out = np.copy(images)
-    # Salt mode
-    n_salt = np.ceil(amount * images.size * s_vs_p)
-    salt_coords = [np.random.randint(0, i - 1, int(n_salt))
-                   for i in images.shape]
-    out[salt_coords] = 1
+def history_to_csv(history):
+    keys = list(history.history.keys())
+    csv_string = ", ".join(["epoch"] + keys) + "\n"
+    list_len = len(history.history[keys[0]])
+    for i in range(list_len):
+        row = (
+            str(i + 1)
+            + ", "
+            + ", ".join([str(history.history[k][i]) for k in keys])
+            + "\n"
+        )
+        csv_string += row
 
-    # Pepper mode
-    n_pepper = np.ceil(amount * images.size * (1. - s_vs_p))
-    pepper_coords = [np.random.randint(0, i - 1, int(n_pepper))
-                     for i in images.shape]
-    out[pepper_coords] = 0
-
-    return out
+    return csv_string
 
 
 def main():
-    params = load_params()["train"]
-    m = models.get_model()
+    params = load_params()
+    m = get_model()
     m.summary()
-    seed = params["seed"]
-    input_dir = params["prepared_input_dir"]
-    output_dir = params["model_output_dir"]
-    training_set_file = os.path.join(input_dir, "train.npz")
-    testing_set_file = os.path.join(input_dir, "test.npz")
 
-    training_images, training_labels = load_npz_data(training_set_file)
-    testing_images, testing_labels = load_npz_data(testing_set_file)
+    training_images, training_labels = read_labeled_images(
+        os.path.join(INPUT_DIR, 'train/'))
+    testing_images, testing_labels = read_labeled_images(
+        os.path.join(INPUT_DIR, 'test/')
+    )
 
-    if params["normalize"]:
-        training_images = normalize(training_images)
-        testing_images = normalize(testing_images)
+    assert training_images.shape[0] + testing_images.shape[0] == 70000
+    assert training_labels.shape[0] + testing_labels.shape[0] == 70000
 
-    if params["shuffle"]:
-        training_images, training_labels = shuffle_in_parallel(
-            seed, training_images, training_labels)
-        testing_images, testing_labels = shuffle_in_parallel(
-            seed, testing_images, testing_labels)
+    print(f"Training Dataset Shape: {training_images.shape}")
+    print(f"Testing Dataset Shape: {testing_images.shape}")
+    print(f"Training Labels: {training_labels}")
+    print(f"Testing Labels: {testing_labels}")
+
+    training_images = normalize(training_images)
+    testing_images = normalize(testing_images)
 
     training_labels = tf.keras.utils.to_categorical(
         training_labels, num_classes=10, dtype="float32")
     testing_labels = tf.keras.utils.to_categorical(
         testing_labels, num_classes=10, dtype="float32")
 
-    validation_split_index = int(
-        (1 - params["validation_split"]) * training_images.shape[0]
-    )
-    if validation_split_index == training_images.shape[0]:
-        x_train = training_images
-        x_valid = testing_images
-        y_train = training_labels
-        y_valid = testing_labels
-    else:
-        x_train = training_images[:validation_split_index]
-        x_valid = training_images[validation_split_index:]
-        y_train = training_labels[:validation_split_index]
-        y_valid = training_labels[validation_split_index:]
-
-    print(f"x_train: {x_train.shape}")
-    print(f"x_valid: {x_valid.shape}")
-    print(f"y_train: {y_train.shape}")
-    print(f"y_valid: {y_valid.shape}")
+    # We use the test set as validation for simplicity
+    x_train = training_images
+    x_valid = testing_images
+    y_train = training_labels
+    y_valid = testing_labels
 
     history = m.fit(
         x_train,
         y_train,
-        batch_size=params["batch_size"],
-        epochs=params["epochs"],
+        batch_size=BATCH_SIZE,
+        epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
     )
@@ -88,18 +108,17 @@ def main():
     with open("logs.csv", "w") as f:
         f.write(history_to_csv(history))
 
-    model_file = os.path.join(output_dir, "model.h5")
+    model_file = os.path.join(OUTPUT_DIR, "model.h5")
     m.save(model_file)
 
     metrics_dict = m.evaluate(
         testing_images,
         testing_labels,
-        batch_size=params["batch_size"],
+        batch_size=BATCH_SIZE,
         return_dict=True,
     )
-    metrics_file = "metrics.json"
 
-    with open(metrics_file, "w") as f:
+    with open(METRICS_FILE, "w") as f:
         f.write(json.dumps(metrics_dict))
 
 

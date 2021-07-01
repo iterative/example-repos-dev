@@ -1,80 +1,62 @@
 from ruamel.yaml import YAML
 import numpy as np
-
-FULL_PARAMS = {
-    "prepare": {
-        "seed": 20210428,
-        "remix": False,
-        "remix_split": 0.20,
-        "images_input_dir": "data/images",
-        "prepared_output_dir": "data/prepared"
-    },
-    "train": {
-        "seed": 20210428,
-        "validation_split": 0,
-        "epochs": 10,
-        "batch_size": 128,
-        "normalize": True,
-        "shuffle": False,
-        "add_noise": False,
-        "noise_amount": 0.0004,
-        "noise_s_vs_p": 0.5,
-        "resume": True,
-        "prepared_input_dir": "data/prepared",
-        "model_output_dir": "models"
-    },
-    "model":
-    {
-        "name": "cnn",
-        "optimizer": "Adam",
-        "mlp": {
-            "units": 16,
-            "activation": "relu",
-        },
-        "cnn": {
-            "dense_units": 128,
-            "activation": "relu",
-            "conv_kernel_size": 3,
-            "conv_units": 16,
-            "dropout": 0.5
-        },
-        "metrics": {
-            "acc": True,
-            "precision": False,
-            "recall": False,
-            "roc": False,
-            "pr": False,
-            "tp": False,
-            "tn": False,
-            "fp": False,
-            "fn": False
-        }
-    }
-}
+import os
+from imageio import imread
 
 
-def update_param_values(current, update):
-    """Updates the values in current with the values in update if they have the
-    identical keys.
+def get_images_from_directory(directory):
+    image_file_extensions = ['.png', '.jpg', '.bmp']
+    images = []
+    # we assume the images are 28x28 grayscale
+    shape_0, shape_1 = 28, 28
+    for f in os.listdir(directory):
+        if os.path.splitext(f)[1] in image_file_extensions:
+            current_img = imread(os.path.join(directory, f))
+            if (len(current_img.shape) != 2 or current_img.shape[0] != shape_0 or current_img.shape[1] != shape_1):
+                raise Exception("Works with 28x28 grayscale images")
+            images.append(current_img)
+    image_array = np.ndarray(
+        shape=(len(images), shape_0, shape_1), dtype='uint8')
+    for i, img in enumerate(images):
+        image_array[i] = img
+    print(image_array.shape)
+    return image_array
 
-    This is error prone for dictionary values in update, but we want to use
-    flat parameter lists.
-    """
 
-    for k, v in current.items():
-        if isinstance(v, dict):
-            current[k] = update_param_values(v, update)
-        elif k in update:
-            current[k] = update[k]
-    return current
+def read_labeled_images(directory):
+    """The structure of the directory should be like:
+.
+├── 0
+├── 1
+├── 2
+├── 3
+├── 4
+├── 5
+├── 6
+├── 7
+├── 8
+└── 9
+
+    and contain PNG images in each directory.
+"""
+    shape_0, shape_1 = 28, 28
+    label_array = np.ndarray(shape=0, dtype='uint8')
+    image_array = np.ndarray(shape=(0, shape_0, shape_1), dtype='uint8')
+    for label in range(0, 10):
+        images_dir = f"{directory}/{label}"
+        images = get_images_from_directory(images_dir)
+        labels = np.ones(shape=(images.shape[0]), dtype='uint8') * label
+        image_array = np.concatenate((image_array, images), axis=0)
+        label_array = np.concatenate((label_array, labels), axis=0)
+
+    return image_array, label_array
 
 
 def load_params():
     "Updates FULL_PARAMS with the values in params.yaml and returns all as a dictionary"
     yaml = YAML(typ="safe")
     with open("params.yaml") as f:
-        loaded_params = yaml.load(f)
-    params = update_param_values(FULL_PARAMS, loaded_params)
+        params = yaml.load(f)
     return params
 
 
@@ -90,19 +72,3 @@ def shuffle_in_parallel(seed, array1, array2):
     np.random.shuffle(array2)
 
     return array1, array2
-
-
-def history_to_csv(history):
-    keys = list(history.history.keys())
-    csv_string = ", ".join(["epoch"] + keys) + "\n"
-    list_len = len(history.history[keys[0]])
-    for i in range(list_len):
-        row = (
-            str(i + 1)
-            + ", "
-            + ", ".join([str(history.history[k][i]) for k in keys])
-            + "\n"
-        )
-        csv_string += row
-
-    return csv_string

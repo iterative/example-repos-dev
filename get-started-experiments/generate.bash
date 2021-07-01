@@ -41,24 +41,13 @@ pushd "${REPO_ROOT}"
 
 
 add_main_pipeline() {
-    dvc stage add -n prepare \
-                  -d src/prepare.py \
-                  -d data/images/ \
-                  -o data/prepared \
-                  python3 src/prepare.py
-
-    echo "prepared/" >> data/.gitignore
-
     mkdir -p models
 
     dvc stage add -n train \
-                -d data/prepared/ \
-                -d src/models.py \
+                -d data/images/ \
                 -d src/train.py \
-                -p conv_units \
-                -p dense_units \
-                -p dropout \
-                -p epochs \
+                -p model.conv_units \
+                -p train.epochs \
                 -o models/model.h5 \
                 --plots-no-cache logs.csv \
                 --metrics-no-cache metrics.json \
@@ -107,9 +96,9 @@ popd
 # WARNING: We don't add images.tar.gz to neither Git nor DVC here
 # git add . operation will add all 70000 images to the repository
 
+# Tutorial should start here
 dvc init
 
-# Tutorial should start here
 tag_tick
 git add .dvc
 git commit -m "Initialized DVC"
@@ -159,7 +148,7 @@ set -veux
 
 pushd ${REPO_PATH}
 
-dvc remote add storage s3://dvc-public/code/${PROJECT_NAME}/
+dvc remote add --default storage s3://dvc-public/code/${PROJECT_NAME}/
 dvc push 
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
