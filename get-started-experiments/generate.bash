@@ -117,6 +117,14 @@ git add dvc.yaml
 git commit -m "Added experiments pipeline"
 git tag -a "created-pipeline" -m "Experiments pipeline added."
 
+tag_tick
+# Remote active on this env only, for writing to HTTP redirect below.
+dvc remote add --default --local storage s3://dvc-public/remote/get-started-experiments
+dvc remote add --default storage https://remote.dvc.org/get-started-experiments
+git add .dvc
+git commit -m "Added DVC remote"
+git tag -a "configured-remote" -m "Added DVC remote"
+
 dvc exp run
 tag_tick
 echo "model.h5" >> models/.gitignore
@@ -148,7 +156,7 @@ set -veux
 
 pushd ${REPO_PATH}
 
-dvc remote add --default storage s3://dvc-public/code/${PROJECT_NAME}/
+# dvc remote add --default storage s3://dvc-public/remote/${PROJECT_NAME}/
 dvc push 
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
