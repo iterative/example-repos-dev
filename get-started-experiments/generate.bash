@@ -156,7 +156,7 @@ set -veux
 
 pushd ${REPO_PATH}
 
-# dvc remote add --default storage s3://dvc-public/remote/${PROJECT_NAME}/
+dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
 dvc push 
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
