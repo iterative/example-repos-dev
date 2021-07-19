@@ -88,15 +88,6 @@ test -d data/ || mkdir -p data/
 dvc get https://github.com/iterative/dataset-registry \
         fashion-mnist/images.tar.gz -o data/images.tar.gz
 
-pushd data
-tar -xvzf images.tar.gz 
-rm -f images.tar.gz 
-popd 
-
-# WARNING: We don't add images.tar.gz to neither Git nor DVC here
-# git add . operation will add all 70000 images to the repository
-
-# Tutorial should start here
 dvc init
 
 tag_tick
@@ -104,11 +95,11 @@ git add .dvc
 git commit -m "Initialized DVC"
 git tag -a "dvc-init" -m "Initialized DVC"
 
-
-dvc add data/images
+# We add zipped file here and extracted directory below
+dvc add data/images.tar.gz
 tag_tick
-git add data/images.dvc data/.gitignore
-git commit -m "Added Fashion-MNIST images"
+git add data/images.tar.gz.dvc data/.gitignore
+git commit -m "Added Fashion-MNIST images in tar.gz format"
 git tag -a "added-data" -m "Fashion-MNIST data file added."
 
 tag_tick
@@ -124,6 +115,18 @@ dvc remote add --default storage https://remote.dvc.org/get-started-experiments
 git add .dvc
 git commit -m "Added DVC remote"
 git tag -a "configured-remote" -m "Added DVC remote"
+
+git tag -a "get-started" -m "Beginning of Get Started with Experiments"
+
+pushd data
+tar -xvzf images.tar.gz 
+popd 
+tag_tick
+dvc add data/images 
+git add data/images.dvc data/.gitignore
+git commit -m "Added Fashion-MNIST images directory"
+git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
+
 
 dvc exp run
 tag_tick
