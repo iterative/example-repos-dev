@@ -41,6 +41,12 @@ pushd "${REPO_ROOT}"
 
 
 add_main_pipeline() {
+
+    dvc stage add -n extract \
+	    -d data/images.tar.gz \
+            -o data/images/ \
+	    tar -xvzf data/images.tar.gz --directory data
+ 
     mkdir -p models
 
     dvc stage add -n train \
@@ -95,7 +101,6 @@ git add .dvc
 git commit -m "Initialized DVC"
 git tag -a "dvc-init" -m "Initialized DVC"
 
-# We add zipped file here and extracted directory below
 dvc add data/images.tar.gz
 tag_tick
 git add data/images.tar.gz.dvc data/.gitignore
@@ -118,15 +123,16 @@ git tag -a "configured-remote" -m "Added DVC remote"
 
 git tag -a "get-started" -m "Beginning of Get Started with Experiments"
 
-pushd data
-tar -xvzf images.tar.gz 
-popd 
-tag_tick
-dvc add data/images 
-git add data/images.dvc data/.gitignore
-git commit -m "Added Fashion-MNIST images directory"
-git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
-
+# We added the following to the pipeline
+# pushd data
+# tar -xvzf images.tar.gz 
+# popd 
+# tag_tick
+# dvc add data/images 
+# git add data/images.dvc data/.gitignore
+# git commit -m "Added Fashion-MNIST images directory"
+# git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
+# 
 
 dvc exp run
 tag_tick
