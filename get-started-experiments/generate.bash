@@ -44,7 +44,7 @@ add_main_pipeline() {
 
     dvc stage add -n extract \
 	    -d data/images.tar.gz \
-            -o data/images/ \
+            --outs-no-cache data/images/ \
 	    tar -xvzf data/images.tar.gz --directory data
  
     mkdir -p models
@@ -54,7 +54,7 @@ add_main_pipeline() {
                 -d src/train.py \
                 -p model.conv_units \
                 -p train.epochs \
-                -o models/model.h5 \
+                --outs-no-cache models/model.h5 \
                 --plots-no-cache logs.csv \
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
