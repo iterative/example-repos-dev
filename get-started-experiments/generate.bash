@@ -44,9 +44,12 @@ add_main_pipeline() {
 
     dvc stage add -n extract \
 	    -d data/images.tar.gz \
-            --outs-no-cache data/images/ \
+        --outs-no-cache data/images/ \
 	    tar -xvzf data/images.tar.gz --directory data
- 
+    # The following is not added automatically as we use --no-cache
+
+    echo "/images/" >> data/.gitignore
+
     mkdir -p models
 
     dvc stage add -n train \
@@ -74,7 +77,7 @@ pip install 'dvc[all]'
 
 git init
 git checkout -b main
-cp $HERE/code-experiments/README.md "${REPO_PATH}" 
+cp $HERE/code-experiments/README.md "${REPO_PATH}"
 cp $HERE/code-experiments/.gitignore "${REPO_PATH}"
 tag_tick
 git add .gitignore README.md
@@ -109,7 +112,7 @@ git tag -a "added-data" -m "Fashion-MNIST data file added."
 
 tag_tick
 add_main_pipeline
-git add dvc.yaml 
+git add dvc.yaml
 git commit -m "Added experiments pipeline"
 git tag -a "created-pipeline" -m "Experiments pipeline added."
 
@@ -125,19 +128,19 @@ git tag -a "get-started" -m "Beginning of Get Started with Experiments"
 
 # We added the following to the pipeline
 # pushd data
-# tar -xvzf images.tar.gz 
-# popd 
+# tar -xvzf images.tar.gz
+# popd
 # tag_tick
-# dvc add data/images 
+# dvc add data/images
 # git add data/images.dvc data/.gitignore
 # git commit -m "Added Fashion-MNIST images directory"
 # git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
-# 
+#
 
 dvc exp run
 tag_tick
 echo "model.h5" >> models/.gitignore
-git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json 
+git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
 git tag -a "baseline-experiment" -m "Baseline experiment"
 
@@ -150,7 +153,7 @@ dvc exp run --run-all --jobs 2
 
 dvc exp show --no-pager
 
-git status 
+git status
 
 PUSH_SCRIPT="${REPO_ROOT}/push-${PROJECT_NAME}.bash"
 
@@ -166,11 +169,11 @@ set -veux
 pushd ${REPO_PATH}
 
 dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
-dvc push 
+dvc push
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
   # Delete all tags in the remote
-for tag in \$(git ls-remote --tags origin | grep -v '{}$' | cut -c 52-) ; do 
+for tag in \$(git ls-remote --tags origin | grep -v '{}$' | cut -c 52-) ; do
     git push -v origin --delete \${tag}
 done
 git push --force origin --all --follow-tags
@@ -187,11 +190,11 @@ cat << EOF
 ### REPOSITORY GENERATION DONE ###
 ##################################
 
-Repositories are in: 
+Repositories are in:
 
 ${REPO_ROOT}
 
-Push scripts are written to: 
+Push scripts are written to:
 $(ls -1 ${REPO_ROOT}/*.bash)
 
 You may remove the generated repo with:
