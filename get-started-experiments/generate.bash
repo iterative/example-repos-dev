@@ -62,6 +62,8 @@ add_main_pipeline() {
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
 
+    echo "model.h5" >> models/.gitignore
+
 }
 
 export REPO_PATH="${REPO_ROOT}/${PROJECT_NAME}"
@@ -112,7 +114,7 @@ git tag -a "added-data" -m "Fashion-MNIST data file added."
 
 tag_tick
 add_main_pipeline
-git add dvc.yaml
+git add dvc.yaml data/.gitignore models/.gitignore
 git commit -m "Added experiments pipeline"
 git tag -a "created-pipeline" -m "Experiments pipeline added."
 
