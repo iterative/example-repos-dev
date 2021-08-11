@@ -84,7 +84,7 @@ cp $HERE/code-experiments/.gitignore "${REPO_PATH}"
 tag_tick
 git add .gitignore README.md
 git commit -m "Initialized Git"
-git tag -a "git-init" -m "Initialized Git"
+git tag "git-init"
 
 cp -r "${HERE}"/code-experiments/src .
 cp "${HERE}"/code-experiments/requirements.txt .
@@ -93,7 +93,7 @@ pip install -r "${REPO_PATH}"/requirements.txt
 tag_tick
 git add .
 git commit -m "Added source and params"
-git tag -a "source-code" -m "Added source code and parameters"
+git tag "source-code"
 
 test -d data/ || mkdir -p data/
 dvc get https://github.com/iterative/dataset-registry \
@@ -104,19 +104,19 @@ dvc init
 tag_tick
 git add .dvc
 git commit -m "Initialized DVC"
-git tag -a "dvc-init" -m "Initialized DVC"
+git tag "dvc-init"
 
 dvc add data/images.tar.gz
 tag_tick
 git add data/images.tar.gz.dvc data/.gitignore
 git commit -m "Added Fashion-MNIST images in tar.gz format"
-git tag -a "added-data" -m "Fashion-MNIST data file added."
+git tag "added-data"
 
 tag_tick
 add_main_pipeline
 git add dvc.yaml data/.gitignore models/.gitignore
 git commit -m "Added experiments pipeline"
-git tag -a "created-pipeline" -m "Experiments pipeline added."
+git tag "created-pipeline"
 
 tag_tick
 # Remote active on this env only, for writing to HTTP redirect below.
@@ -124,9 +124,9 @@ dvc remote add --default --local storage s3://dvc-public/remote/get-started-expe
 dvc remote add --default storage https://remote.dvc.org/get-started-experiments
 git add .dvc
 git commit -m "Added DVC remote"
-git tag -a "configured-remote" -m "Added DVC remote"
+git tag "configured-remote"
 
-git tag -a "get-started" -m "Beginning of Get Started with Experiments"
+git tag "get-started"
 
 # We added the following to the pipeline
 # pushd data
@@ -144,7 +144,7 @@ tag_tick
 echo "model.h5" >> models/.gitignore
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
-git tag -a "baseline-experiment" -m "Baseline experiment"
+git tag "baseline-experiment"
 
 dvc exp run -n cnn-32 --queue -S conv_units=32
 dvc exp run -n cnn-64 --queue -S conv_units=64
