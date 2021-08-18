@@ -146,10 +146,10 @@ git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
-dvc exp run -n cnn-32 --queue -S conv_units=32
-dvc exp run -n cnn-64 --queue -S conv_units=64
-dvc exp run -n cnn-96 --queue -S conv_units=96
-dvc exp run -n cnn-128 --queue -S conv_units=128
+dvc exp run -n cnn-32 --queue -S model.conv_units=32
+dvc exp run -n cnn-64 --queue -S model.conv_units=64
+dvc exp run -n cnn-96 --queue -S model.conv_units=96
+dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
 dvc exp run --run-all --jobs 2
 
@@ -174,10 +174,17 @@ dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
 dvc push
 
 git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
-  # Delete all tags in the remote
+
+# Delete all tags in the remote
 for tag in \$(git ls-remote --tags origin | grep -v '{}$' | cut -c 52-) ; do
     git push -v origin --delete \${tag}
 done
+
+# Delete all experiments in the remote
+git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
+   git push -d origin "${exppath}"
+done
+
 git push --force origin --all --follow-tags
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 popd
