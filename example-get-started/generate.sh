@@ -46,6 +46,7 @@ pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
 git init
 cp $HERE/code/README.md .
+cp $HERE/.gitattributes .
 git add .
 tick
 git commit -m "Initialize Git repository"
