@@ -5,7 +5,6 @@ import os
 import torch
 import torch.nn.functional as F
 import torchvision
-import yaml
 
 EPOCHS = 10
 
@@ -100,7 +99,7 @@ def main():
     x_test, y_test = transform(mnist_test)
     try:
         # Iterate over training epochs.
-        for epoch in range(dvclive.get_step(), dvclive.get_step() + EPOCHS):
+        for epoch in range(1, 1 + EPOCHS):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
                 dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True

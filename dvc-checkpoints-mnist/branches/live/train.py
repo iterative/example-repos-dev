@@ -1,12 +1,11 @@
 """Model training and evaluation."""
-import json
+import itertools
 import os
 
 import dvclive
 import torch
 import torch.nn.functional as F
 import torchvision
-import yaml
 
 
 class ConvNet(torch.nn.Module):
