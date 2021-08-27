@@ -19,7 +19,7 @@ This repo has several
 [branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) that
 show different methods for using checkpoints (using a similar pipeline):
 
-- The [live](https://github.com/iterative/dvc-checkpoints-mnist/edit/live)
+- The [live](https://github.com/iterative/dvc-checkpoints-mnist/tree/live)
   scenario introduces full-featured checkpoint usage — integrating with
   [DVCLive](https://github.com/iterative/dvclive).
 - The [basic](https://github.com/iterative/dvc-checkpoints-mnist/tree/basic)
@@ -50,16 +50,16 @@ To try it out for yourself:
 
 ## Experimenting
 
-Start training the model with `dvc exp run`. It will train for 10 epochs (you
-can use `Ctrl-C` to cancel at any time and still recover the results of the
-completed epochs), each of which will generate a checkpoint.
+Start training the model with `dvc exp run`. It will train for an unlimited
+number of epochs, each of which will generate a checkpoint. Use `Ctrl-C` to stop
+at the last checkpoint, and simply `dvc exp run` again to resume.
 
-Dvclive will track performance at each checkpoint. Open `logs.html` in your web
-browser during training to track performance over time (you will need to refresh
-after each epoch completes to see updates). Metrics will also be logged to
-`.tsv` files in the `logs` directory.
+DVCLive will track performance at each checkpoint. Open `dvclive.html` in your
+web browser during training to track performance over time (you will need to
+refresh after each epoch completes to see updates). Metrics will also be logged
+to `.tsv` files in the `dvclive` directory.
 
-Once the training script completes, you can view the results of the experiment
+Once you stop the training script, you can view the results of the experiment
 with:
 
 ```bash
@@ -90,18 +90,23 @@ You can manage it like any other DVC
 * Run `dvc exp run --reset` to drop all the existing checkpoints and start from
   scratch.
 
-## Adding dvclive checkpoints to a DVC project
+## Adding `dvclive` checkpoints to a DVC project
 
-Using dvclive to add checkpoints to a DVC project requires a few additional
+Using `dvclive` to add checkpoints to a DVC project requires a few additional
 lines of code.
 
 In your training script, use `dvclive.log()` to log metrics and
-`dvclive.next_step()` to make a checkpoint with those metrics. See the
-[train.py](train.py) script for an example:
+`dvclive.next_step()` to make a checkpoint with those metrics.
+If you need the current epoch number, use `dvclive.get_step()` (e.g.
+to use a [learning rate
+schedule](https://en.wikipedia.org/wiki/Learning_rate#Learning_rate_schedule)
+or stop training after a fixed number of epochs). See the
+[train.py](https://github.com/iterative/dvc-checkpoints-mnist/blob/live/train.py)
+script for an example:
 
 ```python
     # Iterate over training epochs.
-    for i in range(1, EPOCHS+1):
+    for epoch in itertools.count(dvclive.get_step()):
         train(model, x_train, y_train)
         torch.save(model.state_dict(), "model.pt")
         # Evaluate and checkpoint.
@@ -112,7 +117,9 @@ In your training script, use `dvclive.log()` to log metrics and
 ```
 
 Then, in `dvc.yaml`, add the `checkpoint: true` option to your model output and
-a `live` section to your stage output. See [dvc.yaml](dvc.yaml) for an example:
+a `live` section to your stage output. See
+[dvc.yaml](https://github.com/iterative/dvc-checkpoints-mnist/blob/live/dvc.yaml)
+for an example:
 
 ```yaml
 stages:
@@ -124,7 +131,7 @@ stages:
     - model.pt:
         checkpoint: true
     live:
-      logs:
+      dvclive:
         summary: true
         html: true
 ```
@@ -133,9 +140,9 @@ If you do not already have a `dvc.yaml` stage, you can use [dvc stage
 add](https://dvc.org/doc/command-reference/stage/add) to create it:
 
 ```bash
-$ dvc stage add -n train -d train.py -c model.pt --live logs python train.py
+$ dvc stage add -n train -d train.py -c model.pt --live dvclive python train.py
 ```
 
 That's it! For users already familiar with logging metrics in DVC, note that you
-no longer need a `metrics` section in `dvc.yaml` since dvclive is already
+no longer need a `metrics` section in `dvc.yaml` since `dvclive` is already
 logging metrics.
