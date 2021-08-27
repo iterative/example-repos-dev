@@ -80,7 +80,7 @@ def main():
     if os.path.exists("model.pt"):
         model.load_state_dict(torch.load("model.pt"))
     # Load train and test data.
-    mnist_train = torchvision.datasets.MNIST("data", download=True)
+    mnist_train = torchvision.datasets.MNIST("data", download=True, train=True)
     x_train, y_train = transform(mnist_train)
     mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
