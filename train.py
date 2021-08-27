@@ -1,29 +1,31 @@
 """Model training and evaluation."""
 import json
-import yaml
 import os
+
 import torch
 import torch.nn.functional as F
 import torchvision
-import dvclive
+import yaml
 
+import dvclive
 
 
 class ConvNet(torch.nn.Module):
     """Toy convolutional neural net."""
+
     def __init__(self):
         super().__init__()
         self.conv1 = torch.nn.Conv2d(1, 8, 3, padding=1)
         self.maxpool1 = torch.nn.MaxPool2d(2)
         self.conv2 = torch.nn.Conv2d(8, 16, 3, padding=1)
-        self.dense1 = torch.nn.Linear(16*14*14, 32)
+        self.dense1 = torch.nn.Linear(16 * 14 * 14, 32)
         self.dense2 = torch.nn.Linear(32, 10)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.maxpool1(x)
         x = F.relu(self.conv2(x))
-        x = x.view(-1, 16*14*14)
+        x = x.view(-1, 16 * 14 * 14)
         x = F.relu(self.dense1(x))
         x = self.dense2(x)
         return x
@@ -31,7 +33,7 @@ class ConvNet(torch.nn.Module):
 
 def transform(dataset):
     """Get inputs and targets from dataset."""
-    x = dataset.data.reshape(len(dataset.data), 1, 28, 28)/255
+    x = dataset.data.reshape(len(dataset.data), 1, 28, 28) / 255
     y = dataset.targets
     return x, y
 
@@ -60,7 +62,7 @@ def get_metrics(y, y_pred, y_pred_label):
     """Get loss and accuracy metrics."""
     metrics = {}
     criterion = torch.nn.CrossEntropyLoss()
-    metrics["acc"] = (y_pred_label == y).sum().item()/len(y)
+    metrics["acc"] = (y_pred_label == y).sum().item() / len(y)
     return metrics
 
 
@@ -89,9 +91,8 @@ def main():
         for epoch in itertools.count(dvclive.get_step()):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
-                    dataset=list(zip(x_train, y_train)),
-                    batch_size=512,
-                    shuffle=True)
+                dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True
+            )
             for x_batch, y_batch in train_loader:
                 train(model, x_batch, y_batch)
             torch.save(model.state_dict(), "model.pt")
