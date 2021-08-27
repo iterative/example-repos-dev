@@ -95,9 +95,12 @@ You can manage it like any other DVC
 Using `dvclive` to add checkpoints to a DVC project requires a few additional
 lines of code.
 
-In your training script, use `dvclive.get_step()` for the current step number;
-`dvclive.log()` to log metrics, and `dvclive.next_step()` to make a checkpoint
-with those metrics. See the
+In your training script, use `dvclive.log()` to log metrics and
+`dvclive.next_step()` to make a checkpoint with those metrics.
+If you need the current epoch number, use `dvclive.get_step()` (e.g.
+to use a [learning rate
+schedule](https://en.wikipedia.org/wiki/Learning_rate#Learning_rate_schedule)
+or stop training after a fixed number of epochs). See the
 [train.py](https://github.com/iterative/dvc-checkpoints-mnist/blob/live/train.py)
 script for an example:
 
