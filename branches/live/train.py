@@ -2,12 +2,11 @@
 import json
 import os
 
+import dvclive
 import torch
 import torch.nn.functional as F
 import torchvision
 import yaml
-
-import dvclive
 
 
 class ConvNet(torch.nn.Module):
