@@ -8,8 +8,6 @@ import torchvision
 import dvclive
 
 
-EPOCHS = 10
-
 
 class ConvNet(torch.nn.Module):
     """Toy convolutional neural net."""
@@ -88,7 +86,7 @@ def main():
     x_test, y_test = transform(mnist_test)
     try:
         # Iterate over training epochs.
-        for i in range(1, EPOCHS+1):
+        for epoch in itertools.count(dvclive.get_step()):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
                     dataset=list(zip(x_train, y_train)),
