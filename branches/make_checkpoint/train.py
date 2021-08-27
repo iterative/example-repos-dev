@@ -90,7 +90,7 @@ def main():
     x_test, y_test = transform(mnist_test)
     try:
         # Iterate over training epochs.
-        for i in range(1, EPOCHS + 1):
+        for epoch in range(dvclive.get_step(), dvclive.get_step() + EPOCHS):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
                 dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True

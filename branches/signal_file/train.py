@@ -75,6 +75,17 @@ def evaluate(model, x, y):
         json.dump(metrics, f)
 
 
+def make_checkpoint():
+    """Generate dvc checkpoint."""
+    dvc_root = os.getenv("DVC_ROOT")  # Root dir of dvc project.
+    if dvc_root:  # Skip if not running via dvc.
+        signal_file = os.path.join(dvc_root, ".dvc", "tmp", "DVC_CHECKPOINT")
+        with open(signal_file, "w") as f:  # Write empty file.
+            f.write("")
+        while os.path.exists(signal_file):  # Wait until dvc deletes file.
+            pass
+
+
 def main():
     """Train model and evaluate on test data."""
     torch.manual_seed(0)
@@ -83,13 +94,13 @@ def main():
     if os.path.exists("model.pt"):
         model.load_state_dict(torch.load("model.pt"))
     # Load train and test data.
-    mnist_train = torchvision.datasets.MNIST("data", download=True)
+    mnist_train = torchvision.datasets.MNIST("data", download=True, train=True)
     x_train, y_train = transform(mnist_train)
     mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
     try:
         # Iterate over training epochs.
-        for i in range(1, EPOCHS + 1):
+        for epoch in range(dvclive.get_step(), dvclive.get_step() + EPOCHS):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
                 dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True
@@ -99,14 +110,7 @@ def main():
             torch.save(model.state_dict(), "model.pt")
             # Evaluate and checkpoint.
             evaluate(model, x_test, y_test)
-            # Generate dvc checkpoint.
-            dvc_root = os.getenv("DVC_ROOT")  # Root dir of dvc project.
-            if dvc_root:  # Skip if not running via dvc.
-                signal_file = os.path.join(dvc_root, ".dvc", "tmp", "DVC_CHECKPOINT")
-                with open(signal_file, "w") as f:  # Write empty file.
-                    f.write("")
-                while os.path.exists(signal_file):  # Wait until dvc deletes file.
-                    pass
+            make_checkpoint()
     except KeyboardInterrupt:
         pass
 

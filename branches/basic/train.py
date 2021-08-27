@@ -85,7 +85,7 @@ def main():
     x_train, y_train = transform(mnist_train)
     mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
-    # Train model in batches.
+    # Train in batches.
     train_loader = torch.utils.data.DataLoader(
         dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True
     )

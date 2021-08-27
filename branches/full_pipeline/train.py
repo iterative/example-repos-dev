@@ -94,13 +94,13 @@ def main():
         params = yaml.safe_load(f)
     torch.manual_seed(params["seed"])
     # Load train and test data.
-    mnist_train = torchvision.datasets.MNIST("data")
+    mnist_train = torchvision.datasets.MNIST("data", download=True, train=True)
     x_train, y_train = transform(mnist_train)
-    mnist_test = torchvision.datasets.MNIST("data", train=False)
+    mnist_test = torchvision.datasets.MNIST("data", download=True, train=False)
     x_test, y_test = transform(mnist_test)
     try:
         # Iterate over training epochs.
-        for i in range(1, EPOCHS + 1):
+        for epoch in range(dvclive.get_step(), dvclive.get_step() + EPOCHS):
             # Train in batches.
             train_loader = torch.utils.data.DataLoader(
                 dataset=list(zip(x_train, y_train)), batch_size=512, shuffle=True
@@ -110,8 +110,8 @@ def main():
             torch.save(model.state_dict(), "model.pt")
             # Evaluate and checkpoint.
             metrics = evaluate(model, x_test, y_test)
-            for k, v in metrics.items():
-                dvclive.log(k, v)
+            for metric, value in metrics.items():
+                dvclive.log(metric, value)
             dvclive.next_step()
     except KeyboardInterrupt:
         pass
