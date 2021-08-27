@@ -1,0 +1,4 @@
+dvc>=2.0.0a0
+dvclive
+torch
+torchvision>=0.9.1
