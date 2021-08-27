@@ -19,7 +19,7 @@ This repo has several
 [branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) that
 show different methods for using checkpoints (using a similar pipeline):
 
-- The [live](https://github.com/iterative/dvc-checkpoints-mnist/edit/live)
+- The [live](https://github.com/iterative/dvc-checkpoints-mnist/tree/live)
   scenario introduces full-featured checkpoint usage — integrating with
   [DVCLive](https://github.com/iterative/dvclive).
 - The [basic](https://github.com/iterative/dvc-checkpoints-mnist/tree/basic)
@@ -45,13 +45,17 @@ show different methods for using checkpoints (using a similar pipeline):
 To try it out for yourself:
 
 1. Fork the repository and clone to your local workstation.
-2. Install the prerequisites in `requirements.txt` (if you are using pip, run `pip install -r requirements.txt`).
+2. Install the prerequisites in `requirements.txt` (if you are using pip, run
+   `pip install -r requirements.txt`).
 
 ## Experiment with checkpoints
 
-Start training the model with `dvc exp run`. It will train for 10 epochs (you can also use `Ctrl-C` to cancel at any time and still recover the results of the completed epochs).
+Start training the model with `dvc exp run`. This will train for 10 epochs (you
+can also use `Ctrl-C` to cancel at any time and still recover the results of
+the completed epochs).
 
-Once the training script completes, you can view the results of each checkpoint with:
+Once the training script completes, you can view the results of each checkpoint
+with:
 
 ```bash
 $ dvc exp show
@@ -73,16 +77,21 @@ $ dvc exp show
 └───────────────┴──────────┴────────┘
 ```
 
-You can also:
+You can manage this like any other DVC
+[experiment](https://dvc.org/doc/start/experiments), including:
 * Run `dvc exp run` again to continue training from the last checkpoint.
-* Run `dvc exp apply [checkpoint_id]` to revert to any of the prior checkpoints (which will update the `model.pt` output file and metrics to that point).
-* Run `dvc exp run --reset` to drop all the existing checkpoints and start from scratch.
+* Run `dvc exp apply [checkpoint_id]` to revert to any of the prior checkpoints
+  (which will update the `model.pt` output file and metrics to that point).
+* Run `dvc exp run --reset` to drop all the existing checkpoints and start from
+  scratch.
 
 ## How to add checkpoints to your DVC project
 
 Adding checkpoints to a DVC project requires a few additional lines of code.
 
-In your script that reports metrics, add the `make_checkpoint()` function to be called whenever you want to record a checkpoint (every model epoch in this case, but it can be less frequently if you want less noise):
+In your script that reports metrics, add the `make_checkpoint()` function to be
+called whenever you want to record a checkpoint (every model epoch in this case,
+but it can be less frequently if you want less noise):
 
 ```diff
 --- a/train.py

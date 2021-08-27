@@ -19,7 +19,7 @@ This repo has several
 [branches](https://github.com/iterative/dvc-checkpoints-mnist/branches) that
 show different methods for using checkpoints (using a similar pipeline):
 
-- The [live](https://github.com/iterative/dvc-checkpoints-mnist/edit/live)
+- The [live](https://github.com/iterative/dvc-checkpoints-mnist/tree/live)
   scenario introduces full-featured checkpoint usage — integrating with
   [DVCLive](https://github.com/iterative/dvclive).
 - The [basic](https://github.com/iterative/dvc-checkpoints-mnist/tree/basic)
@@ -54,10 +54,10 @@ Start training the model with `dvc exp run`. It will train for 10 epochs (you
 can use `Ctrl-C` to cancel at any time and still recover the results of the
 completed epochs), each of which will generate a checkpoint.
 
-Dvclive will track performance at each checkpoint. Open `logs.html` in your web
-browser during training to track performance over time (you will need to refresh
-after each epoch completes to see updates). Metrics will also be logged to
-`.tsv` files in the `logs` directory.
+DVCLive will track performance at each checkpoint. Open `dvclive.html` in your
+web browser during training to track performance over time (you will need to
+refresh after each epoch completes to see updates). Metrics will also be logged
+to `.tsv` files in the `dvclive` directory.
 
 Once the training script completes, you can view the results of the experiment
 with:
@@ -82,17 +82,17 @@ $ dvc exp show
 └───────────────┴──────────┴──────┴────────┘
 ```
 
-You can manage it like any other DVC
-[experiments](https://dvc.org/doc/start/experiments), including:
+You can manage this like any other DVC
+[experiment](https://dvc.org/doc/start/experiments), including:
 * Run `dvc exp run` again to continue training from the last checkpoint.
 * Run `dvc exp apply [checkpoint_id]` to revert to any of the prior checkpoints
   (which will update the `model.pt` output file and metrics to that point).
 * Run `dvc exp run --reset` to drop all the existing checkpoints and start from
   scratch.
 
-## Adding dvclive checkpoints to a DVC project
+## Adding `dvclive` checkpoints to a DVC project
 
-Using dvclive to add checkpoints to a DVC project requires a few additional
+Using `dvclive` to add checkpoints to a DVC project requires a few additional
 lines of code.
 
 In your training script, use `dvclive.log()` to log metrics and

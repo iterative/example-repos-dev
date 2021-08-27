@@ -50,7 +50,7 @@ To try it out for yourself:
 
 ## Experimenting
 
-Start training the model with `dvc exp run`. It will train for an unlimited
+Start training the model with `dvc exp run`. This will train for an unlimited
 number of epochs, each of which will generate a checkpoint. Use `Ctrl-C` to stop
 at the last checkpoint, and simply `dvc exp run` again to resume.
 
@@ -82,8 +82,8 @@ $ dvc exp show
 └───────────────┴──────────┴──────┴────────┘
 ```
 
-You can manage it like any other DVC
-[experiments](https://dvc.org/doc/start/experiments), including:
+You can manage this like any other DVC
+[experiment](https://dvc.org/doc/start/experiments), including:
 * Run `dvc exp run` again to continue training from the last checkpoint.
 * Run `dvc exp apply [checkpoint_id]` to revert to any of the prior checkpoints
   (which will update the `model.pt` output file and metrics to that point).
