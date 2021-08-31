@@ -1,0 +1,5 @@
+train:
+  epochs: 10
+model: 
+  conv_units: 16
+

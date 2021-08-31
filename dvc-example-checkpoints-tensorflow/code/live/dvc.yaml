@@ -1,0 +1,23 @@
+stages:
+  extract:
+    cmd: tar -xvzf data/images.tar.gz --directory data
+    deps:
+    - data/images.tar.gz
+    outs:
+    - data/images/:
+        cache: false
+  train:
+    cmd: python3 src/train.py
+    deps:
+    - data/images/
+    - src/train.py
+    params:
+    - model.conv_units
+    - train.epochs
+    outs:
+    - models/model.h5:
+        checkpoint: true
+    live:
+      dvclive:
+        summary: true
+        html: true
