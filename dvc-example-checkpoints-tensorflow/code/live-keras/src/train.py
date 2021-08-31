@@ -3,7 +3,6 @@ import numpy as np
 from util import load_params, read_labeled_images
 import os
 import json
-import dvclive
 from  dvclive.keras import DvcLiveCallback
 
 
@@ -101,7 +100,6 @@ def main():
 
     epochs = params["train"]["epochs"]
     model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    dvclive.init("training_metrics")
     dvclivecb = DvcLiveCallback(model_file=model_file)
     if epochs == 0:
         while True:

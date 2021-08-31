@@ -42,6 +42,7 @@ pip install 'dvc[all]'
 git init
 git checkout -b basic
 cp -arf $HERE/code/basic/* "${REPO_PATH}"
+echo '__pycache__' >> .gitignore
 test -d data/ || mkdir -p data/
 dvc get https://github.com/iterative/dataset-registry \
         fashion-mnist/images.tar.gz -o data/images.tar.gz
@@ -55,6 +56,7 @@ git add .dvc/config
 git commit -m "configured DVC remotes"
 
 dvc add data/images.tar.gz
+echo 'images/' >> data/.gitignore
 git add data/images.tar.gz.dvc data/.gitignore
 git commit -m "added data set"
 
@@ -63,31 +65,29 @@ git commit -m "added code and requirements files for basic branch"
 git tag "basic"
 
 git checkout basic
-git checkout -b live
-cp -arf $HERE/code/live/* "${REPO_PATH}"
+git checkout -b live-keras
+cp -arf $HERE/code/live-keras/* "${REPO_PATH}"
+git add .gitignore dvc.yaml params.yaml requirements.txt src/train.py
+git commit -m "added dvclive-keras code"
 pip install -r requirements.txt
-dvc exp run -S train.epochs=3
-git status
-read
-git add *
-git commit -m "live"
+dvc exp run
+git add dvc.lock dvclive.json dvclive.html models/.gitignore
+git commit -m "after running live-keras"
 
 
 git checkout basic
-git checkout -b make-checkpoint
-cp -arf $HERE/code/make-checkpoint/* "${REPO_PATH}"
+git checkout -b python-api
+cp -arf $HERE/code/python-api/* "${REPO_PATH}"
 pip install -r requirements.txt
-dvc exp run -S train.epochs=3
-git status
-read
-git add *
+dvc exp run
+git add .gitignore dvc.lock logs.csv metrics.json models/.gitignore
 git commit -m "make-checkpoint"
 git status
 
 git checkout basic
 git checkout -b signal-file
 pip install -r requirements.txt
-dvc exp run -S train.epochs=3
+dvc exp run
 cp -arf $HERE/code/signal-file/* "${REPO_PATH}"
 git status
 read
