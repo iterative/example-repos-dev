@@ -117,7 +117,7 @@ done
 
 # Delete all experiments in the remote
 git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
-   git push -d origin "${exppath}"
+   git push -d origin "\${exppath}"
 done
 
 git push --force origin --all --follow-tags
