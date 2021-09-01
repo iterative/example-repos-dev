@@ -1,146 +1,95 @@
-## DVC Get Started with Experiments
-
+## DVC example project for checkpoints
 
 ![DVC](https://img.shields.io/badge/-tracked-white.svg?logo=data-version-control&link=https://dvc.org/?utm_campaign=badge)
 
 [![DVC](https://img.shields.io/badge/-Data_Version_Control-white.svg?logo=data-version-control&style=social)](https://dvc.org/?utm_campaign=badge)
 
-![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/get-started-experiments/raw/main/metrics.json&query=acc)
+![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/dvc-example-checkpoints-tensorflow/raw/basic/metrics.json&query=acc)
 
-This project is a showcase for [`dvc exp`](https://dvc.org/doc/start/experiments)
-commands to manage large number of experiments.  It trains a CNN on [Fashion
+This project is a showcase for the checkpoints features in DVC 2.0 and
+[`dvclive`][dvcl]. It shows how to use checkpoints in various ways by training a
+a CNN model to classify [Fashion
 MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset in Tensorflow.
 
-<details>
+[dvcl]: https://dvc.org/doc/dvclive
 
-<summary>
-### Installation Instructions
-</summary>
-
-After [installing DVC](https://dvc.org/doc/install) and cloning the repository, you can run:
+All four branches are cloned and installed similarly: 
 
 ```console
+git clone https://github.com/iterative/dvc-example-checkpoints-tensorflow -b basic
+cd dvc-example-checkpoints-tensorflow
 virtualenv .venv
 . .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-Retrieve all the required data and model files:
+You can also clone `https://github.com/iterative/dvc-example-checkpoints-tensorflow` with
+all the tags and use `git checkout` to navigate among them. 
 
-```console
-dvc pull
-```
+### Branches
 
-</details>
+- [`basic`][basict]: Shows how to use checkpoints by modifying `dvc.yaml`. 
 
-## Running Experiments
+In `dvc.yaml`, the following changes are done. You can also specify this by
+using `--checkpoints/-c` option to `dvc stage add`.
 
-You can run the experiment defined in the project.
-
-```console
-dvc exp run
-```
-
-This new command in DVC 2.0 also allows to change the parameters on the fly with `--set-param` option. 
-
-```console
-dvc exp run --set-param model.conv_units=128 
-```
-
-`params.yaml` defines two parameters to modify with `dvc exp run
---set-param/-S` option. The above command updates `params.yaml` with
-`conv_units: 128` before running the experiment. 
-
-The experiment will produce `metrics.json` along with a `models/model.h5`.
-
-You can check the changes in metrics:
-
-```console
-dvc exp diff
-```
-
-It's also possible to queue experiments with `--queue` option and run them all
-in a single batch with `--run-all`.
-
-```console
-dvc exp run --queue -S model.conv_units=32
-dvc exp run --queue -S model.conv_units=64
-dvc exp run --queue -S model.conv_units=96
-```
-
-The queued experiments can be run in parallel with `--jobs`.
-
-```console
-dvc exp run --run-all --jobs 2
-```
-
-You can get the summary of experiments with: 
-
-```console
-dvc exp show
-```
-
-Limit the parameters and metrics to show with `--include-params` and
-`--include-metrics` options, respectively.  
-
-By default experiments are given auto-generated names derived from their inputs
-and environment. It may be easier to review them when you give names with the
-`--name/-n` option.
-
-```console
-dvc exp run -n my-baseline-experiment
-```
-
-Artifacts produced by experiments are normally not checked out to the repository.
-If you want to do so, you can use:
-
-```console
-dvc exp apply exp-123456
-```
-
-where `exp-123456` is the experiment ID you see with `dvc exp show`. 
-
-Then, you can use DVC and Git commands on the artifacts and code as usual. 
-
-You can push and pull the _code changes_ related to an experiment with `dvc exp
-push` and `dvc exp pull` respectively. These two commands work with _Git
-remotes_ and [DVC remotes](https://dvc.org/doc/command-reference/remote)
-together. Changes in the text files tracked by Git are transferred from/to Git
-repositories, and binary tracked by DVC are transferred from/to DVC remotes. 
-
-You can clean up the unused experiments with:
-
-```console
-dvc exp gc --workspace
-```
-
-### Parameters
-
-There are two parameters in the project. They are set in `params.yaml`. `models.conv_units` defines the number of convolutional units in the model, and `train.epochs` sets the number of epochs to train the model. 
+[basict]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/basic
 
 ```yaml
-train:
-  - epochs: 1
-model:
-  - conv_units: 16
+    outs:
+      - models/fashion-mnist/model.h5:
+          checkpoint: true
 ```
 
-You can select these parameters in `dvc exp show` with `--include-params`.
+- [`dvclive`][dvclivet]: Shows how to use [dvclive callback] for Keras to record
+ the model and the metrics automatically in every checkpoint. 
 
-### Metrics
+[dvclive callback]: https://dvc.org/doc/dvclive/user-guide/ml-frameworks/keras
+[dvclivet]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/dvclive
 
-There are two metrics produced by the training stage. 
+```python
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        for metric, value in logs.items():
+            dvclive.log(metric, value)
+        dvclive.next_step()
+```
 
-- `loss`: Categorical Crosstentropy loss value 
-- `acc`: Categorical Accuracy metrics for the classes.
+- [`python-api`][pythonapit]: Uses [make_checkpoint()][apicp] API call in a custom Tensorflow
+  callback to record a checkpoint in `train.py`.
 
-You can select these metrics in `dvc exp show` with `--include-metrics`. 
+[pythonapit]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/python-api
+[apicp]: https://dvc.org/doc/api-reference/make_checkpoint#dvcapimake_checkpoint
 
-### Data Files
+```python
+    def on_epoch_end(self, epoch, logs=None):
+        if (epoch % self.frequency) == 0:
+            make_checkpoint()
+```
 
-The data files used in the project are found in `data/images`. All of these
-files are tracked by DVC and should be retrieved using `dvc pull` from the
-configured remote.
+- [`signal-file`][signalfilet]: This branch shows language-independent way of
+  producing checkpoints. Instead of using DVC Python API or DVClive, a signal
+  file is created to set the checkpoint. 
+
+[signalfilet]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/signal-file
+
+```python
+    def dvc_signal(self):
+        "Generates a DVC signal file and blocks until it's deleted"
+        dvc_root = os.getenv("DVC_ROOT") # Root dir of dvc project.
+        if dvc_root: # Skip if not running via dvc.
+            signal_file = os.path.join(dvc_root, ".dvc", "tmp",
+                "DVC_CHECKPOINT")
+            with open(signal_file, "w") as f: # Write empty file.
+                f.write("")
+            while os.path.exists(signal_file): # Wait until dvc deletes file.
+                # Wait 10 milliseconds
+                time.sleep(0.01)
+```
+
+You can run the experiments similar to the [examples in documentation.][gsexp]
+
+[gsexp]: https://dvc.org/doc/start/experiments
 
 ## Contributing
 
