@@ -82,7 +82,6 @@ pip install -r requirements.txt
 dvc exp run
 git add .gitignore dvc.lock logs.csv metrics.json models/.gitignore
 git commit -m "make-checkpoint"
-git status
 
 git checkout basic
 git checkout -b signal-file
@@ -90,10 +89,8 @@ pip install -r requirements.txt
 dvc exp run
 cp -arf $HERE/code/signal-file/* "${REPO_PATH}"
 git status
-read
-git add *
+git add dvc.lock logs.csv metrics.json models/.gitignore
 git commit -m "signal-file"
-git status
 
 PUSH_SCRIPT="${REPO_ROOT}/push-${PROJECT_NAME}.bash"
 
