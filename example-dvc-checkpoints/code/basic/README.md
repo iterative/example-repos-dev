@@ -4,7 +4,7 @@
 
 [![DVC](https://img.shields.io/badge/-Data_Version_Control-white.svg?logo=data-version-control&style=social)](https://dvc.org/?utm_campaign=badge)
 
-![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/dvc-example-checkpoints-tensorflow/raw/basic/metrics.json&query=acc)
+![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/dvc-example-checkpoints/raw/dvclive/metrics.json&query=acc)
 
 This project is a showcase for the checkpoints features in DVC 2.0 and
 [`dvclive`][dvcl]. It shows how to use checkpoints in various ways by training a
@@ -16,14 +16,14 @@ MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset in Tensorflow.
 All four branches are cloned and installed similarly: 
 
 ```console
-git clone https://github.com/iterative/dvc-example-checkpoints-tensorflow -b basic
-cd dvc-example-checkpoints-tensorflow
+git clone https://github.com/iterative/dvc-example-checkpoints -b basic
+cd dvc-example-checkpoints
 virtualenv .venv
 . .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-You can also clone `https://github.com/iterative/dvc-example-checkpoints-tensorflow` with
+You can also clone `https://github.com/iterative/dvc-example-checkpoints` with
 all the tags and use `git checkout` to navigate among them. 
 
 ### Branches
@@ -33,7 +33,7 @@ all the tags and use `git checkout` to navigate among them.
 In `dvc.yaml`, the following changes are done. You can also specify this by
 using `--checkpoints/-c` option to `dvc stage add`.
 
-[basict]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/basic
+[basict]: https://github.com/iterative/dvc-example-checkpoints/tree/basic
 
 ```yaml
     outs:
@@ -45,7 +45,7 @@ using `--checkpoints/-c` option to `dvc stage add`.
  the model and the metrics automatically in every checkpoint. 
 
 [dvclive callback]: https://dvc.org/doc/dvclive/user-guide/ml-frameworks/keras
-[dvclivet]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/dvclive
+[dvclivet]: https://github.com/iterative/dvc-example-checkpoints/tree/dvclive
 
 ```python
     def on_epoch_end(self, epoch, logs=None):
@@ -58,7 +58,7 @@ using `--checkpoints/-c` option to `dvc stage add`.
 - [`python-api`][pythonapit]: Uses [make_checkpoint()][apicp] API call in a custom Tensorflow
   callback to record a checkpoint in `train.py`.
 
-[pythonapit]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/python-api
+[pythonapit]: https://github.com/iterative/dvc-example-checkpoints/tree/python-api
 [apicp]: https://dvc.org/doc/api-reference/make_checkpoint#dvcapimake_checkpoint
 
 ```python
@@ -71,7 +71,7 @@ using `--checkpoints/-c` option to `dvc stage add`.
   producing checkpoints. Instead of using DVC Python API or DVClive, a signal
   file is created to set the checkpoint. 
 
-[signalfilet]: https://github.com/iterative/dvc-example-checkpoints-tensorflow/tree/signal-file
+[signalfilet]: https://github.com/iterative/dvc-example-checkpoints/tree/signal-file
 
 ```python
     def dvc_signal(self):
