@@ -79,16 +79,16 @@ pip install 'dvc[all]'
 
 git init
 git checkout -b main
-cp $HERE/code-experiments/README.md "${REPO_PATH}"
-cp $HERE/code-experiments/.gitignore "${REPO_PATH}"
+cp $HERE/code/README.md "${REPO_PATH}"
+cp $HERE/code/.gitignore "${REPO_PATH}"
 tag_tick
 git add .gitignore README.md
 git commit -m "Initialized Git"
 git tag "git-init"
 
-cp -r "${HERE}"/code-experiments/src .
-cp "${HERE}"/code-experiments/requirements.txt .
-cp "${HERE}"/code-experiments/params.yaml .
+cp -r "${HERE}"/code/src .
+cp "${HERE}"/code/requirements.txt .
+cp "${HERE}"/code/params.yaml .
 pip install -r "${REPO_PATH}"/requirements.txt
 tag_tick
 git add .
