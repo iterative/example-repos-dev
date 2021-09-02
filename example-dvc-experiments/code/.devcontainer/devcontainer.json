@@ -1,5 +1,5 @@
 {
-    "name": "experiments-get-started",
+    "name": "example-dvc-experiments",
     "build": {
         "dockerfile": "Dockerfile"
     }
