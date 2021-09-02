@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-PROJECT_NAME="dvc-example-checkpoints-tensorflow"
+PROJECT_NAME="example-dvc-checkpoints"
 REPO_NAME="$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
