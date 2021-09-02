@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-PROJECT_NAME="get-started-experiments"
+PROJECT_NAME="example-dvc-experiments"
 REPO_NAME="$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
@@ -43,9 +43,9 @@ pushd "${REPO_ROOT}"
 add_main_pipeline() {
 
     dvc stage add -n extract \
-	    -d data/images.tar.gz \
+        -d data/images.tar.gz \
         --outs-no-cache data/images/ \
-	    tar -xvzf data/images.tar.gz --directory data
+        tar -xvzf data/images.tar.gz --directory data
     # The following is not added automatically as we use --no-cache
 
     echo "/images/" >> data/.gitignore
@@ -120,8 +120,8 @@ git tag "created-pipeline"
 
 tag_tick
 # Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add --default --local storage s3://dvc-public/remote/get-started-experiments
-dvc remote add --default storage https://remote.dvc.org/get-started-experiments
+dvc remote add --default --local storage s3://dvc-public/remote/example-dvc-experiments
+dvc remote add --default storage https://remote.dvc.org/example-dvc-experiments
 git add .dvc
 git commit -m "Added DVC remote"
 git tag "configured-remote"
@@ -182,7 +182,7 @@ done
 
 # Delete all experiments in the remote
 git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
-   git push -d origin "${exppath}"
+   git push -d origin "\${exppath}"
 done
 
 git push --force origin --all --follow-tags
