@@ -1,11 +1,11 @@
-## DVC Get Started with Experiments
+## Example Project for DVC Experiments
 
 
 ![DVC](https://img.shields.io/badge/-tracked-white.svg?logo=data-version-control&link=https://dvc.org/?utm_campaign=badge)
 
 [![DVC](https://img.shields.io/badge/-Data_Version_Control-white.svg?logo=data-version-control&style=social)](https://dvc.org/?utm_campaign=badge)
 
-![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/get-started-experiments/raw/main/metrics.json&query=acc)
+![](https://img.shields.io/badge/dynamic/json?logo=data-version-control&colorA=black&colorB=F46737&label=Model%20Accuracy&url=https://github.com/iterative/example-dvc-experiments/raw/main/metrics.json&query=acc)
 
 This project is a showcase for [`dvc exp`](https://dvc.org/doc/start/experiments)
 commands to manage large number of experiments.  It trains a CNN on [Fashion

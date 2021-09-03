@@ -37,6 +37,6 @@ $ ./deploy.sh
   > If you change the [source code](code/src/) files in this repo, run
   > `deploy.sh` first, to make sure that the `code.zip` archive is up to date.
 
-### get-started-experiments
+### example-dvc-experiments
 
-- `generate.sh`: Generates the [repository](https://github.com/iterative/get-started-experiments) for _Get Started with Experiments_.  It creates a new project in `get-started-experiments/build/YYYY-MM-DD-HH-MM-SS/get-started-experiments` and an accompanying script to push the repository to DVC and Git. The generated repository uses `s3://dvc-public/remote/get-started-experiments/` as a DVC remote.
+- `generate.sh`: Generates the [repository](https://github.com/iterative/example-dvc-experiments) for _Get Started with Experiments_.  It creates a new project in `example-dvc-experiments/build/YYYY-MM-DD-HH-MM-SS/example-dvc-experiments` and an accompanying script to push the repository to DVC and Git. The generated repository uses `s3://dvc-public/remote/example-dvc-experiments/` as a DVC remote.
