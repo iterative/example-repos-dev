@@ -78,7 +78,6 @@ pip install 'dvc[all]'
 
 git init
 git checkout -b main
-<<<<<<< HEAD:example-dvc-experiments/generate.bash
 cp $HERE/code/README.md "${REPO_PATH}"
 cp $HERE/code/.gitignore "${REPO_PATH}"
 tag_tick
