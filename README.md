@@ -13,6 +13,21 @@ will run:
 - [Python](https://www.python.org/) 3 (with `python3` and [pip](https://pypi.org/project/pip/) commands)
 - [Virtualenv](https://virtualenv.pypa.io/en/stable/)
 
+## Naming Convention for Example Repositories
+
+In order to have a consistent naming scheme across all example repositories, the
+new repositories should be named as:
+
+```
+example-PROD-FEATURE
+```
+
+where `PROD` is one of the products like `dvc`, `cml`, `studio`, or `dvclive`, and `FEATURE` is
+the feature that the repository focused on, like `experiments`, or `pipelines`.
+You can also use additional keywords as suffix to differentiate from the others.
+
+⚠️ Please create all new repositories with the prefix `example-`.
+
 ## Scripts
 
 Each example DVC project is in each of the root directories (below). `cd` into
