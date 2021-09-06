@@ -80,6 +80,7 @@ pip install 'dvc[all]'
 git init
 git checkout -b main
 cp $HERE/code/README.md "${REPO_PATH}"
+cp $HERE/.gitattributes "${REPO_PATH}"
 cp $HERE/code/.gitignore "${REPO_PATH}"
 tag_tick
 git add .gitignore README.md
