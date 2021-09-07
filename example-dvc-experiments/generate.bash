@@ -62,8 +62,6 @@ add_main_pipeline() {
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
 
-    echo "model.h5" >> models/.gitignore
-
 }
 
 export REPO_PATH="${REPO_ROOT}/${PROJECT_NAME}"
@@ -142,7 +140,6 @@ git tag "get-started"
 
 dvc exp run
 tag_tick
-echo "model.h5" >> models/.gitignore
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
