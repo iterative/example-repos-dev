@@ -127,17 +127,6 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-# We added the following to the pipeline
-# pushd data
-# tar -xvzf images.tar.gz
-# popd
-# tag_tick
-# dvc add data/images
-# git add data/images.dvc data/.gitignore
-# git commit -m "Added Fashion-MNIST images directory"
-# git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
-#
-
 dvc exp run
 tag_tick
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
