@@ -55,3 +55,22 @@ $ ./deploy.sh
 ### example-dvc-experiments
 
 - `generate.sh`: Generates the [repository](https://github.com/iterative/example-dvc-experiments) for _Get Started with Experiments_.  It creates a new project in `example-dvc-experiments/build/YYYY-MM-DD-HH-MM-SS/example-dvc-experiments` and an accompanying script to push the repository to DVC and Git. The generated repository uses `s3://dvc-public/remote/example-dvc-experiments/` as a DVC remote.
+
+### example-studio-all-fashion-mnist
+
+- `generator.sh`: Generates the `fashion-mnist` DVC project from scratch.
+    
+    Mandatory arguments to `generator.sh` are:
+    1. Git account or org name (eg, tapadipti)
+    2. Repo name (eg, fashion_mnist)
+    3. Git author name (eg, tapadipti)
+    4. Git author email (eg, tapadipti@gmail.com)
+    5. DVC remote URL (eg, s3://mydvc/tapa)
+  
+  Eg, `sh generator.sh tapadipti fashion_mnist tapadipti tapadipti@gmail.com s3://mydvc/tapa`
+  
+  The repo will be created at https://github.com/GIT_ACC_OR_ORG/REPO_NAME (eg, https://github.com/tapadipti/fashion_mnist).
+  
+  If this repo already exists, it will be replaced by the new one - so make sure that you don't need the existing one.
+  
+  Make sure you have the required access to the Git account and DVC remote location.
