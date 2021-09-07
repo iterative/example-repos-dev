@@ -57,7 +57,7 @@ add_main_pipeline() {
                 -d src/train.py \
                 -p model.conv_units \
                 -p train.epochs \
-                --outs-no-cache models/model.h5 \
+                --outs models/model.h5 \
                 --plots-no-cache logs.csv \
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
