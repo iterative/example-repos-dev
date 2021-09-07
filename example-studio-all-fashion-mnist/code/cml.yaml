@@ -1,0 +1,52 @@
+name: train-my-model
+
+on: [push]
+
+jobs:
+  run:
+    runs-on: [ubuntu-latest]
+  
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: iterative/setup-cml@v1
+
+      - name: cml_run
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pip install -r requirements.txt
+
+          # Reproduce pipeline if any changes detected in dependencies
+          dvc repro
+
+          # Publish confusion matrix diff
+          echo -e "## Plots\n### Class confusions" >> report.md
+          dvc plots diff \
+            --target output/predictions.json \
+            --show-vega > vega.json
+          vl2png vega.json -s 1.5 | cml-publish --md >> report.md
+          # Add figure to report
+          cat output/metrics.json >> report.md
+          cml-send-comment report.md
+
+      - name: Commit files
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          git add --all
+          if [-z "$(git status --porcelain)"]; then
+            echo "::set-output name=push::false"
+          else
+            git commit -m "Results of the last experiment" -a
+            echo "::set-output name=push::true"
+          fi
+        shell: bash
+
+      - name: Push changes
+        if: steps.commit.outputs.push == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

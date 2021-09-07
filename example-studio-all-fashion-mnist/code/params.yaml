@@ -1,0 +1,7 @@
+train:
+  batch_size: 128
+  hidden_units: 64
+  dropout: 0.40
+  num_epochs: 1
+  lr: 0.01
+  conv_activation: relu
