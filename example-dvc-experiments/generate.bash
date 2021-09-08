@@ -127,7 +127,8 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-dvc exp run
+# dvc exp run is not suitable for the first run due to missing file warnings
+dvc repro
 tag_tick
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
@@ -172,7 +173,9 @@ git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
    git push -d origin "\${exppath}"
 done
 
-git push --force origin --all --follow-tags
+git push --force origin --all
+# We use lightweight tags so --follow-tags don't work
+git push --force origin --tags
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 popd
 EOF
