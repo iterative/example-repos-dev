@@ -5,7 +5,7 @@ set -veux
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
 PROJECT_NAME="example-dvc-experiments"
-REPO_NAME="$(date +%F-%H-%M-%S)"
+REPO_NAME="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
 export REPO_ROOT="${HERE}/build/${REPO_NAME}"
