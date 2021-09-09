@@ -1,7 +1,9 @@
+import os
+# Set tensorflow logging to minimum
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
 import numpy as np
 from util import load_params, read_labeled_images
-import os
 import json
 
 INPUT_DIR = "data/images"
@@ -77,10 +79,10 @@ def main():
     assert training_images.shape[0] + testing_images.shape[0] == 70000
     assert training_labels.shape[0] + testing_labels.shape[0] == 70000
 
-    print(f"Training Dataset Shape: {training_images.shape}")
-    print(f"Testing Dataset Shape: {testing_images.shape}")
-    print(f"Training Labels: {training_labels}")
-    print(f"Testing Labels: {testing_labels}")
+    # print(f"Training Dataset Shape: {training_images.shape}")
+    # print(f"Testing Dataset Shape: {testing_images.shape}")
+    # print(f"Training Labels: {training_labels}")
+    # print(f"Testing Labels: {testing_labels}")
 
     training_images = normalize(training_images)
     testing_images = normalize(testing_images)
