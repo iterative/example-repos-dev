@@ -5,7 +5,7 @@ set -veux
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
 PROJECT_NAME="example-dvc-experiments"
-REPO_NAME="$(date +%F-%H-%M-%S)"
+REPO_NAME="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
 export REPO_ROOT="${HERE}/build/${REPO_NAME}"
@@ -57,12 +57,10 @@ add_main_pipeline() {
                 -d src/train.py \
                 -p model.conv_units \
                 -p train.epochs \
-                --outs-no-cache models/model.h5 \
+                --outs models/model.h5 \
                 --plots-no-cache logs.csv \
                 --metrics-no-cache metrics.json \
                 python3 src/train.py
-
-    echo "model.h5" >> models/.gitignore
 
 }
 
@@ -129,20 +127,9 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-# We added the following to the pipeline
-# pushd data
-# tar -xvzf images.tar.gz
-# popd
-# tag_tick
-# dvc add data/images
-# git add data/images.dvc data/.gitignore
-# git commit -m "Added Fashion-MNIST images directory"
-# git tag -a "extracted-images" -m "Fashion-MNIST data directory added."
-#
-
-dvc exp run
+# dvc exp run is not suitable for the first run due to missing file warnings
+dvc repro
 tag_tick
-echo "model.h5" >> models/.gitignore
 git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
@@ -186,7 +173,9 @@ git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
    git push -d origin "\${exppath}"
 done
 
-git push --force origin --all --follow-tags
+git push --force origin --all
+# We use lightweight tags so --follow-tags don't work
+git push --force origin --tags
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 popd
 EOF
