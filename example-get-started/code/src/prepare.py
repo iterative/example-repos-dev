@@ -48,4 +48,5 @@ os.makedirs(os.path.join("data", "prepared"), exist_ok=True)
 with io.open(input, encoding="utf8") as fd_in:
     with io.open(output_train, "w", encoding="utf8") as fd_out_train:
         with io.open(output_test, "w", encoding="utf8") as fd_out_test:
-            process_posts(fd_in, fd_out_train, fd_out_test, "<python>")
+            process_posts(fd_in, fd_out_train, fd_out_test, "<r>")
+
