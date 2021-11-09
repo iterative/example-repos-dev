@@ -136,10 +136,20 @@ git tag "baseline-experiment"
 
 dvc exp run -n cnn-32 --queue -S model.conv_units=32
 dvc exp run -n cnn-64 --queue -S model.conv_units=64
-dvc exp run -n cnn-96 --queue -S model.conv_units=96
 dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
 dvc exp run --run-all --jobs 2
+
+
+tag_tick
+cp -f code-dvclive/train.py src/train.py
+cp -f code-dvclive/requirements.txt requirements.txt
+git add src/train.py requirements.txt
+git commit -m "DVCLive modifications"
+
+dvc exp run -n live-32 --queue -S model.conv_units=32
+dvc exp run -n live-64 --queue -S model.conv_units=64
+dvc exp run -n live-128 --queue -S model.conv_units=128
 
 dvc exp show --no-pager
 
