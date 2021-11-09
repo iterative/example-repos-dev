@@ -142,8 +142,8 @@ dvc exp run --run-all --jobs 2
 
 
 tag_tick
-cp -f code-dvclive/train.py src/train.py
-cp -f code-dvclive/requirements.txt requirements.txt
+cp -f ${HERE}/code-dvclive/train.py src/train.py
+cp -f ${HERE}/code-dvclive/requirements.txt requirements.txt
 git add src/train.py requirements.txt
 git commit -m "DVCLive modifications"
 
