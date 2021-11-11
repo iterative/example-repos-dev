@@ -143,8 +143,11 @@ dvc exp run --run-all --jobs 2
 
 tag_tick
 cp -f ${HERE}/code-dvclive/train.py src/train.py
+cp -f ${HERE}/code-dvclive/dvc.yaml dvc.yaml
 cp -f ${HERE}/code-dvclive/requirements.txt requirements.txt
-git add src/train.py requirements.txt
+rm metrics.json
+rm logs.csv
+git add src/train.py requirements.txt dvc.yaml metrics.json logs.csv
 git commit -m "DVCLive modifications"
 
 dvc exp run -n live-32 --queue -S model.conv_units=32
