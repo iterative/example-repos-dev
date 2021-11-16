@@ -50,15 +50,12 @@ add_main_pipeline() {
 
     echo "/images/" >> data/.gitignore
 
-    mkdir -p models
-
     dvc stage add -n train \
                 -d data/images/ \
                 -d src/train.py \
                 -p model.conv_units \
                 -p train.epochs \
                 --live metrics \
-                --outs models/model.h5 \
                 python3 src/train.py
 
 }
@@ -112,7 +109,7 @@ git tag "added-data"
 
 tag_tick
 add_main_pipeline
-git add dvc.yaml data/.gitignore models/.gitignore
+git add dvc.yaml data/.gitignore
 git commit -m "Added experiments pipeline"
 git tag "created-pipeline"
 
@@ -126,10 +123,9 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-# dvc exp run is not suitable for the first run due to missing file warnings
-dvc repro
+dvc exp run
 tag_tick
-git add models/.gitignore data/.gitignore dvc.lock 
+git add data/.gitignore dvc.lock 
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
