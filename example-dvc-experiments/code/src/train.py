@@ -5,6 +5,8 @@ import tensorflow as tf
 import numpy as np
 from util import load_params, read_labeled_images
 import json
+from dvclive.keras import DvcLiveCallback
+
 
 INPUT_DIR = "data/images"
 RESUME_PREVIOUS_MODEL = False
@@ -67,7 +69,7 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    m = get_model()
+    m = get_model(conv_units=params["model"]["conv_units"])
     m.summary()
 
     training_images, training_labels = read_labeled_images(
@@ -78,6 +80,11 @@ def main():
 
     assert training_images.shape[0] + testing_images.shape[0] == 70000
     assert training_labels.shape[0] + testing_labels.shape[0] == 70000
+
+    # print(f"Training Dataset Shape: {training_images.shape}")
+    # print(f"Testing Dataset Shape: {testing_images.shape}")
+    # print(f"Training Labels: {training_labels}")
+    # print(f"Testing Labels: {testing_labels}")
 
     training_images = normalize(training_images)
     testing_images = normalize(testing_images)
@@ -93,30 +100,22 @@ def main():
     y_train = training_labels
     y_valid = testing_labels
 
-    history = m.fit(
+    m.fit(
         x_train,
         y_train,
         batch_size=BATCH_SIZE,
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
+        callbacks=[DvcLiveCallback(model_file="model.h5")]
     )
 
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    m.save(model_file)
-
-    metrics_dict = m.evaluate(
+    m.evaluate(
         testing_images,
         testing_labels,
         batch_size=BATCH_SIZE,
         return_dict=True,
     )
-
-    with open(METRICS_FILE, "w") as f:
-        f.write(json.dumps(metrics_dict))
 
 
 if __name__ == "__main__":
