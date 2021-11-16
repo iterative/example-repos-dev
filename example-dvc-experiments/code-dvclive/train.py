@@ -100,31 +100,22 @@ def main():
     y_train = training_labels
     y_valid = testing_labels
 
-    history = m.fit(
+    m.fit(
         x_train,
         y_train,
         batch_size=BATCH_SIZE,
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
-        callbacks=[DvcLiveCallback()]
+        callbacks=[DvcLiveCallback(model_file="model.h5")]
     )
 
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    m.save(model_file)
-
-    metrics_dict = m.evaluate(
+    m.evaluate(
         testing_images,
         testing_labels,
         batch_size=BATCH_SIZE,
         return_dict=True,
     )
-
-    with open(METRICS_FILE, "w") as f:
-        f.write(json.dumps(metrics_dict))
 
 
 if __name__ == "__main__":
