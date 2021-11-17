@@ -109,7 +109,7 @@ git tag "added-data"
 
 tag_tick
 add_main_pipeline
-git add dvc.yaml data/.gitignore
+git add dvc.yaml data/.gitignore .gitignore
 git commit -m "Added experiments pipeline"
 git tag "created-pipeline"
 
