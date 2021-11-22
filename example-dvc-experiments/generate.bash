@@ -137,11 +137,6 @@ dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
 dvc exp run --run-all --jobs 2
 
-
-dvc exp run -n live-32 --queue -S model.conv_units=32
-dvc exp run -n live-64 --queue -S model.conv_units=64
-dvc exp run -n live-128 --queue -S model.conv_units=128
-
 dvc exp show --no-pager
 
 git status
