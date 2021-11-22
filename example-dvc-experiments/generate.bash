@@ -50,11 +50,13 @@ add_main_pipeline() {
 
     echo "/images/" >> data/.gitignore
 
+    mkdir models
     dvc stage add -n train \
                 -d data/images/ \
                 -d src/train.py \
                 -p model.conv_units \
                 -p train.epochs \
+                -o models/model.h5 \
                 --live metrics \
                 python3 src/train.py
 
