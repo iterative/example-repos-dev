@@ -125,7 +125,9 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-dvc exp run
+# Normally, the following should be dvc exp run but there appears warnings about missing deps/files
+# See: https://github.com/iterative/dvc/issues/6592
+dvc repro
 tag_tick
 git add data/.gitignore dvc.lock metrics.json metrics_dvc_plots/index.html models/.gitignore
 git commit -m "Baseline experiment run"
