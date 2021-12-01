@@ -67,7 +67,7 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    m = get_model()
+    m = get_model(conv_units=params['model']['conv_units'])
     m.summary()
 
     training_images, training_labels = read_labeled_images(
@@ -119,8 +119,14 @@ def main():
         f.write(json.dumps(metrics_dict))
 
     # predictions for the confusion matrix
-    y_prob = model.predict(x_valid) 
+    y_prob = m.predict(x_valid) 
     y_pred = y_prob.argmax(axis=-1)
+    os.makedirs("plots")
+    with open("plots/confusion.csv", "w") as f:
+        f.write("actual,predicted\n")
+        sx = y_valid.shape[0]
+        for i in range(sx):
+            f.write(f"{y_valid.argmax()},{y_pred[i]}\n")
 
 
 if __name__ == "__main__":
