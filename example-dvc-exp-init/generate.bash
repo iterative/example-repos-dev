@@ -94,7 +94,6 @@ tag_tick
 git add .
 git commit -m "added .dvc, initialized experiment and added data"
 git status 
-read
 git tag "dvc-exp-init-run"
 
 # tag_tick
@@ -117,7 +116,6 @@ git tag "get-started"
 dvc exp run
 tag_tick
 git status
-read
 # git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git add . 
 git commit -m "Baseline experiment run"
