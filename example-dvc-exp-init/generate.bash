@@ -88,6 +88,8 @@ dvc init
 # dvc add data/images.tar.gz
 
 dvc exp init python3 src/train.py
+## it doesn't add data/ so adding it manually
+dvc add data/
 # tag_tick
 # add_main_pipeline
 # git add dvc.yaml data/.gitignore models/.gitignore
