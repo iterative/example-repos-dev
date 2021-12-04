@@ -116,7 +116,10 @@ git tag "get-started"
 # dvc exp run is not suitable for the first run due to missing file warnings
 dvc exp run
 tag_tick
-git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
+git status
+read
+# git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
+git add . 
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
