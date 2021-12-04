@@ -79,7 +79,6 @@ tar xvzf images.tar.gz
 popd
 
 dvc init
-dvc exp init python3 src/train.py
 
 # tag_tick
 # git add .dvc
@@ -87,11 +86,8 @@ dvc exp init python3 src/train.py
 # git tag "dvc-init"
 #
 # dvc add data/images.tar.gz
-# tag_tick
-# git add data/images.tar.gz.dvc data/.gitignore
-# git commit -m "Added Fashion-MNIST images in tar.gz format"
-# git tag "added-data"
-#
+
+dvc exp init python3 src/train.py
 # tag_tick
 # add_main_pipeline
 # git add dvc.yaml data/.gitignore models/.gitignore
