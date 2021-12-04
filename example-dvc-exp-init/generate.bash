@@ -93,6 +93,10 @@ dvc add data/
 tag_tick
 git add .
 git commit -m "added .dvc, initialized experiment and added data"
+git status 
+read
+git tag "dvc-exp-init-run"
+
 # tag_tick
 # add_main_pipeline
 # git add dvc.yaml data/.gitignore models/.gitignore
