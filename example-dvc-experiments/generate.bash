@@ -71,7 +71,9 @@ virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
-pip install 'dvc[all]'
+# install dvc from master until 2.9 is released
+# pip install 'dvc[all]'
+pip install git+https://github.com/iterative/dvc 'dvc[all]'
 
 git init
 git checkout -b main
