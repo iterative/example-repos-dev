@@ -73,12 +73,12 @@ git tag "source-code"
 
 test -d data/ || mkdir -p data/ 
 pushd data
-dvc get https://github.com/iterative/dataset-registry \
+time dvc get https://github.com/iterative/dataset-registry \
         fashion-mnist/images.tar.gz -o images.tar.gz
-tar xvzf images.tar.gz
+time tar xvzf images.tar.gz
 popd
 
-dvc init
+time dvc init
 
 # tag_tick
 # git add .dvc
@@ -87,9 +87,9 @@ dvc init
 #
 # dvc add data/images.tar.gz
 
-dvc exp init python3 src/train.py
+time dvc exp init python3 src/train.py
 ## it doesn't add data/ so adding it manually
-dvc add data/
+time dvc add data/
 tag_tick
 git add .
 git commit -m "added .dvc, initialized experiment and added data"
@@ -112,8 +112,7 @@ dvc remote add --default storage https://remote.dvc.org/example-dvc-experiments
 
 git tag "get-started"
 
-# dvc exp run is not suitable for the first run due to missing file warnings
-dvc exp run
+time dvc exp run
 tag_tick
 git status
 # git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
@@ -121,14 +120,14 @@ git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
-dvc exp run -n cnn-32 --queue -S model.conv_units=32
-dvc exp run -n cnn-64 --queue -S model.conv_units=64
-dvc exp run -n cnn-96 --queue -S model.conv_units=96
-dvc exp run -n cnn-128 --queue -S model.conv_units=128
+time dvc exp run -n cnn-32 --queue -S model.conv_units=32
+time dvc exp run -n cnn-64 --queue -S model.conv_units=64
+time dvc exp run -n cnn-96 --queue -S model.conv_units=96
+time dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
-dvc exp run --run-all --jobs 2
+time dvc exp run --run-all --jobs 2
 
-dvc exp show --no-pager
+time dvc exp show --no-pager
 
 git status
 
