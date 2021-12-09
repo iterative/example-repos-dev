@@ -45,7 +45,7 @@ add_main_pipeline() {
     dvc stage add -n extract \
         -d data/images.tar.gz \
         --outs-no-cache data/images/ \
-        tar -xvzf data/images.tar.gz --directory data
+        tar -xzf data/images.tar.gz --directory data
     # The following is not added automatically as we use --no-cache
 
     echo "/images/" >> data/.gitignore
