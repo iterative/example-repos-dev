@@ -5,6 +5,7 @@ import tensorflow as tf
 import numpy as np
 from util import load_params, read_labeled_images
 import json
+import imageio
 
 INPUT_DIR = "data/images"
 RESUME_PREVIOUS_MODEL = False
@@ -14,6 +15,34 @@ METRICS_FILE = "metrics.json"
 SEED = 20210715
 
 BATCH_SIZE = 128
+
+def untar_dataset(dataset_path):
+    ds = tarfile.open(name=dataset_path, mode='r:gz')
+    training, testing = []
+    for f in ds:
+        if f.isfile():
+            filepath = f.name
+            memfile = ds.extractfile(f)
+            imagedata = array_from_bytes(memfile)
+            imagesection, imagelabel = label_from_path(filepath)
+            if imagesection == "train":
+                training.append((imagelabel, imagedata))
+            else:
+                testing.append((imagelabel, imagedata))
+
+    # we assume the images are 28x28 grayscale
+    shape_0, shape_1 = 28, 28
+    testing_images = np.ndarray(shape=(len(testing), shape_0, shape_1), dtype="uint8")
+    testing_labels = np.zeros(shape=(len(testing)), dtype="uint8")
+    for i, (label, image) in enumerate(testing):
+        testing_images[i] = image
+        testing_labels[i] = label
+    training_images = np.ndarray(shape=(len(training), shape_0, shape_1), dtype="uint8")
+    training_labels = np.zeros(shape=(len(training)), dtype="uint8")
+    for i, (label, image) in enumerate(training):
+        training_images[i] = image
+        training_labels[i] = label
+    return (training_images, training_labels, testing_images, testing_labels)
 
 
 def get_model(dense_units=128,
