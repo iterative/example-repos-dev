@@ -150,7 +150,7 @@ def main():
         f.write(json.dumps(metrics_dict))
 
     # predictions for the confusion matrix
-    y_prob = m.predict(x_valid) 
+    y_prob = m.predict(x_valid)
     y_pred = y_prob.argmax(axis=-1)
     os.makedirs("plots")
     with open("plots/confusion.csv", "w") as f:
