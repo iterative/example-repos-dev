@@ -51,6 +51,31 @@ def read_dataset(dataset_path):
     return (training_images, training_labels, testing_images, testing_labels)
 
 
+def create_image_matrix(cells):
+    """cells is a dictionary containing 28x28 arrays for each (i, j) key. These are printed on a max(i) * 30 x max(j) * 30 array."""
+
+    max_i, max_j = 0, 0
+    for (i, j) in cells:
+        if i > max_i:
+            max_i = i
+        if j > max_j:
+            max_j = j
+
+    frame_size = 30
+    image_size = 28
+
+    out_matrix = np.ones(shape=(max_i * frame_size, max_j * frame_size), dtype="uint8") * 255
+
+    for (i, j) in cells:
+        image = cells[(i, j)]
+        xs = i * frame_size + 1
+        xe = (i + 1) * frame_size - 1
+        ys = j * frame_size + 1
+        ye = (j + 1) * frame_size - 1
+        out_matrix[xs:xe, ys:ye] = image
+
+    return out_matrix
+
 def get_model(dense_units=128,
               conv_kernel=(3, 3),
               conv_units=32,
