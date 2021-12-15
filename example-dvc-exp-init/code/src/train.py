@@ -17,7 +17,13 @@ SEED = 20210715
 
 BATCH_SIZE = 128
 
-def untar_dataset(dataset_path):
+
+def label_from_path(filepath):
+    """extracts "test", and 3 from a path like "images/test/3/00177.png" """
+    elements = filepath.split('/')
+    return (elements[1], int(elements[2]))
+
+def read_dataset(dataset_path):
     ds = tarfile.open(name=dataset_path, mode='r:gz')
     training, testing = []
     for f in ds:
