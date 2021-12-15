@@ -36,8 +36,9 @@ def read_dataset(dataset_path):
                 training.append((imagelabel, image))
             else:
                 testing.append((imagelabel, image))
-
-    print(f"Read {training.len()} training images and {testing.len()} testing images")
+    training_len = len(training)
+    testing_len = len(testing)
+    print(f"Read {training_len} training images and {testing_len} testing images")
     # we assume the images are 28x28 grayscale
     shape_0, shape_1 = 28, 28
     testing_images = np.ndarray(shape=(len(testing), shape_0, shape_1), dtype="uint8")
