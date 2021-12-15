@@ -24,7 +24,7 @@ def label_from_path(filepath):
 
 def read_dataset(dataset_path):
     ds = tarfile.open(name=dataset_path, mode='r:gz')
-    training, testing = []
+    training, testing = [], []
     for f in ds:
         if f.isfile():
             filepath = f.name
