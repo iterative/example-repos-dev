@@ -62,12 +62,13 @@ def create_image_matrix(cells):
             max_j = j
 
     frame_size = 30
-    image_size = 28
+    image_shape = (28, 28)
 
     out_matrix = np.ones(shape=(max_i * frame_size, max_j * frame_size), dtype="uint8") * 255
 
     for (i, j) in cells:
         image = cells[(i, j)]
+        assert image.shape == image_shape
         xs = i * frame_size + 1
         xe = (i + 1) * frame_size - 1
         ys = j * frame_size + 1
