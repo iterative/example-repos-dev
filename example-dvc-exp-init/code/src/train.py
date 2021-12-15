@@ -23,13 +23,13 @@ def untar_dataset(dataset_path):
     for f in ds:
         if f.isfile():
             filepath = f.name
-            memfile = ds.extractfile(f)
-            imagedata = array_from_bytes(memfile)
+            content = ds.extractfile(f)
+            image = imageio.get_reader(content, '.png')
             imagesection, imagelabel = label_from_path(filepath)
             if imagesection == "train":
-                training.append((imagelabel, imagedata))
+                training.append((imagelabel, image))
             else:
-                testing.append((imagelabel, imagedata))
+                testing.append((imagelabel, image))
 
     # we assume the images are 28x28 grayscale
     shape_0, shape_1 = 28, 28
