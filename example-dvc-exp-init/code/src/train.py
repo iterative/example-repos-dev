@@ -25,17 +25,19 @@ def label_from_path(filepath):
 def read_dataset(dataset_path):
     ds = tarfile.open(name=dataset_path, mode='r:gz')
     training, testing = [], []
+    print(f"Reading dataset from {dataset_path}")
     for f in ds:
         if f.isfile():
             filepath = f.name
             content = ds.extractfile(f)
-            image = imageio.get_reader(content, '.png')
+            image = imageio.imread(content)
             imagesection, imagelabel = label_from_path(filepath)
             if imagesection == "train":
                 training.append((imagelabel, image))
             else:
                 testing.append((imagelabel, image))
 
+    print(f"Read {training.len()} training images and {testing.len()} testing images")
     # we assume the images are 28x28 grayscale
     shape_0, shape_1 = 28, 28
     testing_images = np.ndarray(shape=(len(testing), shape_0, shape_1), dtype="uint8")
