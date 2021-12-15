@@ -105,11 +105,7 @@ def main():
     m = get_model(conv_units=params['model']['conv_units'])
     m.summary()
 
-    training_images, training_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'train/'))
-    testing_images, testing_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'test/')
-    )
+    training_images, training_labels, testing_images, testing_labels = read_dataset(DATASET_FILE)
 
     assert training_images.shape[0] + testing_images.shape[0] == 70000
     assert training_labels.shape[0] + testing_labels.shape[0] == 70000
