@@ -71,12 +71,9 @@ git add .
 git commit -m "Added source and params"
 git tag "source-code"
 
-test -d data/ || mkdir -p data/ 
-pushd data
+test -d data/ || mkdir -p data/
 time dvc get https://github.com/iterative/dataset-registry \
-        fashion-mnist/images.tar.gz -o images.tar.gz
-time tar xvzf images.tar.gz
-popd
+        fashion-mnist/images.tar.gz -o data/images.tar.gz
 
 time dvc init
 
@@ -89,11 +86,11 @@ time dvc init
 
 time dvc exp init python3 src/train.py
 ## it doesn't add data/ so adding it manually
-time dvc add data/
+time dvc add data/images.tar.gz
 tag_tick
 git add .
 git commit -m "added .dvc, initialized experiment and added data"
-git status 
+git status
 git tag "dvc-exp-init-run"
 
 # tag_tick
@@ -116,7 +113,7 @@ time dvc exp run
 tag_tick
 git status
 # git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
-git add . 
+git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
