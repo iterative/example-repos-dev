@@ -51,14 +51,21 @@ add_main_pipeline() {
     echo "/images/" >> data/.gitignore
 
     mkdir models
-    dvc stage add -n train \
-                -d data/images/ \
-                -d src/train.py \
-                -p model.conv_units \
-                -p train.epochs \
-                -o models/model.h5 \
-                --live metrics \
-                python3 src/train.py
+    # dvc stage add -n train \
+    #             -d data/images/ \
+    #             -d src/train.py \
+    #             -p model.conv_units \
+    #             -p train.epochs \
+    #             -o models/model.h5 \
+    #             --live metrics \
+    #             python3 src/train.py
+
+    dvc exp init --name train \
+        --data data/ \
+        --models models/ \
+        --params params.yaml \
+        --live metrics \
+        python3 src/train.py
 
 }
 
@@ -129,7 +136,7 @@ git tag "get-started"
 
 # Normally, the following should be dvc exp run but there appears warnings about missing deps/files
 # See: https://github.com/iterative/dvc/issues/6592
-dvc repro
+dvc exp run
 tag_tick
 git add data/.gitignore dvc.lock metrics.json metrics_dvc_plots/index.html models/.gitignore
 git commit -m "Baseline experiment run"
