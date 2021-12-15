@@ -5,6 +5,7 @@ import tensorflow as tf
 import numpy as np
 from util import load_params, read_labeled_images
 import json
+import tarfile
 import imageio
 
 INPUT_DIR = "data/images"
