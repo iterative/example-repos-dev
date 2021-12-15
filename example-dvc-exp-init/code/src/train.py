@@ -8,8 +8,7 @@ import json
 import tarfile
 import imageio
 
-INPUT_DIR = "data/images"
-RESUME_PREVIOUS_MODEL = False
+DATASET_FILE = "data/images.tar.gz"
 OUTPUT_DIR = "models"
 
 METRICS_FILE = "metrics.json"
