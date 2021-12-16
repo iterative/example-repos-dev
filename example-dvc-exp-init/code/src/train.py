@@ -198,7 +198,7 @@ def main():
 
 
     # find misclassified examples and generate a confusion table image
-    confusion_out = confusion_image(misclassified)
+    confusion_out = create_image_matrix(misclassified)
     imageio.imwrite("plots/confusion.png", confusion_out)
 
 if __name__ == "__main__":
