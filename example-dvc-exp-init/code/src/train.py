@@ -178,6 +178,8 @@ def main():
     with open(METRICS_FILE, "w") as f:
         f.write(json.dumps(metrics_dict))
 
+    misclassified = {}
+
     # predictions for the confusion matrix
     y_prob = m.predict(x_valid)
     y_pred = y_prob.argmax(axis=-1)
@@ -186,8 +188,16 @@ def main():
         f.write("actual,predicted\n")
         sx = y_valid.shape[0]
         for i in range(sx):
-            f.write(f"{y_valid.argmax()},{y_pred[i]}\n")
+            actual=y_valid[i].argmax()
+            predicted=y_pred[i]
+            f.write(f"{actual},{predicted}\n")
+            if actual != predicted:
+                misclassified[(actual, predicted)] = x_valid[i]
 
+
+    # find misclassified examples and generate a confusion table image
+    confusion_out = confusion_image(misclassified)
+    imageio.imwrite("plots/confusion.png", confusion_out)
 
 if __name__ == "__main__":
     main()
