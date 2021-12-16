@@ -78,6 +78,7 @@ def create_image_matrix(cells):
         ys = j * frame_size + 1
         ye = (j + 1) * frame_size - 1
         assert (xe-xs, ye-ys) == image_shape
+        print((i, j, xs, xe, ys, ye))
         print(out_matrix[xs:xe, ys:ye].shape)
         out_matrix[xs:xe, ys:ye] = image
 
