@@ -7,6 +7,7 @@ from util import load_params, read_labeled_images
 import json
 import tarfile
 import imageio
+from dvclive.keras import DvcLiveCallback
 
 DATASET_FILE = "data/images.tar.gz"
 OUTPUT_DIR = "models"
@@ -160,13 +161,14 @@ def main():
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
+        callbacks=[DvcLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
     )
 
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    m.save(model_file)
+    # with open("logs.csv", "w") as f:
+    #     f.write(history_to_csv(history))
+    #
+    # model_file = os.path.join(OUTPUT_DIR, "model.h5")
+    # m.save(model_file)
 
     metrics_dict = m.evaluate(
         testing_images,
