@@ -68,7 +68,8 @@ def create_image_matrix(cells):
     frame_size = 30
     image_shape = (28, 28)
 
-    out_matrix = np.ones(shape=(max_i * frame_size, max_j * frame_size), dtype="uint8") * 255
+    out_matrix = np.ones(shape=((max_i+1) * frame_size, (max_j+1) * frame_size), dtype="uint8") * 255
+    print(f"out_matrix: {out_matrix.shape}")
 
     for (i, j) in cells:
         image = cells[(i, j)]
