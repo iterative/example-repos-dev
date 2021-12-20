@@ -1,6 +1,0 @@
-{
-    "name": "example-dvc-experiments",
-    "build": {
-        "dockerfile": "Dockerfile"
-    }
-}

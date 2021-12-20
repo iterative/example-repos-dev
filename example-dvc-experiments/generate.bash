@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-PROJECT_NAME="example-dvc-experiments"
+PROJECT_NAME="example-dvc-exp-init"
 REPO_NAME="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
@@ -40,30 +40,6 @@ mkdir -p "${REPO_ROOT}"
 pushd "${REPO_ROOT}"
 
 
-add_main_pipeline() {
-
-    dvc stage add -n extract \
-        -d data/images.tar.gz \
-        --outs-no-cache data/images/ \
-        tar -xvzf data/images.tar.gz --directory data
-    # The following is not added automatically as we use --no-cache
-
-    echo "/images/" >> data/.gitignore
-
-    mkdir -p models
-
-    dvc stage add -n train \
-                -d data/images/ \
-                -d src/train.py \
-                -p model.conv_units \
-                -p train.epochs \
-                --outs models/model.h5 \
-                --plots-no-cache logs.csv \
-                --metrics-no-cache metrics.json \
-                python3 src/train.py
-
-}
-
 export REPO_PATH="${REPO_ROOT}/${PROJECT_NAME}"
 
 mkdir -p "$REPO_PATH"
@@ -73,7 +49,8 @@ virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
-pip install 'dvc[all]'
+# pip install 'dvc[all]'
+pip install git+https://github.com/iterative/dvc.git 'dvc[all]'
 
 git init
 git checkout -b main
@@ -95,53 +72,59 @@ git commit -m "Added source and params"
 git tag "source-code"
 
 test -d data/ || mkdir -p data/
-dvc get https://github.com/iterative/dataset-registry \
+time dvc get https://github.com/iterative/dataset-registry \
         fashion-mnist/images.tar.gz -o data/images.tar.gz
 
-dvc init
+time dvc init
 
-tag_tick
-git add .dvc
-git commit -m "Initialized DVC"
-git tag "dvc-init"
+# tag_tick
+# git add .dvc
+# git commit -m "Initialized DVC"
+# git tag "dvc-init"
+#
+# dvc add data/images.tar.gz
 
-dvc add data/images.tar.gz
+time dvc exp init python3 src/train.py
+## it doesn't add data/ so adding it manually
+time dvc add data/images.tar.gz
 tag_tick
-git add data/images.tar.gz.dvc data/.gitignore
-git commit -m "Added Fashion-MNIST images in tar.gz format"
-git tag "added-data"
+git add .
+git commit -m "added .dvc, initialized experiment and added data"
+git status
+git tag "dvc-exp-init-run"
 
-tag_tick
-add_main_pipeline
-git add dvc.yaml data/.gitignore models/.gitignore
-git commit -m "Added experiments pipeline"
-git tag "created-pipeline"
-
-tag_tick
+# tag_tick
+# add_main_pipeline
+# git add dvc.yaml data/.gitignore models/.gitignore
+# git commit -m "Added experiments pipeline"
+# git tag "created-pipeline"
+#
+# tag_tick
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add --default --local storage s3://dvc-public/remote/example-dvc-experiments
 dvc remote add --default storage https://remote.dvc.org/example-dvc-experiments
-git add .dvc
-git commit -m "Added DVC remote"
-git tag "configured-remote"
+# git add .dvc
+# git commit -m "Added DVC remote"
+# git tag "configured-remote"
 
 git tag "get-started"
 
-# dvc exp run is not suitable for the first run due to missing file warnings
-dvc repro
+time dvc exp run
 tag_tick
-git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
+git status
+# git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
+git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
-dvc exp run -n cnn-32 --queue -S model.conv_units=32
-dvc exp run -n cnn-64 --queue -S model.conv_units=64
-dvc exp run -n cnn-96 --queue -S model.conv_units=96
-dvc exp run -n cnn-128 --queue -S model.conv_units=128
+time dvc exp run -n cnn-32 --queue -S model.conv_units=32
+time dvc exp run -n cnn-64 --queue -S model.conv_units=64
+time dvc exp run -n cnn-96 --queue -S model.conv_units=96
+time dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
-dvc exp run --run-all --jobs 2
+time dvc exp run --run-all --jobs 2
 
-dvc exp show --no-pager
+time dvc exp show --no-pager
 
 git status
 

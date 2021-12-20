@@ -5,9 +5,11 @@ import tensorflow as tf
 import numpy as np
 from util import load_params, read_labeled_images
 import json
+import tarfile
+import imageio
+from dvclive.keras import DvcLiveCallback
 
-INPUT_DIR = "data/images"
-RESUME_PREVIOUS_MODEL = False
+DATASET_FILE = "data/images.tar.gz"
 OUTPUT_DIR = "models"
 
 METRICS_FILE = "metrics.json"
@@ -15,6 +17,73 @@ SEED = 20210715
 
 BATCH_SIZE = 128
 
+
+def label_from_path(filepath):
+    """extracts "test", and 3 from a path like "images/test/3/00177.png" """
+    elements = filepath.split('/')
+    return (elements[1], int(elements[2]))
+
+def read_dataset(dataset_path):
+    ds = tarfile.open(name=dataset_path, mode='r:gz')
+    training, testing = [], []
+    print(f"Reading dataset from {dataset_path}")
+    for f in ds:
+        if f.isfile():
+            filepath = f.name
+            content = ds.extractfile(f)
+            image = imageio.imread(content)
+            imagesection, imagelabel = label_from_path(filepath)
+            if imagesection == "train":
+                training.append((imagelabel, image))
+            else:
+                testing.append((imagelabel, image))
+    training_len = len(training)
+    testing_len = len(testing)
+    print(f"Read {training_len} training images and {testing_len} testing images")
+    # we assume the images are 28x28 grayscale
+    shape_0, shape_1 = 28, 28
+    testing_images = np.ndarray(shape=(len(testing), shape_0, shape_1), dtype="uint8")
+    testing_labels = np.zeros(shape=(len(testing)), dtype="uint8")
+    for i, (label, image) in enumerate(testing):
+        testing_images[i] = image
+        testing_labels[i] = label
+    training_images = np.ndarray(shape=(len(training), shape_0, shape_1), dtype="uint8")
+    training_labels = np.zeros(shape=(len(training)), dtype="uint8")
+    for i, (label, image) in enumerate(training):
+        training_images[i] = image
+        training_labels[i] = label
+    return (training_images, training_labels, testing_images, testing_labels)
+
+
+def create_image_matrix(cells):
+    """cells is a dictionary containing 28x28 arrays for each (i, j) key. These are printed on a max(i) * 30 x max(j) * 30 array."""
+
+    max_i, max_j = 0, 0
+    for (i, j) in cells:
+        if i > max_i:
+            max_i = i
+        if j > max_j:
+            max_j = j
+
+    frame_size = 30
+    image_shape = (28, 28)
+
+    out_matrix = np.ones(shape=((max_i+1) * frame_size, (max_j+1) * frame_size), dtype="uint8") * 255
+    print(f"out_matrix: {out_matrix.shape}")
+
+    for (i, j) in cells:
+        image = cells[(i, j)]
+        assert image.shape == image_shape
+        xs = i * frame_size + 1
+        xe = (i + 1) * frame_size - 1
+        ys = j * frame_size + 1
+        ye = (j + 1) * frame_size - 1
+        assert (xe-xs, ye-ys) == image_shape
+        print((i, j, xs, xe, ys, ye))
+        print(out_matrix[xs:xe, ys:ye].shape)
+        out_matrix[xs:xe, ys:ye] = image
+
+    return out_matrix
 
 def get_model(dense_units=128,
               conv_kernel=(3, 3),
@@ -67,14 +136,10 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    m = get_model()
+    m = get_model(conv_units=params['model']['conv_units'])
     m.summary()
 
-    training_images, training_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'train/'))
-    testing_images, testing_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'test/')
-    )
+    training_images, training_labels, testing_images, testing_labels = read_dataset(DATASET_FILE)
 
     assert training_images.shape[0] + testing_images.shape[0] == 70000
     assert training_labels.shape[0] + testing_labels.shape[0] == 70000
@@ -100,13 +165,14 @@ def main():
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
+        callbacks=[DvcLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
     )
 
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    m.save(model_file)
+    # with open("logs.csv", "w") as f:
+    #     f.write(history_to_csv(history))
+    #
+    # model_file = os.path.join(OUTPUT_DIR, "model.h5")
+    # m.save(model_file)
 
     metrics_dict = m.evaluate(
         testing_images,
@@ -118,6 +184,26 @@ def main():
     with open(METRICS_FILE, "w") as f:
         f.write(json.dumps(metrics_dict))
 
+    misclassified = {}
+
+    # predictions for the confusion matrix
+    y_prob = m.predict(x_valid)
+    y_pred = y_prob.argmax(axis=-1)
+    os.makedirs("plots")
+    with open("plots/confusion.csv", "w") as f:
+        f.write("actual,predicted\n")
+        sx = y_valid.shape[0]
+        for i in range(sx):
+            actual=y_valid[i].argmax()
+            predicted=y_pred[i]
+            f.write(f"{actual},{predicted}\n")
+            if actual != predicted:
+                misclassified[(actual, predicted)] = x_valid[i]
+
+
+    # find misclassified examples and generate a confusion table image
+    confusion_out = create_image_matrix(misclassified)
+    imageio.imwrite("plots/confusion.png", confusion_out)
 
 if __name__ == "__main__":
     main()
