@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-PROJECT_NAME="example-dvc-exp-init"
+PROJECT_NAME="example-dvc-staging"
 REPO_NAME="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
