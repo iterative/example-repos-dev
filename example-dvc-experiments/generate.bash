@@ -141,6 +141,9 @@ set -veux
 
 pushd ${REPO_PATH}
 
+# We use DVC we installed to the venv in generation.
+source .venv/bin/activate
+
 dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
 dvc push
 
