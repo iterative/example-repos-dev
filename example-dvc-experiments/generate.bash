@@ -63,8 +63,10 @@ git commit -m "Initialized Git"
 git tag "git-init"
 
 cp -r "${HERE}"/code/src .
-cp "${HERE}"/code/requirements.txt .
+cp "${HERE}"/code/requirement*.txt .
 cp "${HERE}"/code/params.yaml .
+## We are assuming the repo is generated in Linux
+## Otherwise the following line must be changed to have requirements-macos.txt
 pip install -r "${REPO_PATH}"/requirements.txt
 tag_tick
 git add .
