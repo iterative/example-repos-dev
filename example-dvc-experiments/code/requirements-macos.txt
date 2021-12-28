@@ -1,0 +1,4 @@
+tensorflow-macos>=2.6,<2.7
+ruamel.yaml>=0.17,<0.18
+imageio>=2.9,<3
+dvclive>=0.4
