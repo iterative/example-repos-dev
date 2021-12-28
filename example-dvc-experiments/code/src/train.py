@@ -67,9 +67,12 @@ def create_image_matrix(cells):
 
     frame_size = 30
     image_shape = (28, 28)
+    correct_color = np.array((40, 255, 40), dtype="uint8")
+    incorrect_color = np.array((255, 40, 40), dtype="uint8")
 
-    out_matrix = np.ones(shape=((max_i+1) * frame_size, (max_j+1) * frame_size), dtype="uint8") * 255
+    out_matrix = np.ones(shape=((max_i+1) * frame_size, (max_j+1) * frame_size, 3), dtype="uint8") * 255
     print(f"out_matrix: {out_matrix.shape}")
+
 
     for (i, j) in cells:
         image = cells[(i, j)]
@@ -80,8 +83,14 @@ def create_image_matrix(cells):
         ye = (j + 1) * frame_size - 1
         assert (xe-xs, ye-ys) == image_shape
         print((i, j, xs, xe, ys, ye))
-        print(out_matrix[xs:xe, ys:ye].shape)
-        out_matrix[xs:xe, ys:ye] = image
+        print(out_matrix[xs:xe, ys:ye, :].shape)
+        ## I'm sure there is an easier way to broadcast but I'll find it later
+        if i == j:
+            for c in range(3):
+                out_matrix[xs:xe, ys:ye, c] = image * correct_color[c]
+        else:
+            for c in range(3):
+                out_matrix[xs:xe, ys:ye, c] = image * incorrect_color[c]
 
     return out_matrix
 
@@ -197,8 +206,7 @@ def main():
             actual=y_valid[i].argmax()
             predicted=y_pred[i]
             f.write(f"{actual},{predicted}\n")
-            if actual != predicted:
-                misclassified[(actual, predicted)] = x_valid[i]
+            misclassified[(actual, predicted)] = x_valid[i]
 
 
     # find misclassified examples and generate a confusion table image
