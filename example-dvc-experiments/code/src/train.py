@@ -68,29 +68,41 @@ def create_image_matrix(cells):
     frame_size = 30
     image_shape = (28, 28)
     correct_color = np.array((40, 255, 40), dtype="uint8")
-    incorrect_color = np.array((255, 40, 40), dtype="uint8")
+    incorrect_color = np.array((255, 60, 60), dtype="uint8")
+    label_color = np.array((60, 60, 240), dtype="uint8")
 
-    out_matrix = np.ones(shape=((max_i+1) * frame_size, (max_j+1) * frame_size, 3), dtype="uint8") * 255
+    # out_matrix contains examples in the axes
+
+    out_matrix = np.ones(shape=((max_i+2) * frame_size, (max_j+2) * frame_size, 3), dtype="uint8") * 240
     print(f"out_matrix: {out_matrix.shape}")
 
+    ## put axis labels
+
+    for i in range(max_i+1):
+        if (i, i) in cells:
+            image = cells[(i, i)]
+            xs = (i + 1) * frame_size + 1
+            xe = (i + 2) * frame_size - 1
+            ys = 1
+            ye = frame_size - 1
+            for c in range(3):
+                out_matrix[xs:xe, ys:ye, c] = (1 - image) * label_color[c]
+                out_matrix[ys:ye, xs:xe, c] = (1 - image) * label_color[c]
 
     for (i, j) in cells:
         image = cells[(i, j)]
         assert image.shape == image_shape
-        xs = i * frame_size + 1
-        xe = (i + 1) * frame_size - 1
-        ys = j * frame_size + 1
-        ye = (j + 1) * frame_size - 1
+        xs = (i + 1) * frame_size + 1
+        xe = (i + 2) * frame_size - 1
+        ys = (j + 1) * frame_size + 1
+        ye = (j + 2) * frame_size - 1
         assert (xe-xs, ye-ys) == image_shape
         print((i, j, xs, xe, ys, ye))
         print(out_matrix[xs:xe, ys:ye, :].shape)
         ## I'm sure there is an easier way to broadcast but I'll find it later
-        if i == j:
+        if i != j:
             for c in range(3):
-                out_matrix[xs:xe, ys:ye, c] = image * correct_color[c]
-        else:
-            for c in range(3):
-                out_matrix[xs:xe, ys:ye, c] = image * incorrect_color[c]
+                out_matrix[xs:xe, ys:ye, c] = (1 - image) * incorrect_color[c]
 
     return out_matrix
 
