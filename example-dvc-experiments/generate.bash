@@ -76,7 +76,7 @@ git tag "source-code"
 
 test -d data/ || mkdir -p data/
 time dvc get https://github.com/iterative/dataset-registry \
-        fashion-mnist/images.tar.gz -o data/images.tar.gz
+        mnist/images.tar.gz -o data/images.tar.gz
 
 time dvc init
 
