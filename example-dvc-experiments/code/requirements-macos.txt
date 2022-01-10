@@ -1,4 +1,4 @@
-dvc>=2.9
+dvc[all]>=2.9
 tensorflow-macos>=2.6,<2.7
 ruamel.yaml>=0.17,<0.18
 imageio>=2.9,<3
