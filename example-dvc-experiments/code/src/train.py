@@ -67,9 +67,8 @@ def create_image_matrix(cells):
 
     frame_size = 30
     image_shape = (28, 28)
-    correct_color = np.array((40, 255, 40), dtype="uint8")
-    incorrect_color = np.array((255, 60, 60), dtype="uint8")
-    label_color = np.array((60, 60, 240), dtype="uint8")
+    incorrect_color = np.array((255, 100, 100), dtype="uint8")
+    label_color = np.array((100, 100, 240), dtype="uint8")
 
     # out_matrix contains examples in the axes
 
