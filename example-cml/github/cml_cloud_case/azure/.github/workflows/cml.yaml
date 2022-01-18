@@ -1,0 +1,49 @@
+name: train-my-model
+
+on: [push]
+
+jobs:
+  deploy-runner:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: iterative/setup-cml@v1
+
+      - name: deploy
+        shell: bash
+        env:
+          repo_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          cml-runner \
+          --cloud-spot \
+          --cloud azure \
+          --cloud-region eastus \
+          --cloud-type Standard_A1_v2 \
+          --idle-timeout 1800 \
+          --labels cml-runner
+
+  run:
+    needs: deploy-runner
+    runs-on: [self-hosted,cml-runner]
+    container: 
+      image: docker://dvcorg/cml
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+
+    - name: cml
+      env:
+        repo_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      run: |
+        echo "## Training metrics" >> report.md
+      
+        cml-send-comment report.md 
