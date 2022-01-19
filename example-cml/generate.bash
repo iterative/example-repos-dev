@@ -71,7 +71,7 @@ for hub in ${hubs} ; do
         git init --initial-branch=seed
         git add *
         git commit -m "Initial commit from files in ${SEED_REPO}"
-        git remote add origin "$(git_remote_from_hub $hubname $repo_name)"
+        git remote add origin "$(git_remote_from_hub $hub $repo_name)"
         for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
             branch_name=$(basename ${branch_dir})
             git checkout -b ${branch_name}
