@@ -96,39 +96,32 @@ done
 
 ## TODO: Our push script should push all generated repositories and DVC elements
 
-# PUSH_SCRIPT="${REPO_ROOT}/push-${PROJECT_NAME}.bash"
-#
-# cat > "${PUSH_SCRIPT}" <<EOF
-# #!/usr/bin/env bash
-#
-# set -veux
-#
-# pushd ${REPO_PATH}
-#
-# dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
-# dvc push
-#
-# git remote add origin "git@github.com:iterative/${PROJECT_NAME}.git"
-#
-# # Delete all tags in the remote
-# for tag in \$(git ls-remote --tags origin | grep -v '{}$' | cut -c 52-) ; do
-#     git push -v origin --delete \${tag}
-# done
-#
-# # Delete all experiments in the remote
-# git ls-remote origin 'refs/exps/*' | cut -f 2 | while read exppath ; do
-#    git push -d origin "\${exppath}"
-# done
-#
-# git push --force origin --all
-# # We use lightweight tags so --follow-tags don't work
-# git push --force origin --tags
-# dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
-# popd
-# EOF
-#
-# chmod u+x "${PUSH_SCRIPT}"
-#
+PUSH_SCRIPT="${REPO_ROOT}/push-${PROJECT_NAME}.bash"
+
+cat > "${PUSH_SCRIPT}" <<EOF
+#!/usr/bin/env bash
+
+set -veux
+
+for hub in ${hubs} ; do
+    mkdir -p ${REPO_ROOT}/${hub}
+    for source_dir in $(find ${HERE}/${hub}/ -maxdepth 1 -mindepth 1 -type d) ; do
+        repo_name=$(basename ${source_dir})
+        target_dir="${REPO_ROOT}/${hub}/${repo_name}"
+        pushd \${target_dir}
+        ## We are pushing the branches one by one to prevent "seed" branch to appear
+        for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
+            branch_name=$(basename ${branch_dir})
+            git checkout \${branch_name}
+            dvc push
+            git push --force -u origin
+        done
+        popd
+done
+EOF
+
+chmod u+x "${PUSH_SCRIPT}"
+
 popd
 
 cat << EOF
