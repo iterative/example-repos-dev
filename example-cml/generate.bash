@@ -70,7 +70,6 @@ for hub in ${hubs} ; do
         rm -rf .git
         git init --initial-branch=seed
         git add *
-        git add .*
         git commit -m "Initial commit from files in ${SEED_REPO}"
         git remote add origin "$(git_remote_from_hub $hubname $repo_name)"
         for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
