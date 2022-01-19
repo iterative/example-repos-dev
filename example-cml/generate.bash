@@ -104,14 +104,13 @@ cat > "${PUSH_SCRIPT}" <<EOF
 set -veux
 
 for hub in ${hubs} ; do
-    mkdir -p ${REPO_ROOT}/${hub}
-    for source_dir in $(find ${HERE}/${hub}/ -maxdepth 1 -mindepth 1 -type d) ; do
-        repo_name=$(basename ${source_dir})
-        target_dir="${REPO_ROOT}/${hub}/${repo_name}"
+    for source_dir in \$(find ${HERE}/${hub}/ -maxdepth 1 -mindepth 1 -type d) ; do
+        repo_name=\$(basename ${source_dir})
+        target_dir="${REPO_ROOT}/\${hub}/\${repo_name}"
         pushd \${target_dir}
         ## We are pushing the branches one by one to prevent "seed" branch to appear
-        for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
-            branch_name=$(basename ${branch_dir})
+        for branch_dir in \$(find \${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
+            branch_name=\$(basename \${branch_dir})
             git checkout \${branch_name}
             dvc push
             git push --force -u origin
