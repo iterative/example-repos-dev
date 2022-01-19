@@ -7,7 +7,7 @@ export HERE
 PROJECT_NAME="example-cml"
 PROJECT_SUFFIX="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 
-SEED_REPO="https://github.com/iterative/example-cml"
+SEED_REPO="git@github.com:iterative/example_cml"
 
 export REPO_ROOT="${HERE}/build/${PROJECT_NAME}-${PROJECT_SUFFIX}"
 
