@@ -61,7 +61,7 @@ git_remote_from_hub() {
 
 for hub in ${hubs} ; do
     mkdir -p ${REPO_ROOT}/${hub}
-    for source_dir in "$(find ${HERE}/${hub} -type d --depth 1)" ; do
+    for source_dir in "$(find ${HERE}/${hub} -type d -maxdepth 1)" ; do
         repo_name=$(basename ${source_dir})
         target_dir="${REPO_ROOT}/${hub}/${repo_name}"
         git clone --depth=1 ${SEED_DIR} ${target_dir}
@@ -73,7 +73,7 @@ for hub in ${hubs} ; do
         git add .*
         git commit -m "Initial commit from files in ${SEED_REPO}"
         git remote add origin "$(git_remote_from_hub $hubname $repo_name)"
-        for branch_dir in "$(find ${source_dir} -type d --depth 1)" ; do
+        for branch_dir in "$(find ${source_dir} -type d -maxdepth 1)" ; do
             branch_name=$(basename ${branch_dir})
             git checkout -b ${branch_name}
             cp -r ${branch_dir}/* ${target_dir}
