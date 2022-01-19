@@ -68,7 +68,7 @@ for hub in ${hubs} ; do
         pushd ${target_dir}
         # Delete git to reinit
         rm -rf .git
-        git  init --initial-branch=seed
+        git init --initial-branch=seed
         git add *
         git add .*
         git commit -m "Initial commit from files in ${SEED_REPO}"
