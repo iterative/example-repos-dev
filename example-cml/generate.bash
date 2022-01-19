@@ -69,7 +69,7 @@ for hub in ${hubs} ; do
         # Delete git to reinit
         rm -rf .git
         git init --initial-branch=seed
-        git add *
+        git add .
         git commit -m "Initial commit from files in ${SEED_REPO}"
         git remote add origin "$(git_remote_from_hub $hub $repo_name)"
         for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
@@ -83,7 +83,7 @@ for hub in ${hubs} ; do
                 rm -f "${BRANCH_MODIFY_SCRIPT}"
             fi
 
-            git add *
+            git add .
             git commit -m "Modifications for ${branch_name}"
             # move this to push script
             # git branch --set-upstream-to=origin/${branch_name}
