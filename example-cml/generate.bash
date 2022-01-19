@@ -84,7 +84,6 @@ for hub in ${hubs} ; do
             fi
 
             git add *
-            git add .*
             git commit -m "Modifications for ${branch_name}"
             git branch --set-upstream-to=origin/${branch_name}
             git status -s
