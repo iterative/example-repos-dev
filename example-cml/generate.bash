@@ -42,8 +42,8 @@ BRANCH_MODIFY_SCRIPT="modify-branch.bash"
 mkdir -p "${REPO_ROOT}"
 pushd "${REPO_ROOT}"
 
-git clone "${SEED_REPO}"
-SEED_DIR=$(basename "${SEED_REPO}")
+# git clone "${SEED_REPO}"
+# SEED_DIR=$(basename "${SEED_REPO}")
 
 hubs=(github)
 
@@ -64,7 +64,7 @@ for hub in ${hubs} ; do
     for source_dir in $(find ${HERE}/${hub}/ -maxdepth 1 -mindepth 1 -type d) ; do
         repo_name=$(basename ${source_dir})
         target_dir="${REPO_ROOT}/${hub}/${repo_name}"
-        git clone --depth=1 ${SEED_DIR} ${target_dir}
+        git clone --depth=1 ${SEED_REPO} ${target_dir}
         pushd ${target_dir}
         # Delete git to reinit
         rm -rf .git
@@ -75,7 +75,7 @@ for hub in ${hubs} ; do
         for branch_dir in $(find ${source_dir}  -maxdepth 1 -mindepth 1 -type d) ; do
             branch_name=$(basename ${branch_dir})
             git checkout -b ${branch_name}
-            cp -r ${branch_dir}/* ${target_dir}
+            cp -r ${branch_dir}/. ${target_dir}
             if [[ -f  "${BRANCH_MODIFY_SCRIPT}" ]] ; then
                 chmod u+x "${BRANCH_MODIFY_SCRIPT}"
                 bash -c "${BRANCH_MODIFY_SCRIPT}"
@@ -85,7 +85,8 @@ for hub in ${hubs} ; do
 
             git add *
             git commit -m "Modifications for ${branch_name}"
-            git branch --set-upstream-to=origin/${branch_name}
+            # move this to push script
+            # git branch --set-upstream-to=origin/${branch_name}
             git status -s
             git checkout seed
         done
