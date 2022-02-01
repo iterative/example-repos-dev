@@ -101,12 +101,6 @@ def main():
         callbacks=[DvcLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
     )
 
-    # with open("logs.csv", "w") as f:
-    #     f.write(history_to_csv(history))
-    #
-    # model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    # m.save(model_file)
-
     metrics_dict = m.evaluate(
         testing_images,
         testing_labels,
