@@ -80,50 +80,35 @@ time dvc get https://github.com/iterative/dataset-registry \
 
 time dvc init
 
-# tag_tick
-# git add .dvc
-# git commit -m "Initialized DVC"
-# git tag "dvc-init"
-#
-# dvc add data/images.tar.gz
-
-time dvc exp init python3 src/train.py
+dvc exp init python3 src/train.py
 ## it doesn't add data/ so adding it manually
-time dvc add data/images.tar.gz
+dvc add data/images.tar.gz
 tag_tick
 git add .
 git commit -m "added .dvc, initialized experiment and added data"
 git status
 git tag "dvc-exp-init-run"
 
-# tag_tick
-# add_main_pipeline
-# git add dvc.yaml data/.gitignore models/.gitignore
-# git commit -m "Added experiments pipeline"
-# git tag "created-pipeline"
-#
-# tag_tick
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add --default --local storage s3://dvc-public/remote/example-dvc-experiments
 dvc remote add --default storage https://remote.dvc.org/example-dvc-experiments
-# git add .dvc
-# git commit -m "Added DVC remote"
-# git tag "configured-remote"
+git add .dvc
+git commit -m "Added DVC remote"
+git tag "configured-remote"
 
 git tag "get-started"
 
-time dvc exp run
+dvc exp run
 tag_tick
 git status
-# git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
 git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
-time dvc exp run -n cnn-32 --queue -S model.conv_units=32
-time dvc exp run -n cnn-64 --queue -S model.conv_units=64
-time dvc exp run -n cnn-96 --queue -S model.conv_units=96
-time dvc exp run -n cnn-128 --queue -S model.conv_units=128
+dvc exp run -n cnn-32 --queue -S model.conv_units=32
+dvc exp run -n cnn-64 --queue -S model.conv_units=64
+dvc exp run -n cnn-96 --queue -S model.conv_units=96
+dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
 time dvc exp run --run-all --jobs 2
 
