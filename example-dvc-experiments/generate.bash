@@ -66,9 +66,11 @@ cp -r "${HERE}"/code/src .
 cp "${HERE}"/code/requirements.txt .
 cp "${HERE}"/code/requirements-macos.txt .
 cp "${HERE}"/code/params.yaml .
-## We are assuming the repo is generated in Linux
-## Otherwise the following line must be changed to have requirements-macos.txt
-pip install -r "${REPO_PATH}"/requirements.txt
+if [[ $(uname -s) == 'Darwin' ]] ; then
+    pip install -r "${REPO_PATH}"/requirements-macos.txt
+else
+    pip install -r "${REPO_PATH}"/requirements.txt
+fi
 tag_tick
 git add .
 git commit -m "Added requirements.txt, source code and params"
