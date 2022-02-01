@@ -4,7 +4,7 @@ set -veux
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 export HERE
-PROJECT_NAME="example-dvc-staging"
+PROJECT_NAME="example-dvc-experiments"
 REPO_NAME="$(git rev-parse --short HEAD)-$(date +%F-%H-%M-%S)"
 export REPO_NAME
 
@@ -78,7 +78,7 @@ test -d data/ || mkdir -p data/
 time dvc get https://github.com/iterative/dataset-registry \
         mnist/images.tar.gz -o data/images.tar.gz
 
-time dvc init
+dvc init
 
 dvc exp init python3 src/train.py
 ## it doesn't add data/ so adding it manually
@@ -110,9 +110,9 @@ dvc exp run -n cnn-64 --queue -S model.conv_units=64
 dvc exp run -n cnn-96 --queue -S model.conv_units=96
 dvc exp run -n cnn-128 --queue -S model.conv_units=128
 
-time dvc exp run --run-all --jobs 2
+dvc exp run --run-all --jobs 2
 
-time dvc exp show --no-pager
+dvc exp show --no-pager
 
 git status
 
