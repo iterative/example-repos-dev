@@ -75,7 +75,7 @@ git commit -m "Added requirements.txt, source code and params"
 git tag "source-code"
 
 test -d data/ || mkdir -p data/
-time dvc get https://github.com/iterative/dataset-registry \
+dvc get https://github.com/iterative/dataset-registry \
         mnist/images.tar.gz -o data/images.tar.gz
 
 dvc init
