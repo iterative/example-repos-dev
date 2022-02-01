@@ -9,6 +9,9 @@ def label_from_path(filepath):
     return (elements[1], int(elements[2]))
 
 def read_dataset(dataset_path):
+    """Reads the dataset from the specified tar.gz file and returns 4-tuple of
+    numpy arrays (training_images, training_labels, testing_images,
+    testing_labels)"""
     ds = tarfile.open(name=dataset_path, mode='r:gz')
     training, testing = [], []
     print(f"Reading dataset from {dataset_path}")
