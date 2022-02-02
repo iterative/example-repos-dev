@@ -3,11 +3,13 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import tensorflow as tf
 import numpy as np
-from util import load_params, read_labeled_images
+from util import load_params, read_labeled_images, label_from_path, read_dataset, create_image_matrix
 import json
+import tarfile
+import imageio
+from dvclive.keras import DvcLiveCallback
 
-INPUT_DIR = "data/images"
-RESUME_PREVIOUS_MODEL = False
+DATASET_FILE = "data/images.tar.gz"
 OUTPUT_DIR = "models"
 
 METRICS_FILE = "metrics.json"
@@ -67,14 +69,10 @@ def history_to_csv(history):
 
 def main():
     params = load_params()
-    m = get_model()
+    m = get_model(conv_units=params['model']['conv_units'])
     m.summary()
 
-    training_images, training_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'train/'))
-    testing_images, testing_labels = read_labeled_images(
-        os.path.join(INPUT_DIR, 'test/')
-    )
+    training_images, training_labels, testing_images, testing_labels = read_dataset(DATASET_FILE)
 
     assert training_images.shape[0] + testing_images.shape[0] == 70000
     assert training_labels.shape[0] + testing_labels.shape[0] == 70000
@@ -100,13 +98,8 @@ def main():
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
+        callbacks=[DvcLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
     )
-
-    with open("logs.csv", "w") as f:
-        f.write(history_to_csv(history))
-
-    model_file = os.path.join(OUTPUT_DIR, "model.h5")
-    m.save(model_file)
 
     metrics_dict = m.evaluate(
         testing_images,
@@ -118,6 +111,25 @@ def main():
     with open(METRICS_FILE, "w") as f:
         f.write(json.dumps(metrics_dict))
 
+    misclassified = {}
+
+    # predictions for the confusion matrix
+    y_prob = m.predict(x_valid)
+    y_pred = y_prob.argmax(axis=-1)
+    os.makedirs("plots")
+    with open("plots/confusion.csv", "w") as f:
+        f.write("actual,predicted\n")
+        sx = y_valid.shape[0]
+        for i in range(sx):
+            actual=y_valid[i].argmax()
+            predicted=y_pred[i]
+            f.write(f"{actual},{predicted}\n")
+            misclassified[(actual, predicted)] = x_valid[i]
+
+
+    # find misclassified examples and generate a confusion table image
+    confusion_out = create_image_matrix(misclassified)
+    imageio.imwrite("plots/confusion.png", confusion_out)
 
 if __name__ == "__main__":
     main()

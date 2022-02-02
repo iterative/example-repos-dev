@@ -40,30 +40,6 @@ mkdir -p "${REPO_ROOT}"
 pushd "${REPO_ROOT}"
 
 
-add_main_pipeline() {
-
-    dvc stage add -n extract \
-        -d data/images.tar.gz \
-        --outs-no-cache data/images/ \
-        tar -xzf data/images.tar.gz --directory data
-    # The following is not added automatically as we use --no-cache
-
-    echo "/images/" >> data/.gitignore
-
-    mkdir -p models
-
-    dvc stage add -n train \
-                -d data/images/ \
-                -d src/train.py \
-                -p model.conv_units \
-                -p train.epochs \
-                --outs models/model.h5 \
-                --plots-no-cache logs.csv \
-                --metrics-no-cache metrics.json \
-                python3 src/train.py
-
-}
-
 export REPO_PATH="${REPO_ROOT}/${PROJECT_NAME}"
 
 mkdir -p "$REPO_PATH"
@@ -73,7 +49,7 @@ virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
-pip install 'dvc[all]'
+pip install git+https://github.com/iterative/dvc.git 'dvc[all]'
 
 git init
 git checkout -b main
@@ -87,37 +63,33 @@ git tag "git-init"
 
 cp -r "${HERE}"/code/src .
 cp "${HERE}"/code/requirements.txt .
+cp "${HERE}"/code/requirements-macos.txt .
 cp "${HERE}"/code/params.yaml .
-pip install -r "${REPO_PATH}"/requirements.txt
+if [[ $(uname -s) == 'Darwin' ]] ; then
+    pip install -r "${REPO_PATH}"/requirements-macos.txt
+else
+    pip install -r "${REPO_PATH}"/requirements.txt
+fi
 tag_tick
 git add .
-git commit -m "Added source and params"
+git commit -m "Added requirements.txt, source code and params"
 git tag "source-code"
 
 test -d data/ || mkdir -p data/
 dvc get https://github.com/iterative/dataset-registry \
-        fashion-mnist/images.tar.gz -o data/images.tar.gz
+        mnist/images.tar.gz -o data/images.tar.gz
 
 dvc init
 
-tag_tick
-git add .dvc
-git commit -m "Initialized DVC"
-git tag "dvc-init"
-
+dvc exp init python3 src/train.py
+## it doesn't add data/ so adding it manually
 dvc add data/images.tar.gz
 tag_tick
-git add data/images.tar.gz.dvc data/.gitignore
-git commit -m "Added Fashion-MNIST images in tar.gz format"
-git tag "added-data"
+git add .
+git commit -m "added .dvc, initialized experiment and added data"
+git status
+git tag "dvc-exp-init-run"
 
-tag_tick
-add_main_pipeline
-git add dvc.yaml data/.gitignore models/.gitignore
-git commit -m "Added experiments pipeline"
-git tag "created-pipeline"
-
-tag_tick
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add --default --local storage s3://dvc-public/remote/example-dvc-experiments
 dvc remote add --default storage https://remote.dvc.org/example-dvc-experiments
@@ -127,10 +99,10 @@ git tag "configured-remote"
 
 git tag "get-started"
 
-# dvc exp run is not suitable for the first run due to missing file warnings
-dvc repro
+dvc exp run
 tag_tick
-git add models/.gitignore data/.gitignore dvc.lock logs.csv metrics.json
+git status
+git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
@@ -157,6 +129,9 @@ set -veux
 # exists first and that you have appropriate write permissions.
 
 pushd ${REPO_PATH}
+
+# We use DVC we installed to the venv in generation.
+source .venv/bin/activate
 
 dvc remote add --force --default storage s3://dvc-public/remote/${PROJECT_NAME}/
 dvc push
