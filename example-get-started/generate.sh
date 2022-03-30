@@ -196,7 +196,7 @@ If the Github repo already exists, run these commands to rewrite it:
 
 cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
-git push --force origin master
+git push --force origin main
 git push --force origin --tags
 
 Run these to drop and then rewrite the experiment references on the repo:
