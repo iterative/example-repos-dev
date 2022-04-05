@@ -20,8 +20,12 @@ jobs:
           cml publish prc.svg --title "Precision & Recall" --md >> report.md
 
           echo "## Metrics" >> report.md
-          echo "### bigrams-experiment → workspace" >> report.md
-          PREVIOUS_REV=$(if [ ${GITHUB_REF##*/}x = "main"x ]; then echo "HEAD^1"; else echo "main"; fi)
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]] ; then
+            PREVIOUS_REF='HEAD^1'
+          else
+            PREVIOUS_REF='main'
+          fi
+          echo "### $PREVIOUS_REV → workspace" >> report.md
           dvc metrics diff $PREVIOUS_REV --show-md >> report.md
 
           cml send-comment report.md
