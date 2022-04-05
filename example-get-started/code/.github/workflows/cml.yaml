@@ -14,13 +14,14 @@ jobs:
           echo "# CML Report" > report.md
 
           echo "## Plots" >> report.md
-          dvc plots diff bigrams-experiment workspace \
+          dvc plots diff main \
             --show-vega --targets prc.json > vega.json
           vl2svg vega.json prc.svg
           cml publish prc.svg --title "Precision & Recall" --md >> report.md
 
           echo "## Metrics" >> report.md
           echo "### bigrams-experiment → workspace" >> report.md
-          dvc metrics diff bigrams-experiment --show-md >> report.md
+          PREVIOUS_REV=$(if [ ${GITHUB_REF##*/}x = "main"x ]; then echo "HEAD^1"; else echo "main"; fi)
+          dvc metrics diff $PREVIOUS_REV --show-md >> report.md
 
           cml send-comment report.md
