@@ -21,7 +21,7 @@ jobs:
 
           echo "## Metrics" >> report.md
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]] ; then
-            PREVIOUS_REF='HEAD^1'
+            PREVIOUS_REF='HEAD~1'
           else
             PREVIOUS_REF='main'
           fi
