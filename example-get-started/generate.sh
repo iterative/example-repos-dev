@@ -28,8 +28,8 @@ tick(){
   export GIT_COMMITTER_DATE=${TAG_TIME}
 }
 
-export GIT_AUTHOR_NAME="Olivaw Owlet"
-export GIT_AUTHOR_EMAIL="64868532+iterative-olivaw@users.noreply.github.com"
+export GIT_AUTHOR_NAME="Ivan Shcheklein"
+export GIT_AUTHOR_EMAIL="shcheklein@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
@@ -155,6 +155,11 @@ git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
+export GIT_AUTHOR_NAME=" Dave Berenbaum"
+export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
+export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+
 dvc exp run --set-param featurize.max_features=3000
 dvc exp run --queue --set-param train.min_split=8
 dvc exp run --queue --set-param train.min_split=64
@@ -170,6 +175,18 @@ git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
 git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
+
+export GIT_AUTHOR_NAME="Dmitry Petrov"
+export GIT_AUTHOR_EMAIL="dmitry.petrov@nevesomo.com"
+export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+
+git checkout -b "try-large-dataset"
+
+dvc update data/data.xml.dvc --rev 100K
+dvc repro
+dvc push
+git commit -am "Try 100K dataset (4x data)"
 
 popd
 
@@ -197,11 +214,12 @@ If the Github repo already exists, run these commands to rewrite it:
 cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
 git push --force origin main
+git push --force origin try-large-dataset
 git push --force origin --tags
 
 Run these to drop and then rewrite the experiment references on the repo:
 
-git ls-remote origin "refs/exps/*" | awk '{print $2}' | xargs -n 1 git push -d origin
+git ls-remote origin "refs/exps/*" | awk '{print \$2}' | xargs -n 1 git push -d origin
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 
 Finally, return to the directory where you started:
