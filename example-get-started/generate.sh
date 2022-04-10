@@ -218,7 +218,7 @@ git push --force origin --tags
 
 Run these to drop and then rewrite the experiment references on the repo:
 
-git ls-remote origin "refs/exps/*" | awk '{print \$2}' | xargs -n 1 git push -d origin
+git ls-remote origin "refs/exps/*" | awk '{print \\$2}' | xargs -n 1 git push -d origin
 dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 
 Finally, return to the directory where you started:
