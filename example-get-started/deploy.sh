@@ -12,7 +12,7 @@ rm -rf $TEST_DIR
 mkdir $TEST_DIR
 
 pushd $PACKAGE_DIR
-zip -r $PACKAGE params.yaml src/* .github/*
+zip -r $PACKAGE params.yaml src/* .github/* .devcontainer/*
 popd
 
 # Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
