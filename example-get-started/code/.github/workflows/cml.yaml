@@ -11,21 +11,21 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cml ci
-          echo "# CML Report" > report.md
+          if [ $GITHUB_REF = refs/heads/main ]; then
+            PREVIOUS_REF=HEAD~1
+          else
+            PREVIOUS_REF=main
+          fi
 
+          echo "# CML Report" > report.md
           echo "## Plots" >> report.md
-          dvc plots diff main \
+          dvc plots diff $PREVIOUS_REF workspace \
             --show-vega --targets prc.json > vega.json
           vl2svg vega.json prc.svg
           cml publish prc.svg --title "Precision & Recall" --md >> report.md
 
           echo "## Metrics" >> report.md
-          if [[ "${GITHUB_REF}" == "refs/heads/main" ]] ; then
-            PREVIOUS_REF='HEAD~1'
-          else
-            PREVIOUS_REF='main'
-          fi
-          echo "### $PREVIOUS_REV → workspace" >> report.md
-          dvc metrics diff $PREVIOUS_REV --show-md >> report.md
+          echo "### $PREVIOUS_REF → workspace" >> report.md
+          dvc metrics diff $PREVIOUS_REF --show-md >> report.md
 
           cml send-comment report.md
