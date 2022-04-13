@@ -11,10 +11,10 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cml ci
-          if [ "$GITHUB_REF" = "refs/heads/main" ] ; then
-            PREVIOUS_REF='HEAD~1'
+          if [ $GITHUB_REF = refs/heads/main ]; then
+            PREVIOUS_REF=HEAD~1
           else
-            PREVIOUS_REF='main'
+            PREVIOUS_REF=main
           fi
 
           echo "# CML Report" > report.md
