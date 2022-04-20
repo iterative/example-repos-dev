@@ -9,7 +9,7 @@ introduction into basic MLEM concepts.
 
 ## Installation
 
-Python 3.6+ is required to run code from this repo.
+Python 3.7+ is required to run code from this repo.
 
 ```console
 $ git clone https://github.com/iterative/example-mlem-get-started
@@ -32,6 +32,3 @@ This project with the help of the Git tags reflects the sequence of actions that
 are run in the MLEM [get started](https://mlem.ai/doc/get-started) guide. Feel
 free to checkout one of them and play with the MLEM commands having the
 playground ready.
-
-[comment]: <> (TODO)
-- `0-git-init`: Empty Git repository initialized.
