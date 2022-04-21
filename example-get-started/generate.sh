@@ -41,7 +41,8 @@ export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
 
-pip install gitpython
+# Installing from main since we'd like to update repo before
+# the release
 pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
 git init
