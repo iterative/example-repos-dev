@@ -1,0 +1,46 @@
+name: Act on git tags produced by GTO
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  act:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - run: |
+        set +e
+        # https://stackoverflow.com/questions/10312521/how-to-fetch-all-git-branches
+        git tag | xargs git tag -d
+        for remote in `git branch -r`; do git branch --track ${remote#origin/} $remote; done
+        git fetch --all --prune --tags
+        git pull --all
+        set -e
+    - uses: actions/setup-python@v2
+    - name: set PYSHA
+      run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit|${{ env.PYSHA }}|${{ hashFiles('.pre-commit-config.yaml') }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+    - name: Show current repo state
+      run: |
+        gto show
+        gto history
+    - name: Figure out what was registered/promoted
+      run: |
+        cat << EOF
+        Here GTO analyzes the GIT REF that triggered the workflow.
+        If it registered a version or promoted it to an environment,
+        you can see it and act accordingly, e.g. trigger release or deploy.
+        EOF
+        echo "Github ref is $GITHUB_REF"
+        gto check-ref $GITHUB_REF
