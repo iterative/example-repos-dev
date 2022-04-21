@@ -96,13 +96,11 @@ tick
 git commit -m "Evaluate model"
 git tag -a "4-eval" -m "Metrics calculated"
 
-git rm -r --cached .mlem/
-git commit -m "stop tracking data"
-
 dvc init
 dvc remote add myremote --local azure://example-mlem
 dvc remote add default -d https://examplemlem.blob.core.windows.net/example-mlem
 mlem config set default_storage.type dvc
+git rm -r --cached .mlem/
 python train.py
 echo "/**/?*.mlem" > .dvcignore
 dvc add .mlem/model/rf .mlem/dataset/*.csv
