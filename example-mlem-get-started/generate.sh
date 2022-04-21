@@ -1,5 +1,5 @@
 #!/bin/bash
-# See https://dvc.org/doc/tutorials/get-started
+# See https://mlem.ai/doc/get-started
 
 # Setup script env:
 #   e   Exit immediately if a command exits with a non-zero exit status.
