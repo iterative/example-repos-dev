@@ -19,7 +19,6 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
   echo '.venv/' > .gitignore
-  pip install gitpython
   pip install "git+https://github.com/iterative/mlem#egg=mlem[all]" --use-deprecated=legacy-resolver
   pip install -r $HERE/code/src/requirements.txt
 fi
@@ -109,6 +108,14 @@ tick
 git commit -m "Switch to dvc storage"
 git tag -a "5-switch-to-dvc" -m "Switched to DVC"
 dvc push -r myremote
+
+mlem create packager pip pip_config -c target=build/ -c package_name=example_mlem_get_started
+git add .mlem/packager/pip_config.mlem
+tick
+git commmit -m "Add package config"
+git tag -a "6-pack" -m "Pip package config added"
+
+
 
 popd
 
