@@ -3,9 +3,12 @@ on: push
 jobs:
   run:
     runs-on: [ubuntu-latest]
-    container: docker://dvcorg/cml:0-dvc2-base1
     steps:
-      - uses: actions/checkout@v2
+      - uses: iterative/setup-cml@v1
+      - uses: iterative/setup-dvc@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: Generate metrics report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,3 +32,4 @@ jobs:
           dvc metrics diff $PREVIOUS_REF --show-md >> report.md
 
           cml send-comment report.md
+
