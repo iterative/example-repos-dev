@@ -17,7 +17,9 @@ popd
 
 # Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
 mv $PACKAGE_DIR/$PACKAGE .
-aws s3 cp --acl public-read $PACKAGE s3://dvc-public/code/get-started/$PACKAGE
+#aws s3 cp --acl public-read $PACKAGE s3://dvc-public/code/get-started/$PACKAGE
+
+exit
 
 # Sanity check
 wget https://code.dvc.org/get-started/$PACKAGE -O $TEST_PACKAGE

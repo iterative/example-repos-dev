@@ -23,13 +23,17 @@ jobs:
           echo "# CML Report" > report.md
           echo "## Plots" >> report.md
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets prc.json > vega.json
+            --show-vega --targets evaluation/plots/precision_recall.json > vega.json
           vl2svg vega.json prc.svg
           cml publish prc.svg --title "Precision & Recall" --md >> report.md
+
+          dvc plots show \
+            --show-vega evaluation/plots/predictions.json > vega.json
+          vl2svg vega.json confusion.svg
+          cml publish confusion.svg --title "Confusion Matrix" --md >> report.md
 
           echo "## Metrics" >> report.md
           echo "### $PREVIOUS_REF → workspace" >> report.md
           dvc metrics diff $PREVIOUS_REF --show-md >> report.md
 
           cml send-comment report.md
-

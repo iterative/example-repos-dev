@@ -38,7 +38,7 @@ def get_df(data):
     return df
 
 
-def save_matrix(df, matrix, output):
+def save_matrix(df, matrix, names, output):
     id_matrix = sparse.csr_matrix(df.id.astype(np.int64)).T
     label_matrix = sparse.csr_matrix(df.label.astype(np.int64)).T
 
@@ -48,7 +48,7 @@ def save_matrix(df, matrix, output):
     sys.stderr.write(msg.format(output, result.shape, result.dtype))
 
     with open(output, "wb") as fd:
-        pickle.dump(result, fd)
+        pickle.dump((result, names), fd)
     pass
 
 
@@ -64,11 +64,12 @@ bag_of_words = CountVectorizer(
 
 bag_of_words.fit(train_words)
 train_words_binary_matrix = bag_of_words.transform(train_words)
+feature_names = bag_of_words.get_feature_names_out()
 tfidf = TfidfTransformer(smooth_idf=False)
 tfidf.fit(train_words_binary_matrix)
 train_words_tfidf_matrix = tfidf.transform(train_words_binary_matrix)
 
-save_matrix(df_train, train_words_tfidf_matrix, train_output)
+save_matrix(df_train, train_words_tfidf_matrix, feature_names, train_output)
 
 # Generate test feature matrix
 df_test = get_df(test_input)
@@ -76,4 +77,4 @@ test_words = np.array(df_test.text.str.lower().values.astype("U"))
 test_words_binary_matrix = bag_of_words.transform(test_words)
 test_words_tfidf_matrix = tfidf.transform(test_words_binary_matrix)
 
-save_matrix(df_test, test_words_tfidf_matrix, test_output)
+save_matrix(df_test, test_words_tfidf_matrix, feature_names, test_output)

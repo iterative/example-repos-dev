@@ -60,7 +60,7 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
-  get-started/data.xml -o data/data.xml
+  get-started/data.xml -o data/data.xml --rev 95d720c467496ea6c15dd2c5d5ad48bbb631d8b1
 dvc add data/data.xml --desc "Initial XML StackOverflow dataset (raw data)"
 git add data/.gitignore data/data.xml.dvc
 tick
@@ -79,7 +79,7 @@ dvc push
 
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
-  get-started/data.xml -o data/data.xml \
+  get-started/data.xml -o data/data.xml --rev 95d720c467496ea6c15dd2c5d5ad48bbb631d8b1 \
   --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
 tick
@@ -87,7 +87,8 @@ git commit -m "Import raw data (overwrite)"
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 dvc push
 
-wget https://code.dvc.org/get-started/code.zip
+cp $HERE/code.zip .
+#wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
 pip install -r src/requirements.txt
@@ -127,27 +128,35 @@ git commit -m "Create ML pipeline stages"
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
 dvc push
 
+
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -M scores.json \
-  --plots-no-cache prc.json \
-  --plots-no-cache roc.json \
-  python src/evaluate.py model.pkl data/features scores.json prc.json roc.json
-dvc plots modify prc.json -x recall -y precision
-dvc plots modify roc.json -x fpr -y tpr
-git add .gitignore dvc.yaml dvc.lock prc.json roc.json scores.json
+  -M evaluation.json \
+  --plots-no-cache evaluation/plots/precision_recall.json \
+  --plots-no-cache evaluation/plots/roc.json \
+  --plots-no-cache evaluation/plots/predictions.json \
+  --plots evaluation/importance.png \
+  python src/evaluate.py model.pkl data/features
+dvc plots modify evaluation/plots/precision_recall.json -x recall -y precision
+dvc plots modify evaluation/plots/roc.json -x fpr -y tpr
+dvc plots modify evaluation/plots/predictions.json \
+    -x actual -y predicted -t confusion
+git add .gitignore dvc.yaml dvc.lock evaluation.json evaluation
 tick
 git commit -m "Create evaluation stage"
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 dvc push
 
-sed -e "s/max_features: 500/max_features: 1500/" -i".bkp" params.yaml
+
+sed -e "s/max_features: 100/max_features: 200/" -i".bkp" params.yaml
 sed -e "s/ngrams: 1/ngrams: 2/" -i".bkp" params.yaml
 dvc repro train
 tick
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
+dvc push
+
 
 dvc repro evaluate
 tick
@@ -156,12 +165,14 @@ git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
-export GIT_AUTHOR_NAME=" Dave Berenbaum"
+
+export GIT_AUTHOR_NAME="Dave Berenbaum"
 export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-dvc exp run --set-param featurize.max_features=3000
+git checkout -b "tune-hyperparams"
+
 dvc exp run --queue --set-param train.min_split=8
 dvc exp run --queue --set-param train.min_split=64
 dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
@@ -176,6 +187,8 @@ git tag -a "random-forest-experiments" -m "Run experiments to tune random forest
 git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
 
+git checkout main
+
 export GIT_AUTHOR_NAME="Dmitry Petrov"
 export GIT_AUTHOR_EMAIL="dmitry.petrov@nevesomo.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
@@ -183,10 +196,11 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 git checkout -b "try-large-dataset"
 
-dvc update data/data.xml.dvc --rev 100K
+dvc update data/data.xml.dvc --rev cf6481baf56f156aa0876709cc231aaf3f3a3c29
+sed -e "s/max_features: 200/max_features: 500/" -i".bkp" params.yaml
 dvc repro
 dvc push
-git commit -am "Try 100K dataset (4x data)"
+git commit -am "Try a 40K dataset (4x data)"
 
 popd
 
@@ -215,6 +229,7 @@ cd build/example-get-started
 git remote add origin git@github.com:iterative/example-get-started.git
 git push --force origin main
 git push --force origin try-large-dataset
+git push --force origin tune-hyperparams
 git push --force origin --tags
 
 Run these to drop and then rewrite the experiment references on the repo:
@@ -237,4 +252,3 @@ You may remove the generated repo with:
 rm -fR build
 
 `"
-
