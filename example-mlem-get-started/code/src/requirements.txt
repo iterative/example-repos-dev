@@ -1,4 +1,8 @@
 pandas
 scikit-learn
 scipy
-dvc[azure]
+dvc[azure,s3]
+fastapi
+uvicorn
+docker
+mlem

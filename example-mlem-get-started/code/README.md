@@ -4,6 +4,9 @@ This is an auto-generated repository for use in MLEM
 [Get Started](https://mlem.ai/doc/get-started). It is a step-by-step quick
 introduction into basic MLEM concepts.
 
+The main branch contains only the code needed for the tutorial. Results of each step can be found in tags, and resulting state in correctponding branches.
+
+
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
 
@@ -11,8 +14,10 @@ introduction into basic MLEM concepts.
 
 Python 3.7+ is required to run code from this repo.
 
+To be able to commit and push your results please fork and then clone this repo
+
 ```console
-$ git clone https://github.com/iterative/example-mlem-get-started
+$ gh repo fork https://github.com/iterative/example-mlem-get-started
 $ cd example-mlem-get-started
 ```
 
@@ -21,9 +26,9 @@ recommend creating a virtual environment with a tool such as
 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
 ```console
-$ virtualenv -p python3 .env
+$ python3 -m venv .env
 $ source .env/bin/activate
-$ pip install -r src/requirements.txt
+$ pip install -r requirements
 ```
 
 ## Existing stages

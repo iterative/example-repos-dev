@@ -33,7 +33,7 @@ if [ -d "$REPO_PATH" ]; then
   exit 1
 fi
 
-TOTAL_TAGS=5
+TOTAL_TAGS=12
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 export TAG_TIME=${BEGIN_TIME}
@@ -58,10 +58,18 @@ pushd $REPO_PATH
 git init -b main
 cp $HERE/code/README.md .
 cp $HERE/.gitattributes .
+cp $HERE/code/src/requirements.txt .
+cp $HERE/code/src/*.py .
 git add .
 tick
 git commit -m "Initialize Git repository"
 git tag -a "0-git-init" -m "Git initialized."
+
+
+################## MLEM
+
+git branch simple
+git checkout simple
 
 mlem init
 tick
@@ -69,10 +77,6 @@ git add .mlem/config.yaml
 git commit -m "Initialize MLEM project"
 git tag -a "1-mlem-init" -m "MLEM initialized."
 
-
-cp $HERE/code/src/requirements.txt .
-cp $HERE/code/src/prepare.py .
-git add .
 python prepare.py
 git add .mlem/dataset
 tick
@@ -95,27 +99,67 @@ tick
 git commit -m "Evaluate model"
 git tag -a "4-eval" -m "Metrics calculated"
 
-dvc init
-dvc remote add myremote --local azure://example-mlem
-dvc remote add default -d https://examplemlem.blob.core.windows.net/example-mlem
-mlem config set default_storage.type dvc
-git rm -r --cached .mlem/
-python train.py
-echo "/**/?*.mlem" > .dvcignore
-dvc add .mlem/model/rf .mlem/dataset/*.csv
-git add .mlem
-tick
-git commit -m "Switch to dvc storage"
-git tag -a "5-switch-to-dvc" -m "Switched to DVC"
-dvc push -r myremote
+mlem init s3://example-mlem-get-started
+mlem clone rf s3://example-mlem-get-started/rf
+
 
 mlem create packager pip pip_config -c target=build/ -c package_name=example_mlem_get_started
 git add .mlem/packager/pip_config.mlem
 tick
-git commmit -m "Add package config"
-git tag -a "6-pack" -m "Pip package config added"
+git commit -m "Add package config"
+git tag -a "5-pack" -m "Pip package config added"
+
+mlem create env heroku staging
+mlem create deployment heroku myservice -c app_name=example-mlem-get-started -c model=rf -c env=staging
+git add .mlem/env/staging.mlem .mlem/deployment/myservice.mlem
+tick
+git commit -m "Add env and deploy meta"
+git tag -a "6-deploy-meta" -m "Target env and deploy meta added"
+
+#mlem deploy create myservice
+#git add .mlem/deployment/myservice.mlem
+#tick
+#git commit -m "Deploy service"
+#git tag -a "7-deploy-create" -m "Deployment created"
 
 
+###################### DVC
+
+git checkout main
+git branch dvc
+git checkout dvc
+
+mlem init
+tick
+git add .mlem/config.yaml
+git commit -m "Initialize MLEM project"
+git tag -a "1-dvc-mlem-init" -m "MLEM initialized."
+
+dvc init
+dvc remote add myremote --local azure://example-mlem
+dvc remote add default -d https://examplemlem.blob.core.windows.net/example-mlem
+git add .dvc
+tick
+git commit -m "Init dvc"
+git tag -a "2-dvc-dvc-init" -m "DVC Initialized"
+
+
+mlem config set default_storage.type dvc
+echo "/**/?*.mlem" > .dvcignore
+git add .dvcignore .mlem
+tick
+git commit -m "Configure MLEM for DVC"
+git tag -a "3-dvc-mlme-config" -m "Configured MLEM to work with DVC"
+
+python prepare.py
+python train.py
+python evaluate.py
+dvc add .mlem/model/rf .mlem/dataset/*.csv
+git add .mlem .dvc metrics.json
+tick
+git commit -m "Run code with DVC"
+git tag -a "4-dvc-save-models" -m "Saved models with DVC storage"
+dvc push -r myremote
 
 popd
 
@@ -143,7 +187,7 @@ Run these commands to force push it:
 
 cd build/example-mlem-get-started
 git remote add origin  https://github.com/iterative/example-mlem-get-started
-git push --force origin main
+git push --force origin main simple dvc
 git push --force origin --tags
 cd ../../
 

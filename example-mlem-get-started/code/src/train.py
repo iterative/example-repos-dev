@@ -14,8 +14,7 @@ def main():
     save(
         rf,
         "rf",
-        tmp_sample_data=data,
-        tags=["random-forest", "classifier"],
+        sample_data=data,
         description="Random Forest Classifier",
     )
 
