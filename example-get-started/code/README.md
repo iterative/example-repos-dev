@@ -8,8 +8,8 @@ introduction into basic DVC concepts.
 
 The project is a natural language processing (NLP) binary classifier problem of
 predicting tags for a given StackOverflow question. For example, we want one
-classifier which can predict a post that is about the Python language by tagging
-it `python`.
+classifier which can predict a post that is about the R language by tagging it
+`R`.
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
@@ -160,3 +160,4 @@ $ tree
     ├── requirements.txt  # <-- Python dependencies needed in the project
     └── train.py
 ```
+
