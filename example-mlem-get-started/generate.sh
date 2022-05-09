@@ -60,6 +60,7 @@ cp $HERE/code/README.md .
 cp $HERE/.gitattributes .
 cp $HERE/code/src/requirements.txt .
 cp $HERE/code/src/*.py .
+echo ".venv" > .gitignore
 git add .
 tick
 git commit -m "Initialize Git repository"
@@ -84,17 +85,15 @@ git commit -m "Add data"
 git tag -a "2-prepare" -m "Data created."
 
 
-cp $HERE/code/src/train.py .
 python train.py
-git add .mlem/model train.py
+git add .mlem/model
 tick
 git commit -m "Train the model"
 git tag -a "3-train" -m "Model trained."
 
 
-cp $HERE/code/src/evaluate.py .
 python evaluate.py
-git add metrics.json evaluate.py
+git add metrics.json
 tick
 git commit -m "Evaluate model"
 git tag -a "4-eval" -m "Metrics calculated"
@@ -116,11 +115,11 @@ tick
 git commit -m "Add env and deploy meta"
 git tag -a "6-deploy-meta" -m "Target env and deploy meta added"
 
-#mlem deploy create myservice
-#git add .mlem/deployment/myservice.mlem
-#tick
-#git commit -m "Deploy service"
-#git tag -a "7-deploy-create" -m "Deployment created"
+mlem deploy create myservice
+git add .mlem/deployment/myservice.mlem
+tick
+git commit -m "Deploy service"
+git tag -a "7-deploy-create" -m "Deployment created"
 
 
 ###################### DVC
