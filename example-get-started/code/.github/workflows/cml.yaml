@@ -32,8 +32,8 @@ jobs:
           vl2svg vega.json confusion.svg
           cml publish confusion.svg --title "Confusion Matrix" --md >> report.md
 
-          echo "## Metrics" >> report.md
+          echo "## Metrics and Params" >> report.md
           echo "### $PREVIOUS_REF → workspace" >> report.md
-          dvc metrics diff $PREVIOUS_REF --show-md >> report.md
+          dvc exp diff $PREVIOUS_REF --show-md >> report.md
 
           cml send-comment report.md
