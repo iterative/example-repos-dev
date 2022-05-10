@@ -1,15 +1,18 @@
 import io
 import os
 import random
-import re
 import sys
 import xml.etree.ElementTree
+
+# This file is not part of the poject but is used to generate a slice of
+# data from the full SO dump https://archive.org/details/stackexchange
 
 
 if len(sys.argv) != 3:
     sys.stderr.write("Arguments error. Usage:\n")
     sys.stderr.write("\tpython analyze.py data-file output-file\n")
     sys.exit(1)
+
 
 target = 40000
 split = 0.3
