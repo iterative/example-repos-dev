@@ -27,7 +27,7 @@ with open(model_file, "rb") as fd:
 with open(matrix_file, "rb") as fd:
     matrix, feature_names = pickle.load(fd)
 
-labels = matrix[:, 1].toarray()
+labels = matrix[:, 1].toarray().astype(int)
 x = matrix[:, 2:]
 
 predictions_by_class = model.predict_proba(x)
@@ -60,7 +60,7 @@ with open(prc_file, "w") as fd:
 
 
 # ... confusion matrix plot
-live.log_plot("confusion_matrix", labels, predictions_by_class.argmax(-1))
+live.log_plot("confusion_matrix", labels.squeeze(), predictions_by_class.argmax(-1))
 
 # ... and finally, we can dump an image, it's also supported:
 fig, axes = plt.subplots(dpi=800)
