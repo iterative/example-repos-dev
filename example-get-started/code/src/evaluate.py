@@ -63,7 +63,7 @@ with open(prc_file, "w") as fd:
 live.log_plot("confusion_matrix", labels.squeeze(), predictions_by_class.argmax(-1))
 
 # ... and finally, we can dump an image, it's also supported:
-fig, axes = plt.subplots(dpi=800)
+fig, axes = plt.subplots(dpi=100)
 fig.subplots_adjust(bottom=0.2, top=0.95)
 importances = model.feature_importances_
 forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
