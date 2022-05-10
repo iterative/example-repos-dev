@@ -60,12 +60,7 @@ with open(prc_file, "w") as fd:
 
 
 # ... confusion matrix plot
-predictions = [{
-                "actual": int(actual),
-                "predicted": 1 if predicted > 0.5 else 0
-               } for actual, predicted in zip(labels, predictions)]
-with open("evaluation/plots/predictions.json", "w") as f:
-    json.dump(predictions, f)
+live.log_plot("confusion_matrix", labels, predictions_by_class.argmax(-1))
 
 # ... and finally, we can dump an image, it's also supported:
 fig, axes = plt.subplots(dpi=800)
