@@ -60,7 +60,7 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
-  get-started/data.xml -o data/data.xml --rev 95d720c467496ea6c15dd2c5d5ad48bbb631d8b1
+  get-started/data.xml -o data/data.xml
 dvc add data/data.xml --desc "Initial XML StackOverflow dataset (raw data)"
 git add data/.gitignore data/data.xml.dvc
 tick
@@ -79,7 +79,7 @@ dvc push
 
 rm data/data.xml data/data.xml.dvc
 dvc import https://github.com/iterative/dataset-registry \
-  get-started/data.xml -o data/data.xml --rev 95d720c467496ea6c15dd2c5d5ad48bbb631d8b1 \
+  get-started/data.xml -o data/data.xml \
   --desc "Imported raw data (tracks source updates)"
 git add data/data.xml.dvc
 tick
@@ -87,8 +87,7 @@ git commit -m "Import raw data (overwrite)"
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 dvc push
 
-cp $HERE/code.zip .
-#wget https://code.dvc.org/get-started/code.zip
+wget https://code.dvc.org/get-started/code.zip
 unzip code.zip
 rm -f code.zip
 pip install -r src/requirements.txt
@@ -196,7 +195,7 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 git checkout -b "try-large-dataset"
 
-dvc update data/data.xml.dvc --rev cf6481baf56f156aa0876709cc231aaf3f3a3c29
+dvc update data/data.xml.dvc --rev get-started-40K
 sed -e "s/max_features: 200/max_features: 500/" -i".bkp" params.yaml
 dvc repro
 dvc push
@@ -226,7 +225,7 @@ gh repo create iterative/example-get-started --public \
 Run these commands to force push it:
 
 cd build/example-get-started
-git remote add origin git@github.com:shcheklein/example-get-started.git
+git remote add origin git@github.com:<slug>/example-get-started.git
 git push --force origin main
 git push --force origin try-large-dataset
 git push --force origin tune-hyperparams
@@ -239,7 +238,7 @@ dvc exp list --all --names-only | xargs -n 1 dvc exp push origin
 
 To create a PR from the `try-large-dataset` branch:
 
-gh pr create -t "Try 100K dataset (4x data)" \
+gh pr create -t "Try 40K dataset (4x data)" \
    -b "We are trying here a large dataset, since the smaller one looks unstable" \
    -B main -H try-large-dataset
 
