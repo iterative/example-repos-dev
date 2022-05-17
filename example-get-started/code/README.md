@@ -1,10 +1,12 @@
+[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=data-version-control)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/evaluation.json&query=avg_prec)](https://github.com/iterative/example-get-started/raw/main/evaluation.json)
+
 # DVC Get Started
 
-This is an auto-generated repository for use in DVC
+This is an auto-generated repository for use in [DVC](https://dvc.org)
 [Get Started](https://dvc.org/doc/get-started). It is a step-by-step quick
 introduction into basic DVC concepts.
 
-![](https://dvc.org/img/example-flow-2x.png)
+![](https://static.iterative.ai/img/example-get-started/readme-head.png)
 
 The project is a natural language processing (NLP) binary classifier problem of
 predicting tags for a given StackOverflow question. For example, we want one
@@ -16,7 +18,7 @@ classifier which can predict a post that is about the R language by tagging it
 
 ## Installation
 
-Python 3.6+ is required to run code from this repo.
+Python 3.7+ is required to run code from this repo.
 
 ```console
 $ git clone https://github.com/iterative/example-get-started
@@ -28,8 +30,8 @@ recommend creating a virtual environment with a tool such as
 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
 ```console
-$ virtualenv -p python3 .env
-$ source .env/bin/activate
+$ virtualenv -p python3 .venv
+$ source .venv/bin/activate
 $ pip install -r src/requirements.txt
 ```
 
@@ -130,8 +132,8 @@ These tags can be used to illustrate `-a` or `-T` options across different
 ## Project structure
 
 The data files, DVC files, and results change as stages are created one by one.
-After cloning and using [`dvc pull`](https://man.dvc.org/pull) to download data
-tracked by DVC, the workspace should look like this:
+After cloning and using [`dvc pull`](https://man.dvc.org/pull) to download
+data, models, and plots tracked by DVC, the workspace should look like this:
 
 ```console
 $ tree
@@ -146,13 +148,17 @@ $ tree
 │   └── prepared          # <-- Processed dataset (split and TSV formatted)
 │       ├── test.tsv
 │       └── train.tsv
+├── evaluation
+│   ├── importance.png    # <-- Feature importance plot
+│   └── plots             # <-- Data points for ROC, PRC, confusion matrix
+│       ├── confusion_matrix.json
+│       ├── precision_recall.json
+│       └── roc.json
 ├── dvc.lock
 ├── dvc.yaml              # <-- DVC pipeline file
 ├── model.pkl             # <-- Trained model file
 ├── params.yaml           # <-- Parameters file
-├── prc.json              # <-- Precision-recall curve data points
-├── roc.json              # <-- ROC curve data points
-├── scores.json           # <-- Binary classifier final metrics (e.g. AUC)
+├── evaluation.json       # <-- Binary classifier final metrics (e.g. AUC)
 └── src                   # <-- Source code to run the pipeline stages
     ├── evaluate.py
     ├── featurization.py
@@ -160,4 +166,3 @@ $ tree
     ├── requirements.txt  # <-- Python dependencies needed in the project
     └── train.py
 ```
-
