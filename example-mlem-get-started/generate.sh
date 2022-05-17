@@ -14,7 +14,6 @@ BUILD_PATH="$HERE/build"
 
 pushd $BUILD_PATH
 if [ ! -d "$BUILD_PATH/.venv" ]; then
-  exit 1
   virtualenv -p python3 .venv
   export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
@@ -28,10 +27,10 @@ source $BUILD_PATH/.venv/bin/activate
 
 REPO_PATH="$HERE/build/$REPO_NAME"
 
-if [ -d "$REPO_PATH" ]; then
-  echo "Repo $REPO_PATH already exists, please remove it first."
-  exit 1
-fi
+#if [ -d "$REPO_PATH" ]; then
+#  echo "Repo $REPO_PATH already exists, please remove it first."
+#  exit 1
+#fi
 
 TOTAL_TAGS=12
 STEP_TIME=100000
@@ -78,25 +77,24 @@ git add .mlem/config.yaml
 git commit -m "Initialize MLEM project"
 git tag -a "1-mlem-init" -m "MLEM initialized."
 
-python prepare.py
-git add .mlem/dataset
-tick
-git commit -m "Add data"
-git tag -a "2-prepare" -m "Data created."
-
 
 python train.py
 git add .mlem/model
 tick
 git commit -m "Train the model"
-git tag -a "3-train" -m "Model trained."
+git tag -a "2-train" -m "Model trained."
 
 
 python evaluate.py
+mlem apply rf iris.csv
+echo "sepal length (cm),sepal width (cm),petal length (cm),petal width (cm)
+0,1,2,3" > new_data.csv
+mlem apply rf new_data.csv -i --it pandas[csv]
 git add metrics.json
 tick
 git commit -m "Evaluate model"
-git tag -a "4-eval" -m "Metrics calculated"
+git tag -a "3-eval" -m "Metrics calculated"
+
 
 mlem init s3://example-mlem-get-started
 mlem clone rf s3://example-mlem-get-started/rf
@@ -106,20 +104,24 @@ mlem create packager pip pip_config -c target=build/ -c package_name=example_mle
 git add .mlem/packager/pip_config.mlem
 tick
 git commit -m "Add package config"
-git tag -a "5-pack" -m "Pip package config added"
+git tag -a "4-pack" -m "Pip package config added"
 
 mlem create env heroku staging
 mlem create deployment heroku myservice -c app_name=example-mlem-get-started -c model=rf -c env=staging
 git add .mlem/env/staging.mlem .mlem/deployment/myservice.mlem
 tick
 git commit -m "Add env and deploy meta"
-git tag -a "6-deploy-meta" -m "Target env and deploy meta added"
+git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
+
+if heroku apps:info example-mlem-get-started; then
+  heroku apps:destroy example-mlem-get-started --confirm example-mlem-get-started
+fi
 
 mlem deploy create myservice
 git add .mlem/deployment/myservice.mlem
 tick
 git commit -m "Deploy service"
-git tag -a "7-deploy-create" -m "Deployment created"
+git tag -a "6-deploy-create" -m "Deployment created"
 
 
 ###################### DVC
@@ -150,7 +152,6 @@ tick
 git commit -m "Configure MLEM for DVC"
 git tag -a "3-dvc-mlme-config" -m "Configured MLEM to work with DVC"
 
-python prepare.py
 python train.py
 python evaluate.py
 dvc add .mlem/model/rf .mlem/dataset/*.csv
