@@ -130,16 +130,28 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -M evaluation.json \
-  --plots-no-cache evaluation/plots/precision_recall.json \
-  --plots-no-cache evaluation/plots/roc.json \
-  --plots-no-cache evaluation/plots/confusion_matrix.json \
+  --outs-no-cache evaluation/train/plots \
+  --outs-no-cache evaluation/test/plots \
+  -M evaluation/train.json -M evaluation/test.json
   --plots evaluation/importance.png \
   python src/evaluate.py model.pkl data/features
-dvc plots modify evaluation/plots/precision_recall.json -x recall -y precision
-dvc plots modify evaluation/plots/roc.json -x fpr -y tpr
-dvc plots modify evaluation/plots/confusion_matrix.json \
-    -x actual -y predicted -t confusion
+echo "plots:
+  ROC:
+    x: fpr
+    y:
+      evaluation/train/plots/roc.json: tpr
+      evaluation/test/plots/roc.json: tpr
+  Precision-Recall:
+    x: recall
+    y:
+      evaluation/train/plots/precision_recall.json: precision
+      evaluation/test/plots/precision_recall.json: precision
+  Confusion-Matrix:
+    template: confusion
+    x: actual
+    y:
+      evaluation/train/plots/confusion_matrix.json: predicted
+      evaluation/test/plots/confusion_matrix.json: predicted" >> dvc.yaml
 git add .gitignore dvc.yaml dvc.lock evaluation.json evaluation
 tick
 git commit -m "Create evaluation stage"
