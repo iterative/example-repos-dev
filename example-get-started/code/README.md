@@ -139,27 +139,27 @@ data, models, and plots tracked by DVC, the workspace should look like this:
 $ tree
 .
 ├── README.md
-├── data                  # <-- Directory with raw and intermediate data
-│   ├── data.xml          # <-- Initial XML StackOverflow dataset (raw data)
-│   ├── data.xml.dvc      # <-- .dvc file - a placeholder/pointer to raw data
-│   ├── features          # <-- Extracted feature matrices
+├── data                    # <-- Directory with raw and intermediate data
+│   ├── data.xml            # <-- Initial XML StackOverflow dataset (raw data)
+│   ├── data.xml.dvc        # <-- .dvc file - a placeholder/pointer to raw data
+│   ├── features            # <-- Extracted feature matrices
 │   │   ├── test.pkl
 │   │   └── train.pkl
-│   └── prepared          # <-- Processed dataset (split and TSV formatted)
+│   └── prepared            # <-- Processed dataset (split and TSV formatted)
 │       ├── test.tsv
 │       └── train.tsv
 ├── evaluation
-│   ├── importance.png    # <-- Feature importance plot
-│   └── plots             # <-- Data points for ROC, PRC, confusion matrix
+│   └── plots               # <-- Data points for ROC, PRC, confusion matrix
 │       ├── confusion_matrix.json
+│       ├── importance.png  # <-- Feature importance "image" plot
 │       ├── precision_recall.json
 │       └── roc.json
 ├── dvc.lock
-├── dvc.yaml              # <-- DVC pipeline file
-├── model.pkl             # <-- Trained model file
-├── params.yaml           # <-- Parameters file
-├── evaluation.json       # <-- Binary classifier final metrics (e.g. AUC)
-└── src                   # <-- Source code to run the pipeline stages
+├── dvc.yaml                # <-- DVC pipeline file
+├── model.pkl               # <-- Trained model file
+├── params.yaml             # <-- Parameters file
+├── evaluation.json         # <-- Binary classifier final metrics (e.g. AUC)
+└── src                     # <-- Source code to run the pipeline stages
     ├── evaluate.py
     ├── featurization.py
     ├── prepare.py

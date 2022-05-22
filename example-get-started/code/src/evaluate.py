@@ -69,4 +69,4 @@ importances = model.feature_importances_
 forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
 axes.set_ylabel("Mean decrease in impurity")
 forest_importances.plot.bar(ax=axes)
-fig.savefig('evaluation/importance.png')
+fig.savefig('evaluation/plots/importance.png')

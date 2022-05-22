@@ -134,7 +134,7 @@ dvc run -n evaluate \
   --plots-no-cache evaluation/plots/precision_recall.json \
   --plots-no-cache evaluation/plots/roc.json \
   --plots-no-cache evaluation/plots/confusion_matrix.json \
-  --plots evaluation/importance.png \
+  --plots evaluation/plots/importance.png \
   python src/evaluate.py model.pkl data/features
 dvc plots modify evaluation/plots/precision_recall.json -x recall -y precision
 dvc plots modify evaluation/plots/roc.json -x fpr -y tpr
