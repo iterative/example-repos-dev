@@ -12,13 +12,14 @@ REPO_NAME="example-mlem-get-started"
 
 BUILD_PATH="$HERE/build"
 
+mkdir -p $BUILD_PATH
 pushd $BUILD_PATH
 if [ ! -d "$BUILD_PATH/.venv" ]; then
   virtualenv -p python3 .venv
   export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
   echo '.venv/' > .gitignore
-  pip install "git+https://github.com/iterative/mlem#egg=mlem[all]" --use-deprecated=legacy-resolver
+  pip install "git+https://github.com/iterative/mlem#egg=mlem[all]"
   pip install -r $HERE/code/src/requirements.txt
 fi
 popd
