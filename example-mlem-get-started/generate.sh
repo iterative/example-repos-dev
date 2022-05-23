@@ -57,6 +57,7 @@ pushd $REPO_PATH
 
 git init -b main
 cp $HERE/code/README.md .
+cp -r $HERE/code/.devcontainer .
 cp $HERE/.gitattributes .
 cp $HERE/code/src/requirements.txt .
 cp $HERE/code/src/*.py .
