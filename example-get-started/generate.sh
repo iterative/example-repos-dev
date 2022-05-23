@@ -130,12 +130,13 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
+  --outs evaluation/evaluation/importance.png \
   --outs-no-cache evaluation/train/plots \
   --outs-no-cache evaluation/test/plots \
-  -M evaluation/train.json -M evaluation/test.json
-  --plots evaluation/importance.png \
+  -M evaluation/train.json -M evaluation/test.json \
   python src/evaluate.py model.pkl data/features
 echo "plots:
+  evaluation/importance.png:
   ROC:
     x: fpr
     y:
