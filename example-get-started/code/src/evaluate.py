@@ -45,7 +45,7 @@ live.log("roc_auc", metrics.roc_auc_score(labels, predictions))
 precision, recall, prc_thresholds = metrics.precision_recall_curve(labels, predictions)
 nth_point = math.ceil(len(prc_thresholds) / 1000)
 prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-prc_file = "evaluation/plots/precision_recall.json"
+prc_file = os.path.join("evaluation", "plots", "precision_recall.json")
 with open(prc_file, "w") as fd:
     json.dump(
         {
@@ -69,4 +69,4 @@ importances = model.feature_importances_
 forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
 axes.set_ylabel("Mean decrease in impurity")
 forest_importances.plot.bar(ax=axes)
-fig.savefig('evaluation/importance.png')
+fig.savefig(os.path.join("evaluation", "importance.png"))
