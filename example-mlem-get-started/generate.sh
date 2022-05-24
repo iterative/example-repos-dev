@@ -7,6 +7,14 @@
 #   x   Print commands and their arguments as they are executed.
 set -eux
 
+while read var; do
+  [ -z "${!var+x}" ] && { echo "$var is empty or not set"; exit 1; }
+done << EOF
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+HEROKU_API_KEY
+EOF
+
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-mlem-get-started"
 
@@ -19,8 +27,9 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
   echo '.venv/' > .gitignore
-  pip install "git+https://github.com/iterative/mlem#egg=mlem[all]"
   pip install -r $HERE/code/src/requirements.txt
+  git clone https://github.com/iterative/mlem.git
+  pip install -e ./mlem
 fi
 popd
 
