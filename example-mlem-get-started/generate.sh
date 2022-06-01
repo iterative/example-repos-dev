@@ -13,6 +13,7 @@ done << EOF
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 HEROKU_API_KEY
+AZURE_STORAGE_CONNECTION_STRING
 EOF
 
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -84,13 +85,13 @@ git checkout simple
 
 mlem init
 tick
-git add .mlem/config.yaml
+git add .mlem
 git commit -m "Initialize MLEM project"
 git tag -a "1-mlem-init" -m "MLEM initialized."
 
 
 python train.py
-git add .mlem/model
+git add .mlem
 tick
 git commit -m "Train the model"
 git tag -a "2-train" -m "Model trained."
@@ -111,15 +112,15 @@ mlem init s3://example-mlem-get-started
 mlem clone rf s3://example-mlem-get-started/rf
 
 
-mlem create packager pip pip_config -c target=build/ -c package_name=example_mlem_get_started
-git add .mlem/packager/pip_config.mlem
+mlem declare builder pip pip_config -c target=build/ -c package_name=example_mlem_get_started
+git add .mlem
 tick
 git commit -m "Add package config"
 git tag -a "4-pack" -m "Pip package config added"
 
-mlem create env heroku staging
-mlem create deployment heroku myservice -c app_name=example-mlem-get-started -c model=rf -c env=staging
-git add .mlem/env/staging.mlem .mlem/deployment/myservice.mlem
+mlem declare env heroku staging
+mlem declare deployment heroku myservice -c app_name=example-mlem-get-started -c model=rf -c env=staging
+git add .mlem
 tick
 git commit -m "Add env and deploy meta"
 git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
@@ -128,8 +129,8 @@ if heroku apps:info example-mlem-get-started; then
   heroku apps:destroy example-mlem-get-started --confirm example-mlem-get-started
 fi
 
-mlem deploy create myservice
-git add .mlem/deployment/myservice.mlem
+mlem deployment run myservice
+git add .mlem
 tick
 git commit -m "Deploy service"
 git tag -a "6-deploy-create" -m "Deployment created"
@@ -143,7 +144,7 @@ git checkout dvc
 
 mlem init
 tick
-git add .mlem/config.yaml
+git add .mlem
 git commit -m "Initialize MLEM project"
 git tag -a "1-dvc-mlem-init" -m "MLEM initialized."
 
@@ -156,7 +157,7 @@ git commit -m "Init dvc"
 git tag -a "2-dvc-dvc-init" -m "DVC Initialized"
 
 
-mlem config set default_storage.type dvc
+mlem config set core.storage.type dvc
 echo "/**/?*.mlem" > .dvcignore
 git add .dvcignore .mlem
 tick
@@ -165,7 +166,7 @@ git tag -a "3-dvc-mlme-config" -m "Configured MLEM to work with DVC"
 
 python train.py
 python evaluate.py
-dvc add .mlem/model/rf .mlem/dataset/*.csv
+dvc add .mlem/model/rf .mlem/data/*.csv
 git add .mlem .dvc metrics.json
 tick
 git commit -m "Run code with DVC"
