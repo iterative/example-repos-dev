@@ -26,7 +26,6 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
   echo '.venv/' > .gitignore
-  pip install gitpython
   pip install gto
 fi
 popd
