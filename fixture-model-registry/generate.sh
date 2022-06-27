@@ -26,7 +26,8 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   source .venv/bin/activate
   echo '.venv/' > .gitignore
   pip install -r $HERE/code/requirements.txt
-  pip install -e ~/Git/iterative/gto/
+  pip install git+https://github.com/iterative/gto
+#  pip install -e ~/Git/iterative/gto/
 fi
 popd
 
@@ -126,7 +127,7 @@ tick
 echo "stages: [dev, prod, stage]" > .gto
 gto annotate gto-mlem-not-in-mlem-dir --type model --path models/lambda-2  # --must-exist
 tick
-git add artifacts.yaml
+git add artifacts.yaml .gto
 git commit -m "Change path to a GTO model"
 gto promote gto-mlem-not-in-mlem-dir stage
 
@@ -143,7 +144,7 @@ git commit -m "Add DVC remote and set up MLEM to use it"
 python -c "import mlem; a = lambda x: 'some output text'; mlem.api.save(a, 'models/constant-model', sample_data='some input text', external=True)"
 gto annotate gto-mlem-dvc --type model --path models/constant-model
 dvc add models/constant-model
-git add artifacts.yaml
+git add artifacts.yaml models .mlem
 git commit -am "add DVC+MLEM+GTO model"
 
 gto register gto-mlem-dvc --version v3.0.0
@@ -193,7 +194,7 @@ Run these commands to force push it:
 
 cd build/fixture-model-registry
 git remote add origin  https://github.com/aguschin/fixture-model-registry
-git push --force origin main
+git push --force origin main other-branch
 git push --force origin --tags
 cd ../../
 
