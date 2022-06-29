@@ -130,7 +130,7 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  --outs evaluation/evaluation/importance.png \
+  --outs evaluation/importance.png \
   --outs-no-cache evaluation/train/plots \
   --outs-no-cache evaluation/test/plots \
   -M evaluation/train.json -M evaluation/test.json \
@@ -153,7 +153,7 @@ echo "plots:
     y:
       evaluation/train/plots/confusion_matrix.json: predicted
       evaluation/test/plots/confusion_matrix.json: predicted" >> dvc.yaml
-git add .gitignore dvc.yaml dvc.lock evaluation.json evaluation
+git add .gitignore dvc.yaml dvc.lock evaluation
 tick
 git commit -m "Create evaluation stage"
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"

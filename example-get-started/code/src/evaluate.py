@@ -71,6 +71,10 @@ with open(train_file, "rb") as fd:
 with open(test_file, "rb") as fd:
     test, _ = pickle.load(fd)
 
+# Evaluate train and test datasets.
+evaluate(model, train, "train")
+evaluate(model, test, "test")
+
 # Dump feature importance image and show it with your plots.
 fig, axes = plt.subplots(dpi=100)
 fig.subplots_adjust(bottom=0.2, top=0.95)
@@ -79,7 +83,3 @@ forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
 axes.set_ylabel("Mean decrease in impurity")
 forest_importances.plot.bar(ax=axes)
 fig.savefig(os.path.join("evaluation", "importance.png"))
-
-# Evaluate train and test datasets.
-evaluate(model, train, "train")
-evaluate(model, test, "test")
