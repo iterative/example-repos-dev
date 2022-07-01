@@ -192,7 +192,8 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+EXP=$(dvc exp show --no-pager --sort-by evaluation/test.json:avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
