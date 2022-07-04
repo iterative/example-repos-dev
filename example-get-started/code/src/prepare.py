@@ -5,9 +5,9 @@ import re
 import sys
 import xml.etree.ElementTree
 
-import yaml
+import dvc.api
 
-params = yaml.safe_load(open("params.yaml"))["prepare"]
+params = dvc.api.params_show()["prepare"]
 
 if len(sys.argv) != 2:
     sys.stderr.write("Arguments error. Usage:\n")

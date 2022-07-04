@@ -2,13 +2,14 @@ import os
 import pickle
 import sys
 
+import dvc.api
 import numpy as np
 import pandas as pd
 import scipy.sparse as sparse
 import yaml
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
-params = yaml.safe_load(open("params.yaml"))["featurize"]
+params = dvc.api.params_show()["featurize"]
 
 np.set_printoptions(suppress=True)
 

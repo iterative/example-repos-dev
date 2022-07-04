@@ -2,11 +2,11 @@ import os
 import pickle
 import sys
 
+import dvc.api
 import numpy as np
-import yaml
 from sklearn.ensemble import RandomForestClassifier
 
-params = yaml.safe_load(open("params.yaml"))["train"]
+params = dvc.api.params_show()["train"]
 
 if len(sys.argv) != 3:
     sys.stderr.write("Arguments error. Usage:\n")
