@@ -18,8 +18,14 @@ USER_NAME="iterative"
 REPO_NAME="example-gto"
 
 BUILD_PATH="$HERE/build"
+REPO_PATH="$BUILD_PATH/$REPO_NAME"
 
-mkdir $BUILD_PATH
+if [ -d "$REPO_PATH" ]; then
+  echo "Repo $REPO_PATH already exists, please remove it first."
+  exit 1
+fi
+
+mkdir -p $BUILD_PATH
 pushd $BUILD_PATH
 if [ ! -d "$BUILD_PATH/.venv" ]; then
   virtualenv -p python3 .venv
@@ -31,13 +37,6 @@ fi
 popd
 
 source $BUILD_PATH/.venv/bin/activate
-
-REPO_PATH="$HERE/build/$REPO_NAME"
-
-if [ -d "$REPO_PATH" ]; then
-  echo "Repo $REPO_PATH already exists, please remove it first."
-  exit 1
-fi
 
 TOTAL_TAGS=15
 STEP_TIME=100000
@@ -173,7 +172,7 @@ gh repo create iterative/example-gto --public \
 
 Run these commands to force push it:
 
-cd build/example-mlem-get-started
+cd build/example-gto
 git remote add origin  https://github.com/iterative/example-gto
 git push --force origin main
 git push --force origin --tags

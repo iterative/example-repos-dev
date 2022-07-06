@@ -1,4 +1,4 @@
-name: Act on git tags produced by GTO
+name: Act on artifact registrations and promotions
 on:
   push:
     tags:

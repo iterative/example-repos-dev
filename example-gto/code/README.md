@@ -1,7 +1,8 @@
 # GTO Get Started
 
-This is an auto-generated repository for use in [GTO Get Started](https://github.com/iterative/gto/blob/main/README.md). It is a step-by-step quick
-introduction into basic GTO concepts.
+This is an auto-generated repository for use in
+[GTO Get Started](https://github.com/iterative/gto/blob/main/README.md).
+It is a step-by-step quick introduction into basic GTO concepts.
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
@@ -27,4 +28,6 @@ $ pip install -r requirements.txt
 
 ## To see GTO in action
 
-To understand how this repo is generated, take a look at the [`example-gto/generate.sh` file](https://github.com/iterative/example-repos-dev/blob/add-gto-get-started/example-gto/generate.sh). To reproduce it locally, clone the repo, cd into `example-gto`, and run `bash generate.sh`.
+To understand how this repo is generated, take a look at the
+[`example-gto/generate.sh` file](https://github.com/iterative/example-repos-dev/blob/add-gto-get-started/example-gto/generate.sh).
+To reproduce it locally, clone the repo, cd into `example-gto`, and run `bash generate.sh`.
