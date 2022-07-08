@@ -163,12 +163,12 @@ https://github.com/iterative/example-gto.
 Make sure the Github repo exists first and that you have
 appropriate write permissions.
 
-To run the generator in the test mode, just use `bash generate.sh`
+To run the generator in the test mode, just use "bash generate.sh"
 
-To push it to GitHub, use `bash generate.sh --push`.
+To push it to GitHub, use "bash generate.sh --push"
 This will do it step by step waiting for CI to have consistent results.
 
-To cd to the generated repo, run `cd build/example-gto`
+To cd to the generated repo, run "cd build/example-gto"
 
-You may remove the generated repo with `rm -fR build`
+You may remove the generated repo with "rm -fR build"
 EOF
