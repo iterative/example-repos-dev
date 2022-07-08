@@ -118,14 +118,14 @@ git commit -m "Add package config"
 git tag -a "4-pack" -m "Pip package config added"
 
 mlem declare env heroku staging
-mlem declare deployment heroku myservice -c app_name=example-mlem-get-started -c model=rf -c env=staging
+mlem declare deployment heroku myservice -c app_name=example-mlem-get-started-app -c model=rf -c env=staging
 git add .mlem
 tick
 git commit -m "Add env and deploy meta"
 git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
 
-if heroku apps:info example-mlem-get-started; then
-  heroku apps:destroy example-mlem-get-started --confirm example-mlem-get-started
+if heroku apps:info example-mlem-get-started-app; then
+  heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
 fi
 
 mlem deployment run myservice
