@@ -9,11 +9,14 @@ set -eux
 PUSH=false
 echo $#
 if [ "$#" -eq 1 ] && [ "$0" != "--push" ]; then
-   PUSH=true;
-   echo "Will push things to GitHub :tada:"
+  PUSH=true
+  echo "Will push things to GitHub :tada:"
 fi
 
-HERE="$( cd "$(dirname "$0")" ; pwd -P )"
+HERE="$(
+  cd "$(dirname "$0")"
+  pwd -P
+)"
 USER_NAME="iterative"
 REPO_NAME="example-gto"
 
@@ -29,10 +32,9 @@ mkdir -p $BUILD_PATH
 pushd $BUILD_PATH
 if [ ! -d "$BUILD_PATH/.venv" ]; then
   virtualenv -p python3 .venv
-  export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
-  echo '.venv/' > .gitignore
-  pip install gto
+  echo '.venv/' >.gitignore
+  pip install -r ../code/requirements.txt
 fi
 popd
 
@@ -40,12 +42,12 @@ source $BUILD_PATH/.venv/bin/activate
 
 TOTAL_TAGS=15
 STEP_TIME=100000
-BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
+BEGIN_TIME=$(($(date +%s) - (${TOTAL_TAGS} * ${STEP_TIME})))
 export TAG_TIME=${BEGIN_TIME}
 export GIT_AUTHOR_DATE=${TAG_TIME}
 export GIT_COMMITTER_DATE=${TAG_TIME}
-tick(){
-  export TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+tick() {
+  export TAG_TIME=$((${TAG_TIME} + ${STEP_TIME}))
   export GIT_AUTHOR_DATE=${TAG_TIME}
   export GIT_COMMITTER_DATE=${TAG_TIME}
 }
@@ -54,8 +56,6 @@ export GIT_AUTHOR_NAME="Alexander Guschin"
 export GIT_AUTHOR_EMAIL="1aguschin@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-
-
 
 mkdir -p $REPO_PATH
 pushd $REPO_PATH
@@ -69,7 +69,7 @@ git commit -m "Initialize Git repository with CI workflow"
 if $PUSH; then
   # remove GH Actions workflows
   gh api repos/$USER_NAME/$REPO_NAME/actions/runs \
-    --paginate -q '.workflow_runs[] | "\(.id)"' | \
+    --paginate -q '.workflow_runs[] | "\(.id)"' |
     xargs -n1 -I % gh api --silent repos/$USER_NAME/$REPO_NAME/actions/runs/% -X DELETE
   # add remote
   git remote add origin https://github.com/$USER_NAME/$REPO_NAME
@@ -77,11 +77,9 @@ if $PUSH; then
   git ls-remote --tags origin | awk '/^(.*)(\s+)(.*[a-zA-Z0-9])$/ {print ":" $2}' | xargs git push origin
 fi
 
-echo "Fix env"
-pip freeze > requirements.txt
 echo "Create new models"
 mkdir models
-echo "1st version" > models/churn.pkl
+echo "1st version" >models/churn.pkl
 git add models requirements.txt
 tick
 git commit -am "Create models"
@@ -109,7 +107,7 @@ if $PUSH; then
 fi
 
 echo "Update the model"
-echo "2nd version" > models/churn.pkl
+echo "2nd version" >models/churn.pkl
 tick
 git commit -am "Update model"
 if $PUSH; then
@@ -165,20 +163,12 @@ https://github.com/iterative/example-gto.
 Make sure the Github repo exists first and that you have
 appropriate write permissions.
 
-To create it with https://cli.github.com/, run:
+To run the generator in the test mode, just use `bash generate.sh`
 
-gh repo create iterative/example-gto --public \
-     -d "Get Started GTO project"
+To push it to GitHub, use `bash generate.sh --push`.
+This will do it step by step waiting for CI to have consistent results.
 
-Run these commands to force push it:
+To cd to the generated repo, run `cd build/example-gto`
 
-cd build/example-gto
-git remote add origin  https://github.com/iterative/example-gto
-git push --force origin main
-git push --force origin --tags
-cd ../../
-
-You may remove the generated repo with:
-
-rm -fR build
+You may remove the generated repo with `rm -fR build`
 EOF
