@@ -4,8 +4,8 @@ This is an auto-generated repository for use in MLEM
 [Get Started](https://mlem.ai/doc/get-started). It is a step-by-step quick
 introduction into basic MLEM concepts.
 
-The main branch contains only the code needed for the tutorial. Results of each step can be found in tags, and resulting state in correctponding branches.
-
+The main branch contains only the code needed for the tutorial. Results of each
+step can be found in tags, and resulting state in correctponding branches.
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).

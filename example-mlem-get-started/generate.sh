@@ -20,12 +20,17 @@ HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-mlem-get-started"
 
 BUILD_PATH="$HERE/build"
+REPO_PATH="$BUILD_PATH/$REPO_NAME"
+
+if [ -d "$REPO_PATH" ]; then
+ echo "Repo $REPO_PATH already exists, please remove it first."
+ exit 1
+fi
 
 mkdir -p $BUILD_PATH
 pushd $BUILD_PATH
 if [ ! -d "$BUILD_PATH/.venv" ]; then
   virtualenv -p python3 .venv
-  export VIRTUAL_ENV_DISABLE_PROMPT=true
   source .venv/bin/activate
   echo '.venv/' > .gitignore
   pip install -r $HERE/code/src/requirements.txt
@@ -36,12 +41,6 @@ popd
 
 source $BUILD_PATH/.venv/bin/activate
 
-REPO_PATH="$HERE/build/$REPO_NAME"
-
-#if [ -d "$REPO_PATH" ]; then
-#  echo "Repo $REPO_PATH already exists, please remove it first."
-#  exit 1
-#fi
 
 TOTAL_TAGS=12
 STEP_TIME=100000
