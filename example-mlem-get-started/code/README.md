@@ -4,8 +4,13 @@ This is an auto-generated repository for use in MLEM
 [Get Started](https://mlem.ai/doc/get-started). It is a step-by-step quick
 introduction into basic MLEM concepts.
 
-The main branch contains only the code needed for the tutorial. Results of each
-step can be found in tags, and resulting state in correctponding branches.
+- The `main` branch contains only the code needed to start the Get Started. This
+  branch is useful if you want to go over Get Started executing all the commands
+  by yourself.
+- The `simple` branch contains the results of following Get Started. Results of
+  each step can be found in git tags.
+- The `dvc` branch contains the results of the
+  [MLEM+DVC tutorial](http://mlem.ai/doc/use-cases/dvc).
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
