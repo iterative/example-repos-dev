@@ -197,7 +197,7 @@ gh repo create iterative/example-mlem-get-started --public \
 Run these commands to force push it:
 
 cd build/example-mlem-get-started
-git remote add origin  https://github.com/iterative/example-mlem-get-started
+git remote add origin https://github.com/<slug>/example-mlem-get-started
 git push --force origin main simple dvc
 git push --force origin --tags
 cd ../../

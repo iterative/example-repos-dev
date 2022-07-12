@@ -27,8 +27,7 @@ $ cd example-mlem-get-started
 ```
 
 Now let's install the requirements. But before we do that, we **strongly**
-recommend creating a virtual environment with a tool such as
-[virtualenv](https://virtualenv.pypa.io/en/stable/):
+recommend creating a virtual environment:
 
 ```console
 $ python3 -m venv .env
