@@ -26,16 +26,34 @@ jobs:
       run: |
         pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-    - name: Show current repo state
+    - name: "GTO: show current Registry state"
       run: |
         gto show
         gto history
-    - name: Figure out what was registered/promoted
+    - name: "GTO: figure out what was registered/promoted"
       run: |
         cat << EOF
         Here GTO analyzes the GIT REF that triggered the workflow.
         If it registered a version or promoted it to an environment,
-        you can see it and act accordingly, e.g. trigger release or deploy.
+        you can see it and act accordingly, e.g. trigger release or deploy:
+
         EOF
-        echo "Github ref is $GITHUB_REF"
-        gto check-ref $GITHUB_REF
+
+        export NAME=`gto check-ref $GITHUB_REF --name`
+        export VERSION=`gto check-ref $GITHUB_REF --version`
+
+        if [[ -n `gto check-ref $GITHUB_REF --registration` ]]; then
+          echo "[$GITHUB_REF] You got model '$NAME' registered with version '$VERSION'"
+          echo "[$GITHUB_REF] It is about time to publish it somewhere so others could use it!"
+        fi
+
+        if [[ $(gto check-ref $GITHUB_REF --promotion) ]]; then
+          export STAGE=`gto check-ref $GITHUB_REF --stage`
+          echo "[$GITHUB_REF] You got model '$NAME' of version '$VERSION' promoted to stage '$STAGE'"
+          echo "[$GITHUB_REF] It is about time to deploy it somewhere!"
+        fi
+
+        cat << EOF
+
+        Read GitHub action code for code example
+        EOF

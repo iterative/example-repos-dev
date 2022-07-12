@@ -35,6 +35,8 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   source .venv/bin/activate
   echo '.venv/' >.gitignore
   pip install -r ../code/requirements.txt
+  git clone https://github.com/iterative/gto.git
+  pip install -e ./gto
 fi
 popd
 
@@ -170,5 +172,5 @@ This will do it step by step waiting for CI to have consistent results.
 
 To cd to the generated repo, run "cd build/example-gto"
 
-You may remove the generated repo with "rm -fR build"
+You may remove the generated repo with "rm -fR build/example-gto"
 EOF
