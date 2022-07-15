@@ -120,15 +120,15 @@ git commit -m "Add env and deploy meta"
 git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
 
 
-# if heroku apps:info example-mlem-get-started-app; then
-#   heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
-# fi
+if heroku apps:info example-mlem-get-started-app; then
+  heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
+fi
 
-# mlem deployment run myservice
-# git add .mlem
-# tick
-# git commit -m "Deploy service"
-# git tag -a "6-deploy-create" -m "Deployment created"
+mlem deployment run myservice
+git add .mlem
+tick
+git commit -m "Deploy service"
+git tag -a "6-deploy-create" -m "Deployment created"
 
 
 ###################### DVC
