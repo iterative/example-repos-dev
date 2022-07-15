@@ -79,8 +79,6 @@ git tag -a "0-git-init" -m "Git initialized."
 
 ################## MLEM
 
-git branch simple
-git checkout simple
 
 mlem init
 tick
@@ -97,10 +95,6 @@ git tag -a "2-train" -m "Model trained."
 
 
 python evaluate.py
-mlem apply rf iris.csv
-echo "sepal length (cm),sepal width (cm),petal length (cm),petal width (cm)
-0,1,2,3" > new_data.csv
-mlem apply rf new_data.csv -i --it pandas[csv]
 git add metrics.json
 tick
 git commit -m "Evaluate model"
@@ -117,6 +111,7 @@ tick
 git commit -m "Add package config"
 git tag -a "4-pack" -m "Pip package config added"
 
+
 mlem declare env heroku staging
 mlem declare deployment heroku myservice -c app_name=example-mlem-get-started-app -c model=rf -c env=staging
 git add .mlem
@@ -124,28 +119,22 @@ tick
 git commit -m "Add env and deploy meta"
 git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
 
-if heroku apps:info example-mlem-get-started-app; then
-  heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
-fi
 
-mlem deployment run myservice
-git add .mlem
-tick
-git commit -m "Deploy service"
-git tag -a "6-deploy-create" -m "Deployment created"
+# if heroku apps:info example-mlem-get-started-app; then
+#   heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
+# fi
+
+# mlem deployment run myservice
+# git add .mlem
+# tick
+# git commit -m "Deploy service"
+# git tag -a "6-deploy-create" -m "Deployment created"
 
 
 ###################### DVC
 
-git checkout main
-git branch dvc
-git checkout dvc
 
-mlem init
-tick
-git add .mlem
-git commit -m "Initialize MLEM project"
-git tag -a "1-dvc-mlem-init" -m "MLEM initialized."
+git checkout -b dvc
 
 dvc init
 dvc remote add myremote --local azure://example-mlem
@@ -153,15 +142,17 @@ dvc remote add default -d https://examplemlem.blob.core.windows.net/example-mlem
 git add .dvc
 tick
 git commit -m "Init dvc"
-git tag -a "2-dvc-dvc-init" -m "DVC Initialized"
+git tag -a "7-dvc-dvc-init" -m "DVC Initialized"
 
 
 mlem config set core.storage.type dvc
 echo "/**/?*.mlem" > .dvcignore
-git add .dvcignore .mlem
+git add .dvcignore
+git rm -r --cached .mlem
 tick
 git commit -m "Configure MLEM for DVC"
-git tag -a "3-dvc-mlme-config" -m "Configured MLEM to work with DVC"
+git tag -a "8-dvc-mlem-config" -m "Configured MLEM to work with DVC"
+
 
 python train.py
 python evaluate.py
@@ -169,7 +160,7 @@ dvc add .mlem/model/rf .mlem/data/*.csv
 git add .mlem .dvc metrics.json
 tick
 git commit -m "Run code with DVC"
-git tag -a "4-dvc-save-models" -m "Saved models with DVC storage"
+git tag -a "9-dvc-save-models" -m "Saved models with DVC storage"
 dvc push -r myremote
 
 popd
@@ -197,9 +188,13 @@ gh repo create iterative/example-mlem-get-started --public \
 Run these commands to force push it:
 
 cd build/example-mlem-get-started
-git remote add origin https://github.com/<slug>/example-mlem-get-started
-git push --force origin main simple dvc
+git remote add origin https://github.com/aguschin/example-mlem-get-started
+git push --force origin main dvc
 git push --force origin --tags
+gh pr create --title "DVC-ify MLEM project" \
+     --body "Check out this documentation page to learn how to store your model binaries with DVC https://mlem.ai/doc/use-cases/dvc" \
+     --base main \
+     --head dvc
 cd ../../
 
 You may remove the generated repo with:
