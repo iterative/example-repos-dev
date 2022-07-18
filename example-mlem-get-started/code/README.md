@@ -5,21 +5,21 @@ This is an auto-generated repository for use in MLEM
 introduction into basic MLEM concepts.
 
 - The `main` branch contains the results of following the Get Started. Results
-  of each step can be found in git tags.
+  of each step can be found in Git tags.
 - The `dvc` branch contains the results of the
   [MLEM+DVC tutorial](http://mlem.ai/doc/use-cases/dvc).
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
 
-## Installation
+## Trying out the repository
 
 Python 3.7+ is required to run code from this repo.
 
-To be able to commit and push your results please fork and then clone this repo
+Clone the repository first:
 
 ```console
-$ gh repo fork https://github.com/iterative/example-mlem-get-started
+$ git clone https://github.com/iterative/example-mlem-get-started
 $ cd example-mlem-get-started
 ```
 
