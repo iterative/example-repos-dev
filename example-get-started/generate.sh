@@ -98,7 +98,7 @@ git tag -a "5-source-code" -m "Source code added."
 
 
 dvc run -n prepare \
-  -p prepare.seed,prepare.split \
+  -p prepare \
   -d src/prepare.py -d data/data.xml \
   -o data/prepared \
   python src/prepare.py data/data.xml
@@ -110,14 +110,14 @@ dvc push
 
 
 dvc run -n featurize \
-  -p featurize.max_features,featurize.ngrams \
+  -p featurize \
   -d src/featurization.py -d data/prepared \
   -o data/features \
   python src/featurization.py \
   data/prepared data/features
 git add data/.gitignore dvc.yaml dvc.lock
 dvc run -n train \
-  -p train.seed,train.n_est,train.min_split \
+  -p train \
   -d src/train.py -d data/features \
   -o model.pkl \
   python src/train.py data/features model.pkl
