@@ -1,8 +1,7 @@
 pandas
 scikit-learn
 scipy
-dvc[azure,s3]
 fastapi
 uvicorn
 docker
-mlem
+mlem[dvc,dvc-azure,dvc-s3]
