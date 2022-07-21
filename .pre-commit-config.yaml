@@ -45,7 +45,7 @@ repos:
   - id: isort
     args: [--profile=black, -l=99]
 - repo: https://github.com/ambv/black
-  rev: 21.5b1
+  rev: 22.3.0
   hooks:
   - id: black
     args: [-l, '99']
