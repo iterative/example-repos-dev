@@ -1,7 +1,3 @@
 pandas
 scikit-learn
-scipy
-fastapi
-uvicorn
-docker
-mlem[dvc,dvc-azure,dvc-s3]
+mlem[dvc,dvc-azure,dvc-s3,fastapi,heroku]
