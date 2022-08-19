@@ -10,6 +10,7 @@ set -eux
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-get-started"
 REPO_PATH="$HERE/build/$REPO_NAME"
+PROD=${1:-false}
 
 if [ -d "$REPO_PATH" ]; then
   echo "Repo $REPO_PATH already exists, please remove it first."
@@ -87,7 +88,18 @@ git commit -m "Import raw data (overwrite)"
 git tag -a "4-import-data" -m "Data file overwritten with an import."
 dvc push
 
-wget https://code.dvc.org/get-started/code.zip
+# Deploy code
+pushd $HERE
+source deploy.sh $PROD
+popd
+
+# Get deployed code
+if [ $PROD == 'prod' ]; then
+    wget https://code.dvc.org/get-started/code.zip
+else
+    mv $HERE/code.zip code.zip
+fi
+
 unzip code.zip
 rm -f code.zip
 pip install -r src/requirements.txt
