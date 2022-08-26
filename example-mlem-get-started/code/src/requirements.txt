@@ -1,0 +1,3 @@
+pandas
+scikit-learn
+mlem[dvc,dvc-azure,dvc-s3,fastapi,heroku]
