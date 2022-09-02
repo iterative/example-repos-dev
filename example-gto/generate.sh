@@ -105,7 +105,7 @@ tick
 gto register cv-class --version v0.1.13
 if $PUSH; then
   git push --tags
-  sleep 60
+  sleep 30
 fi
 
 echo "Update the model"
@@ -121,26 +121,26 @@ tick
 gto register churn --bump-minor
 if $PUSH; then
   git push --tags
-  sleep 60
+  sleep 30
 fi
 
 echo "Promote models"
 tick
-gto promote churn staging HEAD
+gto assign churn HEAD --stage staging
 if $PUSH; then
   git push --tags
-  sleep 60
+  sleep 30
 fi
 
 tick
-gto promote churn prod --version v3.0.0
+gto assign churn --version v3.0.0 --stage prod
 if $PUSH; then
   git push --tags
-  sleep 60
+  sleep 30
 fi
 
 tick
-gto promote segment dev --version v0.4.1
+gto assign segment --version v0.4.1 --stage dev
 if $PUSH; then
   git push --tags
 fi
