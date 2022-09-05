@@ -44,6 +44,7 @@ source $BUILD_PATH/.venv/bin/activate
 
 TOTAL_TAGS=15
 STEP_TIME=100000
+SLEEP_TIME=30
 BEGIN_TIME=$(($(date +%s) - (${TOTAL_TAGS} * ${STEP_TIME})))
 export TAG_TIME=${BEGIN_TIME}
 export GIT_AUTHOR_DATE=${TAG_TIME}
@@ -105,7 +106,7 @@ tick
 gto register cv-class --version v0.1.13
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 echo "Update the model"
@@ -121,25 +122,33 @@ tick
 gto register churn --bump-minor
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 echo "Promote models"
 tick
+gto assign churn --version v3.0.0 --stage dev
+if $PUSH; then
+  git push --tags
+  sleep $SLEEP_TIME
+fi
+
+tick
 gto assign churn HEAD --stage staging
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 tick
 gto assign churn --version v3.0.0 --stage prod
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 tick
+gto assign churn --version v3.1.0 --stage dev
 gto assign segment --version v0.4.1 --stage dev
 if $PUSH; then
   git push --tags
