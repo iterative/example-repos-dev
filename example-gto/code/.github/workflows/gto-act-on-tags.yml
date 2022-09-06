@@ -12,48 +12,24 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Fetch the whole repo in CI (including all tags and branches)
-      run: |
-        set +e
-        # https://stackoverflow.com/questions/10312521/how-to-fetch-all-git-branches
-        git tag | xargs git tag -d
-        for remote in `git branch -r`; do git branch --track ${remote#origin/} $remote; done
-        git fetch --all --prune --tags
-        git pull --all
-        set -e
+    - name: "GTO: figure out what was registered/promoted and show the Registry state"
+      id: gto
+      uses: iterative/gto-action@v1
+      with:
+        show: true
+        history: true
     - uses: actions/setup-python@v2
     - name: Install dependencies
       run: |
         pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-    - name: "GTO: show current Registry state"
+    - name: "Publish (act on registering a new version)"
+      if: steps.gto.outputs.event == 'registration'
       run: |
-        gto show
-        gto history
-    - name: "GTO: figure out what was registered/promoted"
+        echo "[$GITHUB_REF] You got version '${{ steps.gto.outputs.version }}' registered for model '${{ steps.gto.outputs.name }}' "
+        echo "[$GITHUB_REF] It is about time to publish it somewhere so others could use it!"
+    - name: "Deploy (act on assigning a new stage)"
+      if: steps.gto.outputs.event == 'assignment'
       run: |
-        cat << EOF
-        Here GTO analyzes the GIT REF that triggered the workflow.
-        If it registered a version or promoted it to an environment,
-        you can see it and act accordingly, e.g. trigger release or deploy:
-
-        EOF
-
-        export NAME=`gto check-ref $GITHUB_REF --name`
-        export VERSION=`gto check-ref $GITHUB_REF --version`
-
-        if [ "$(gto check-ref $GITHUB_REF --event)" = "registration" ]; then
-          echo "[$GITHUB_REF] You got model '$NAME' registered with version '$VERSION'"
-          echo "[$GITHUB_REF] It is about time to publish it somewhere so others could use it!"
-        fi
-
-        if [ "$(gto check-ref $GITHUB_REF --event)" = "assignment" ]; then
-          export STAGE=`gto check-ref $GITHUB_REF --stage`
-          echo "[$GITHUB_REF] You got model '$NAME' of version '$VERSION' promoted to stage '$STAGE'"
-          echo "[$GITHUB_REF] It is about time to deploy it somewhere!"
-        fi
-
-        cat << EOF
-
-        Read GitHub action code for code example
-        EOF
+        echo "[$GITHUB_REF] You got model '${{ steps.gto.outputs.name }}' of version '${{ steps.gto.outputs.version }}' promoted to stage '${{ steps.gto.outputs.stage }}'"
+        echo "[$GITHUB_REF] It is about time to deploy it somewhere!"
