@@ -1,0 +1,4 @@
+object_type: deployment
+type: heroku
+model: models/churn.pkl
+app_name: gto-example-mlem-app-dev

@@ -17,7 +17,7 @@ HERE="$(
   cd "$(dirname "$0")"
   pwd -P
 )"
-USER_NAME="iterative"
+USER_NAME="aguschin"
 REPO_NAME="example-gto"
 
 BUILD_PATH="$HERE/build"
@@ -64,7 +64,9 @@ mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
 git init -b main
-cp -r $HERE/code/ .
+cp $HERE/code/requirements.txt .
+cp $HERE/code/README.md .
+cp -r $HERE/code/.github .
 git add .
 tick
 git commit -m "Initialize Git repository with CI workflow"
@@ -82,7 +84,7 @@ fi
 
 echo "Create new models"
 mkdir models
-echo "1st version" >models/churn.pkl
+echo "1st version" > models/churn.pkl
 git add models requirements.txt
 tick
 git commit -am "Create models"
@@ -154,8 +156,29 @@ if $PUSH; then
   git push --tags
 fi
 
+echo "Add MLEM model"
+tick
+git checkout -b mlem
+cp -R $HERE/code/mlem/ .
+pip install -r requirements.txt
+python train.py
+git add .
+git commit -m "Add MLEM model"
+
+tick
+gto assign churn --stage dev
+if $PUSH; then
+  git push --tags
+fi
+
+
 gto show
 gto history
+
+
+if $PUSH; then
+  git push origin main mlem
+fi
 
 popd
 

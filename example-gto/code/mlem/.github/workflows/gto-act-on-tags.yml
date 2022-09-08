@@ -1,0 +1,32 @@
+name: Act on artifact registrations and promotions
+on:
+  push:
+    tags:
+      - "*"
+env:
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+jobs:
+  act:
+    name: Figure out what was registered/promoted and act on it
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: "GTO: figure out what was registered/promoted and show the Registry state"
+      id: gto
+      uses: iterative/gto-action@v1
+      with:
+        show: true
+        history: true
+    - uses: actions/setup-python@v2
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+    - name: "Deploy a MLEM model (act on assigning a new stage)"
+      if: steps.gto.outputs.event == 'assignment'
+      run: |
+        echo "[$GITHUB_REF] You got model '${{ steps.gto.outputs.name }}' of version '${{ steps.gto.outputs.version }}' promoted to stage '${{ steps.gto.outputs.stage }}'"
+        mlem deploy run deploy/${{ steps.gto.outputs.stage }}

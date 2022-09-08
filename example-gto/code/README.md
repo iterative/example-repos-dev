@@ -4,6 +4,9 @@ This is an auto-generated repository for use in
 [GTO Get Started](https://github.com/iterative/gto). It is a step-by-step quick
 introduction into basic GTO concepts.
 
+The branch `mlem` contains the example of using MLEM to deploy a model upon the
+stage assignment with GTO.
+
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
 

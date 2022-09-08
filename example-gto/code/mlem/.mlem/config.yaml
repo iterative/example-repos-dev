@@ -1,0 +1,6 @@
+#core:
+#  state:
+#    uri: s3://gto-mlem-example/state
+docker:
+  git_rev: feature/new-state
+  source: git
