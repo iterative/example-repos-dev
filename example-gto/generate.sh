@@ -177,7 +177,7 @@ gto history
 
 
 if $PUSH; then
-  git push origin main mlem
+  git push --set-upstream origin main mlem -f
 fi
 
 popd

@@ -7,8 +7,8 @@ env:
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
 jobs:
-  act:
-    name: Figure out what was registered/promoted and act on it
+  check:
+    name: Figure out what was registered/promoted
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -20,13 +20,27 @@ jobs:
       with:
         show: true
         history: true
+    # we define the Job outputs here to let the next Job use them
+    outputs:
+      name: ${{ steps.gto.outputs.name }}
+      version: ${{ steps.gto.outputs.version }}
+      stage: ${{ steps.gto.outputs.stage }}
+      event: ${{ steps.gto.outputs.event }}
+  deploy:
+    name: Deploy a MLEM model (act on assigning a new stage)
+    needs: check
+    if: needs.check.outputs.event == 'assignment'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - uses: actions/setup-python@v2
     - name: Install dependencies
       run: |
         pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-    - name: "Deploy a MLEM model (act on assigning a new stage)"
-      if: steps.gto.outputs.event == 'assignment'
+    - name: Run `mlem deploy``
       run: |
-        echo "[$GITHUB_REF] You got model '${{ steps.gto.outputs.name }}' of version '${{ steps.gto.outputs.version }}' promoted to stage '${{ steps.gto.outputs.stage }}'"
-        mlem deploy run deploy/${{ steps.gto.outputs.stage }}
+        echo "[$GITHUB_REF] You got model '${{ needs.check.outputs.name }}' of version '${{ needs.check.outputs.version }}' promoted to stage '${{ needs.check.outputs.stage }}'"
+        mlem deploy run deploy/${{ needs.check.outputs.stage }}
