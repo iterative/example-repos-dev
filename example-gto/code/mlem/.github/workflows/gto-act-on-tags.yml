@@ -1,4 +1,4 @@
-name: Act on artifact registrations and promotions
+name: Deploy MLEM model after GTO Stage assignment
 on:
   push:
     tags:
@@ -42,5 +42,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run `mlem deploy``
       run: |
-        echo "[$GITHUB_REF] You got model '${{ needs.check.outputs.name }}' of version '${{ needs.check.outputs.version }}' promoted to stage '${{ needs.check.outputs.stage }}'"
         mlem deploy run deploy/${{ needs.check.outputs.stage }}
