@@ -66,7 +66,7 @@ pushd $REPO_PATH
 git init -b main
 cp $HERE/code/requirements.txt .
 cp $HERE/code/README.md .
-cp -r $HERE/code/.github .
+cp -R $HERE/code/.github .
 git add .
 tick
 git commit -m "Initialize Git repository with CI workflow"
@@ -159,6 +159,7 @@ fi
 echo "Add MLEM model"
 tick
 git checkout -b mlem
+rm -rf .github
 cp -R $HERE/code/mlem/ .
 pip install -r requirements.txt
 python train.py
