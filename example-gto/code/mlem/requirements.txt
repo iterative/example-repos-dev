@@ -1,3 +1,3 @@
 gto
 emoji
-git+https://github.com/iterative/mlem@feature/new-state#egg=mlem[heroku,s3,fastapi]
+git+https://github.com/iterative/mlem@release/0.3.0#egg=mlem[heroku,s3,fastapi]

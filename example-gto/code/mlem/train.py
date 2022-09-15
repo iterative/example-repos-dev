@@ -1,17 +1,11 @@
-import random
+import sys
 
-import emoji
 import mlem
 
-def model(text: str):
-    """
-    Translate dog barks to emoji, as you hear them
-    """
-    return " ".join(
-        random.choice(list(emoji.EMOJI_DATA.keys())) for _ in text.split()  # type: ignore
-    )
+if __name__ == "__main__":
+    value = sys.argv[1] if len(sys.argv) > 1 else "no value"
 
+    def model(data):
+        return value
 
-if __name__ == '__main__':
-
-    mlem.api.save(model, "models/churn.pkl", sample_data="Woof woof!", external=True)
+    mlem.api.save(model, "models/churn.pkl", sample_data="string", external=True)

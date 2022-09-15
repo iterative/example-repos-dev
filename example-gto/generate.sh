@@ -17,7 +17,7 @@ HERE="$(
   cd "$(dirname "$0")"
   pwd -P
 )"
-USER_NAME="aguschin"
+USER_NAME="iterative"
 REPO_NAME="example-gto"
 
 BUILD_PATH="$HERE/build"
@@ -162,7 +162,7 @@ git checkout -b mlem
 rm -rf .github
 cp -R $HERE/code/mlem/ .
 pip install -r requirements.txt
-python train.py
+python train.py "The very first MLEM model"
 git add .
 git commit -m "Add MLEM model"
 
