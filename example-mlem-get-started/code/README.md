@@ -27,8 +27,8 @@ Now let's install the requirements. But before we do that, we **strongly**
 recommend creating a virtual environment:
 
 ```console
-$ python3 -m venv .env
-$ source .env/bin/activate
+$ python3 -m venv .venv
+$ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
 

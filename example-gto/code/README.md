@@ -24,8 +24,8 @@ recommend creating a virtual environment with a tool such as
 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
 ```console
-$ virtualenv -p python3 .env
-$ source .env/bin/activate
+$ virtualenv -p python3 .venv
+$ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
