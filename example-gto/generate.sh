@@ -64,6 +64,8 @@ mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
 git init -b main
+cp $HERE/code/.gitignore .
+git add .gitignore
 cp $HERE/code/requirements.txt .
 cp $HERE/code/README.md .
 cp -R $HERE/code/.github .
