@@ -3,4 +3,5 @@ pandas
 pyaml
 scikit-learn
 scipy
+shap
 matplotlib

@@ -5,6 +5,7 @@ import pickle
 import sys
 
 import pandas as pd
+import shap
 from sklearn import metrics
 from sklearn import tree
 from dvclive import Live
@@ -75,11 +76,19 @@ with open(test_file, "rb") as fd:
 evaluate(model, train, "train")
 evaluate(model, test, "test")
 
-# Dump feature importance image and show it with your plots.
-fig, axes = plt.subplots(dpi=100)
-fig.subplots_adjust(bottom=0.2, top=0.95)
+# Save feature importance and show it with your plots.
 importances = model.feature_importances_
 forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
-axes.set_ylabel("Mean decrease in impurity")
-forest_importances.plot.bar(ax=axes)
-fig.savefig(os.path.join("evaluation", "importance.png"))
+forest_importances = forest_importances.reset_index()
+forest_importances.columns = ["Feature", "Mean decrease in impurity"]
+forest_importances.to_csv(os.path.join("evaluation", "importance.csv"),
+                          index=False)
+
+# Save SHAP feature importance and show it with your plots.
+fig, axes = plt.subplots(dpi=100)
+x_arr = test[:, 2:].toarray()
+explainer = shap.TreeExplainer(model, data=x_arr)
+shap_values = explainer.shap_values(x_arr)[1]
+shap.summary_plot(shap_values, x_arr, feature_names=feature_names, 
+                  plot_size=(10,5), show=False)
+plt.savefig(os.path.join("evaluation", "shap.png"))

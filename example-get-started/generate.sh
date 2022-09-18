@@ -142,9 +142,10 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  --outs evaluation/importance.png \
   --outs-no-cache evaluation/train/plots \
   --outs-no-cache evaluation/test/plots \
+  --outs evaluation/importance.csv \
+  --outs evaluation/shap.png \
   -M evaluation/train.json -M evaluation/test.json \
   python src/evaluate.py model.pkl data/features
 git add .gitignore dvc.yaml dvc.lock evaluation
@@ -155,7 +156,6 @@ dvc push
 
 
 echo "plots:
-  evaluation/importance.png:
   ROC:
     x: fpr
     y:
@@ -164,14 +164,20 @@ echo "plots:
   Precision-Recall:
     x: recall
     y:
-      evaluation/train/plots/precision_recall.json: precision
       evaluation/test/plots/precision_recall.json: precision
   Confusion-Matrix:
     template: confusion
     x: actual
     y:
       evaluation/train/plots/confusion_matrix.json: predicted
-      evaluation/test/plots/confusion_matrix.json: predicted" >> dvc.yaml
+      evaluation/test/plots/confusion_matrix.json: predicted
+  evaluation/importance.csv:
+    title: Feature Importance
+    template: bar_horizontal_sorted
+    x: "Mean decrease in impurity"
+    y: "Feature"
+  evaluation/shap.png:
+    title: SHAP Feature Importance" >> dvc.yaml
 git add dvc.yaml
 tick
 git commit -m "Configure plots"
