@@ -35,7 +35,9 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   echo '.venv/' > .gitignore
   pip install -r $HERE/code/src/requirements.txt
   git clone https://github.com/iterative/mlem.git
-  pip install -e ./mlem
+  cd mlem
+  git checkout release/0.3.0
+  pip install -e .
 fi
 popd
 
@@ -105,7 +107,7 @@ mlem init s3://example-mlem-get-started
 mlem clone rf s3://example-mlem-get-started/rf
 
 
-mlem declare builder pip pip_config -c target=build/ -c package_name=example_mlem_get_started
+mlem declare builder pip pip_config --target=build/ --package_name=example_mlem_get_started
 git add .mlem
 tick
 git commit -m "Add package config"
@@ -113,7 +115,7 @@ git tag -a "4-pack" -m "Pip package config added"
 
 
 mlem declare env heroku staging
-mlem declare deployment heroku myservice -c app_name=example-mlem-get-started-app -c model=rf -c env=staging
+mlem declare deployment heroku myservice --app_name=example-mlem-get-started-app --model.path=rf --env=staging
 git add .mlem
 tick
 git commit -m "Add env and deploy meta"
