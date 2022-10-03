@@ -24,7 +24,7 @@ jobs:
           cat <<EOF > report.md
           # CML Report
           ## Plots
-          ![Prevision & Recall](./prc.svg)
+          ![Precision & Recall](./prc.svg)
           ![Confusion Matrix](./confusion.svg)
 
           ## Metrics and Params
