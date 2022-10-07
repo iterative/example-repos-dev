@@ -42,12 +42,12 @@ jobs:
         export NAME=`gto check-ref $GITHUB_REF --name`
         export VERSION=`gto check-ref $GITHUB_REF --version`
 
-        if [[ -n `gto check-ref $GITHUB_REF --registration` ]]; then
+        if [ "$(gto check-ref $GITHUB_REF --event)" = "registration" ]; then
           echo "[$GITHUB_REF] You got model '$NAME' registered with version '$VERSION'"
           echo "[$GITHUB_REF] It is about time to publish it somewhere so others could use it!"
         fi
 
-        if [[ $(gto check-ref $GITHUB_REF --promotion) ]]; then
+        if [ "$(gto check-ref $GITHUB_REF --event)" = "assignment" ]; then
           export STAGE=`gto check-ref $GITHUB_REF --stage`
           echo "[$GITHUB_REF] You got model '$NAME' of version '$VERSION' promoted to stage '$STAGE'"
           echo "[$GITHUB_REF] It is about time to deploy it somewhere!"
