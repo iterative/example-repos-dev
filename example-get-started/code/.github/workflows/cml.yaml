@@ -20,16 +20,6 @@ jobs:
             PREVIOUS_REF=main
           fi
 
-          cat <<EOF > report.md
-          # CML Report
-          ## Plots
-          ![Precision & Recall](./prc.svg)
-          ![Confusion Matrix](./confusion.svg)
-
-          ## Metrics and Params
-          ### ${PREVIOUS_REF} → workspace
-          EOF
-
           dvc plots diff $PREVIOUS_REF workspace \
             --show-vega --targets evaluation/plots/precision_recall.json > vega.json
           vl2svg vega.json prc.svg
@@ -38,6 +28,17 @@ jobs:
             --show-vega --targets evaluation/plots/confusion_matrix.json > vega.json
           vl2svg vega.json confusion.svg
 
-          dvc exp diff $PREVIOUS_REF --show-md >> report.md
+          dvc_report=$(dvc exp diff $PREVIOUS_REF --show-md)
+
+          cat <<EOF > report.md
+          # CML Report
+          ## Plots
+          ![Precision & Recall](./prc.svg)
+          ![Confusion Matrix](./confusion.svg)
+
+          ## Metrics and Params
+          ### ${PREVIOUS_REF} → workspace
+          ${dvc_report}
+          EOF
 
           cml comment create --publish --pr=false report.md
