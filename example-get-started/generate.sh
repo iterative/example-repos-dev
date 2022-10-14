@@ -184,6 +184,9 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 git checkout -b "tune-hyperparams"
 
+unset GIT_AUTHOR_DATE
+unset GIT_COMMITTER_DATE
+
 dvc exp run --queue --set-param train.min_split=8
 dvc exp run --queue --set-param train.min_split=64
 dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
