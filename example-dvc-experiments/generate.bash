@@ -25,8 +25,8 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 tag_tick() {
   export TAG_TIME=$(( TAG_TIME + STEP_TIME ))
-  export GIT_AUTHOR_DATE=${TAG_TIME}
-  export GIT_COMMITTER_DATE=${TAG_TIME}
+  export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
+  export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
 }
 
 export -f tag_tick
@@ -106,6 +106,8 @@ git add .
 git commit -m "Baseline experiment run"
 git tag "baseline-experiment"
 
+unset GIT_AUTHOR_DATE
+unset GIT_COMMITTER_DATE
 dvc exp run -n cnn-32 --queue -S model.conv_units=32
 dvc exp run -n cnn-64 --queue -S model.conv_units=64
 dvc exp run -n cnn-96 --queue -S model.conv_units=96

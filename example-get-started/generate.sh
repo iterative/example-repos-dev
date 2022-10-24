@@ -21,12 +21,12 @@ TOTAL_TAGS=15
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 export TAG_TIME=${BEGIN_TIME}
-export GIT_AUTHOR_DATE=${TAG_TIME}
-export GIT_COMMITTER_DATE=${TAG_TIME}
+export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
+export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
 tick(){
   export TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
-  export GIT_AUTHOR_DATE=${TAG_TIME}
-  export GIT_COMMITTER_DATE=${TAG_TIME}
+  export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
+  export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
 }
 
 export GIT_AUTHOR_NAME="Ivan Shcheklein"
@@ -201,6 +201,9 @@ export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 git checkout -b "tune-hyperparams"
+
+unset GIT_AUTHOR_DATE
+unset GIT_COMMITTER_DATE
 
 dvc exp run --queue --set-param train.min_split=8
 dvc exp run --queue --set-param train.min_split=64
