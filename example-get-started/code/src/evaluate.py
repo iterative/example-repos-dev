@@ -20,10 +20,12 @@ model_file = sys.argv[1]
 train_file = os.path.join(sys.argv[2], "train.pkl")
 test_file = os.path.join(sys.argv[2], "test.pkl")
 
-def evaluate(model, matrix, dataset_name):
-    """Dump all evaluation metrics and plots for given datasets."""
-    eval_path = os.path.join("evaluation", dataset_name)
+# Setup dvclive.
+live = Live("evaluation")
 
+
+def evaluate(model, matrix, split):
+    """Dump all evaluation metrics and plots for given datasets."""
     labels = matrix[:, 1].toarray().astype(int)
     x = matrix[:, 2:]
 
@@ -31,10 +33,12 @@ def evaluate(model, matrix, dataset_name):
     predictions = predictions_by_class[:, 1]
 
     # Use dvclive to log a few simple plots ...
-    live = Live(eval_path)
-    live.log_plot("roc", labels, predictions)
-    live.log("avg_prec", metrics.average_precision_score(labels, predictions))
-    live.log("roc_auc", metrics.roc_auc_score(labels, predictions))
+    live.log_sklearn_plot("roc", labels, predictions,
+                          name=os.path.join(split, "roc"))
+    live.log(os.path.join(split, "avg_prec"),
+             metrics.average_precision_score(labels, predictions))
+    live.log(os.path.join(split, "roc_auc"),
+             metrics.roc_auc_score(labels, predictions))
 
     # ... but actually it can be done with dumping data points into a file:
     # ROC has a drop_intermediate arg that reduces the number of points.
@@ -43,7 +47,8 @@ def evaluate(model, matrix, dataset_name):
     precision, recall, prc_thresholds = metrics.precision_recall_curve(labels, predictions)
     nth_point = math.ceil(len(prc_thresholds) / 1000)
     prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-    prc_file = os.path.join(eval_path, "plots", "precision_recall.json")
+    prc_file = os.path.join("evaluation", "plots", "sklearn", split,
+                            "precision_recall.json")
     with open(prc_file, "w") as fd:
         json.dump(
             {
@@ -58,7 +63,9 @@ def evaluate(model, matrix, dataset_name):
 
 
     # ... confusion matrix plot
-    live.log_plot("confusion_matrix", labels.squeeze(), predictions_by_class.argmax(-1))
+    live.log_sklearn_plot("confusion_matrix", labels.squeeze(),
+                          predictions_by_class.argmax(-1),
+                          name=os.path.join(split, "confusion_matrix"))
 
 
 # Load model and data.
@@ -82,4 +89,4 @@ importances = model.feature_importances_
 forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
 axes.set_ylabel("Mean decrease in impurity")
 forest_importances.plot.bar(ax=axes)
-fig.savefig(os.path.join("evaluation", "importance.png"))
+fig.savefig(os.path.join("evaluation", "plots", "importance.png"))

@@ -142,10 +142,9 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  --outs evaluation/importance.png \
-  --outs-no-cache evaluation/train/plots \
-  --outs-no-cache evaluation/test/plots \
-  -M evaluation/train.json -M evaluation/test.json \
+  --outs evaluation/plots/importance.png \
+  --outs-no-cache evaluation/plots/sklearn \
+  -M evaluation/metrics.json \
   python src/evaluate.py model.pkl data/features
 git add .gitignore dvc.yaml dvc.lock evaluation
 tick
@@ -155,23 +154,23 @@ dvc push
 
 
 echo "plots:
-  evaluation/importance.png:
+  evaluation/plots/importance.png:
   ROC:
     x: fpr
     y:
-      evaluation/train/plots/roc.json: tpr
-      evaluation/test/plots/roc.json: tpr
+      evaluation/plots/sklearn/train/roc.json: tpr
+      evaluation/plots/sklearn/test/roc.json: tpr
   Precision-Recall:
     x: recall
     y:
-      evaluation/train/plots/precision_recall.json: precision
-      evaluation/test/plots/precision_recall.json: precision
+      evaluation/plots/sklearn/train/precision_recall.json: precision
+      evaluation/plots/sklearn/test/precision_recall.json: precision
   Confusion-Matrix:
     template: confusion
     x: actual
     y:
-      evaluation/train/plots/confusion_matrix.json: predicted
-      evaluation/test/plots/confusion_matrix.json: predicted" >> dvc.yaml
+      evaluation/train/plots/sklearn/train/confusion_matrix.json: predicted
+      evaluation/test/plots/sklearn/test/confusion_matrix.json: predicted" >> dvc.yaml
 git add dvc.yaml
 tick
 git commit -m "Configure plots"
@@ -210,7 +209,7 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-EXP=$(dvc exp show --no-pager --sort-by evaluation/test.json:avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+EXP=$(dvc exp show --no-pager --sort-by evaluation/train.avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"
