@@ -112,23 +112,13 @@ tick
 git commit -m "Add package config"
 git tag -a "4-pack" -m "Pip package config added"
 
-
-mlem declare env heroku staging
-mlem declare deployment heroku app.mlem --app_name=example-mlem-get-started-app --model.path=rf --env=staging
-git add app.mlem
-tick
-git commit -m "Add env and deploy meta"
-git tag -a "5-deploy-meta" -m "Target env and deploy meta added"
-
-
 if heroku apps:info example-mlem-get-started-app; then
   heroku apps:destroy example-mlem-get-started-app --confirm example-mlem-get-started-app
   heroku container:login
 fi
 
-mlem deployment run --load app.mlem --model models/rf
-git add app.mlem.state
-tick
+mlem deployment run heroku app.mlem --app_name=example-mlem-get-started-app --model=models/rf
+git add app.mlem app.mlem.state
 git commit -m "Deploy service"
 git tag -a "6-deploy-create" -m "Deployment created"
 
@@ -149,7 +139,7 @@ git tag -a "7-dvc-dvc-init" -m "DVC Initialized"
 
 mlem config set core.storage.type dvc
 echo "/**/?*.mlem" > .dvcignore
-git add .dvcignore
+git add .dvcignore .mlem.yaml
 git rm -r --cached models data
 tick
 git commit -m "Configure MLEM for DVC"
