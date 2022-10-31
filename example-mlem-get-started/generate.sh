@@ -36,7 +36,6 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   pip install -r $HERE/code/src/requirements.txt
   git clone https://github.com/iterative/mlem.git
   cd mlem
-  git checkout release/0.3.0
   pip install -e .
 fi
 popd
