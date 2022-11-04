@@ -142,12 +142,11 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  --outs evaluation/importance.png \
-  --outs-no-cache evaluation/train/plots \
-  --outs-no-cache evaluation/test/plots \
-  -M evaluation/train.json -M evaluation/test.json \
+  --outs eval/importance.png --outs-no-cache eval/prc \
+  --outs-no-cache eval/live/train/plots --outs-no-cache eval/live/test/plots \
+  -M eval/live/train/metrics.json -M eval/live/test/metrics.json \
   python src/evaluate.py model.pkl data/features
-git add .gitignore dvc.yaml dvc.lock evaluation
+git add .gitignore dvc.yaml dvc.lock eval
 tick
 git commit -m "Create evaluation stage"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
@@ -155,23 +154,23 @@ dvc push
 
 
 echo "plots:
-  evaluation/importance.png:
-  ROC:
-    x: fpr
-    y:
-      evaluation/train/plots/roc.json: tpr
-      evaluation/test/plots/roc.json: tpr
-  Precision-Recall:
-    x: recall
-    y:
-      evaluation/train/plots/precision_recall.json: precision
-      evaluation/test/plots/precision_recall.json: precision
-  Confusion-Matrix:
-    template: confusion
-    x: actual
-    y:
-      evaluation/train/plots/confusion_matrix.json: predicted
-      evaluation/test/plots/confusion_matrix.json: predicted" >> dvc.yaml
+  - eval/importance.png
+  - ROC:
+      x: fpr
+      y:
+        eval/live/train/plots/sklearn/roc.json: tpr
+        eval/live/test/plots/sklearn/roc.json: tpr
+  - Precision-Recall:
+      x: recall
+      y:
+        eval/live/train/plots/sklearn/precision_recall.json: precision
+        eval/live/test/plots/sklearn/precision_recall.json: precision
+  - Confusion-Matrix:
+      template: confusion
+      x: actual
+      y:
+        eval/live/train/plots/sklearn/confusion_matrix.json: predicted
+        eval/live/test/plots/sklearn/confusion_matrix.json: predicted" >> dvc.yaml
 git add dvc.yaml
 tick
 git commit -m "Configure plots"
@@ -213,7 +212,7 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-EXP=$(dvc exp show --no-pager --sort-by evaluation/test.json:avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+EXP=$(dvc exp show --csv --sort-by eval/live/test/metrics.json:avg_prec | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"

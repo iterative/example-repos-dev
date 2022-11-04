@@ -7,7 +7,7 @@ introduction into basic MLEM concepts.
 - The `main` branch contains the results of following the Get Started. Results
   of each step can be found in Git tags.
 - The `dvc` branch contains the results of the
-  [MLEM+DVC tutorial](http://mlem.ai/doc/use-cases/dvc).
+  [MLEM+DVC tutorial](https://mlem.ai/doc/user-guide/dvc).
 
 🐛 Please report any issues found in this project here -
 [example-repos-dev](https://github.com/iterative/example-repos-dev).
