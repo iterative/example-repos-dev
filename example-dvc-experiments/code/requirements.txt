@@ -1,5 +1,5 @@
-dvc[all]>=2.9
+dvc[s3]>2.33.2
 tensorflow>=2.5,<2.6
 ruamel.yaml>=0.17,<0.18
 imageio>=2.9,<3
-dvclive>=0.4
+dvclive>=1.0
