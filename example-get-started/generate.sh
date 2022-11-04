@@ -142,17 +142,19 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -M evaluation.json \
-  --plots-no-cache evaluation/plots/precision_recall.json \
-  --plots-no-cache evaluation/plots/roc.json \
-  --plots-no-cache evaluation/plots/confusion_matrix.json \
-  --plots evaluation/importance.png \
+  -M evaluation/metrics.json \
+  -O evaluation/plots/metrics \
+  --plots-no-cache evaluation/plots/sklearn/roc.json \
+  --plots-no-cache evaluation/plots/sklearn/confusion_matrix.json \
+  --plots-no-cache evaluation/plots/prc.json \
+  --plots evaluation/plots/importance.png \
   python src/evaluate.py model.pkl data/features
-dvc plots modify evaluation/plots/precision_recall.json -x recall -y precision
-dvc plots modify evaluation/plots/roc.json -x fpr -y tpr
-dvc plots modify evaluation/plots/confusion_matrix.json \
+dvc plots modify evaluation/plots/sklearn/roc.json -x fpr -y tpr
+dvc plots modify evaluation/plots/sklearn/confusion_matrix.json \
     -x actual -y predicted -t confusion
-git add .gitignore dvc.yaml dvc.lock evaluation.json evaluation
+dvc plots modify evaluation/plots/prc.json -x recall \
+    -y precision
+git add .gitignore dvc.yaml dvc.lock evaluation
 tick
 git commit -m "Create evaluation stage"
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
@@ -194,7 +196,7 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-dvc exp apply $(dvc exp show --no-pager --sort-by avg_prec | tail -n 2 | head -n 1 | grep -o 'exp-\w*')
+dvc exp apply $(dvc exp show --sort-by avg_prec --csv | tail -n 1 | cut -d , -f 1)
 tick
 git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
