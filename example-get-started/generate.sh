@@ -155,16 +155,16 @@ dvc push
 
 echo "plots:
   - eval/importance.png
+  - Precision-Recall:
+      x: recall
+      y:
+        eval/prc/train/prc.json: precision
+        eval/prc/test/prc.json: precision
   - ROC:
       x: fpr
       y:
         eval/live/train/plots/sklearn/roc.json: tpr
         eval/live/test/plots/sklearn/roc.json: tpr
-  - Precision-Recall:
-      x: recall
-      y:
-        eval/live/train/plots/sklearn/precision_recall.json: precision
-        eval/live/test/plots/sklearn/precision_recall.json: precision
   - Confusion-Matrix:
       template: confusion
       x: actual

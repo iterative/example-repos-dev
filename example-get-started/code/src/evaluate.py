@@ -50,7 +50,9 @@ def evaluate(model, matrix, split):
                 metrics.precision_recall_curve(labels, predictions)
         nth_point = math.ceil(len(prc_thresholds) / 1000)
         prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-        prc_file = os.path.join(EVAL_PATH, "prc", split, "prc.json")
+        prc_dir = os.path.join(EVAL_PATH, "prc", split)
+        os.makedirs(prc_dir, exist_ok=True)
+        prc_file = os.path.join(prc_dir, "prc.json")
         with open(prc_file, "w") as fd:
             json.dump(
                 {
