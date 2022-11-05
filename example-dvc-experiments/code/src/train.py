@@ -1,13 +1,11 @@
 import os
 # Set tensorflow logging to minimum
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
-import tensorflow as tf
-import numpy as np
-from util import load_params, read_labeled_images, label_from_path, read_dataset, create_image_matrix
-import json
-import tarfile
 import imageio
-from dvclive.keras import DvcLiveCallback
+import tensorflow as tf
+from dvclive.keras import DVCLiveCallback
+
+from util import load_params, read_dataset, create_image_matrix
 
 DATASET_FILE = "data/images.tar.gz"
 OUTPUT_DIR = "models"
@@ -51,22 +49,6 @@ def normalize(images_array):
     return images_array / 255
 
 
-def history_to_csv(history):
-    keys = list(history.history.keys())
-    csv_string = ", ".join(["epoch"] + keys) + "\n"
-    list_len = len(history.history[keys[0]])
-    for i in range(list_len):
-        row = (
-            str(i + 1)
-            + ", "
-            + ", ".join([str(history.history[k][i]) for k in keys])
-            + "\n"
-        )
-        csv_string += row
-
-    return csv_string
-
-
 def main():
     params = load_params()
     m = get_model(conv_units=params['model']['conv_units'])
@@ -90,26 +72,17 @@ def main():
     x_valid = testing_images
     y_train = training_labels
     y_valid = testing_labels
-
-    history = m.fit(
+    
+    m.fit(
         x_train,
         y_train,
         batch_size=BATCH_SIZE,
         epochs=params["train"]["epochs"],
         verbose=1,
         validation_data=(x_valid, y_valid),
-        callbacks=[DvcLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
+        callbacks=[
+            DVCLiveCallback(model_file=f"{OUTPUT_DIR}/model.h5")],
     )
-
-    metrics_dict = m.evaluate(
-        testing_images,
-        testing_labels,
-        batch_size=BATCH_SIZE,
-        return_dict=True,
-    )
-
-    with open(METRICS_FILE, "w") as f:
-        f.write(json.dumps(metrics_dict))
 
     misclassified = {}
 

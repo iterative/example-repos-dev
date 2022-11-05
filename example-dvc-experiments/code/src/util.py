@@ -1,7 +1,9 @@
-from ruamel.yaml import YAML
-import numpy as np
 import os
+
+import numpy as np
+import tarfile
 from imageio import imread
+from ruamel.yaml import YAML
 
 def label_from_path(filepath):
     """extracts "test", and 3 from a path like "images/test/3/00177.png" """
@@ -19,7 +21,7 @@ def read_dataset(dataset_path):
         if f.isfile():
             filepath = f.name
             content = ds.extractfile(f)
-            image = imageio.imread(content)
+            image = imread(content)
             imagesection, imagelabel = label_from_path(filepath)
             if imagesection == "train":
                 training.append((imagelabel, image))
