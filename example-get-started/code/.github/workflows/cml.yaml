@@ -22,11 +22,11 @@ jobs:
           fi
 
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets evaluation/plots/precision_recall.json > vega.json
+            --show-vega --targets evaluation/plots/prc.json > vega.json
           vl2svg vega.json prc.svg
 
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets evaluation/plots/confusion_matrix.json > vega.json
+            --show-vega --targets evaluation/plots/sklearn/confusion_matrix.json > vega.json
           vl2svg vega.json confusion.svg
 
           dvc_report=$(dvc exp diff $PREVIOUS_REF --show-md)
