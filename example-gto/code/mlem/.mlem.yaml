@@ -1,6 +1,3 @@
 core:
  state:
    uri: s3://gto-mlem-example/state
-docker:
-  git_rev: release/0.3.0
-  source: git
