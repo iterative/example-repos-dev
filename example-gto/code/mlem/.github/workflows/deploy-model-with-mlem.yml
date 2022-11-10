@@ -46,4 +46,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run `mlem deploy``
       run: |
-        mlem --tb deployment run --load deploy/${{ needs.check.outputs.stage }} --model ${{ needs.check.outputs.path }}
+        mlem deployment run --load deploy/${{ needs.check.outputs.stage }} --model ${{ needs.check.outputs.path }}
