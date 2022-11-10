@@ -1,2 +1,2 @@
 gto
-git+https://github.com/iterative/mlem@release/0.3.0#egg=mlem[heroku,s3,fastapi]
+mlem[s3,fastapi,heroku]

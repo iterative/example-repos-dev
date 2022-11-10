@@ -8,4 +8,4 @@ if __name__ == "__main__":
     def model(data):
         return value
 
-    mlem.api.save(model, "models/churn.pkl", sample_data="string", external=True)
+    mlem.api.save(model, "models/churn.pkl", sample_data="string")
