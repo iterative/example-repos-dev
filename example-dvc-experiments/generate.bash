@@ -49,7 +49,6 @@ virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
 echo '.venv/' > .gitignore
-pip install git+https://github.com/iterative/dvc.git 'dvc[all]'
 
 git init
 git checkout -b main
@@ -81,7 +80,7 @@ dvc get https://github.com/iterative/dataset-registry \
 
 dvc init
 
-dvc exp init python3 src/train.py
+dvc exp init --live dvclive --plots plots python3 src/train.py 
 ## it doesn't add data/ so adding it manually
 dvc add data/images.tar.gz
 tag_tick

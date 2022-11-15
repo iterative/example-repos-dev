@@ -1,0 +1,3 @@
+core:
+ state:
+   uri: s3://gto-mlem-example/deployment-state

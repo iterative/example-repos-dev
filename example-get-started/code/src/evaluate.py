@@ -23,6 +23,7 @@ model_file = sys.argv[1]
 train_file = os.path.join(sys.argv[2], "train.pkl")
 test_file = os.path.join(sys.argv[2], "test.pkl")
 
+
 def evaluate(model, matrix, split):
     """Dump all evaluation metrics and plots for given datasets."""
     labels = matrix[:, 1].toarray().astype(int)

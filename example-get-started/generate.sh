@@ -48,7 +48,8 @@ pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
 
 git init
 cp $HERE/code/README.md .
-cp $HERE/.gitattributes .
+cp $HERE/code/.devcontainer.json .
+cp $HERE/code/.gitattributes .
 git add .
 tick
 git commit -m "Initialize Git repository"
@@ -142,8 +143,8 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  --outs eval/importance.png --outs-no-cache eval/prc \
-  --outs-no-cache eval/live/train/plots --outs-no-cache eval/live/test/plots \
+  -o eval/importance.png -O eval/prc \
+  -O eval/live/train/plots -O eval/live/test/plots \
   -M eval/live/train/metrics.json -M eval/live/test/metrics.json \
   python src/evaluate.py model.pkl data/features
 git add .gitignore dvc.yaml dvc.lock eval
@@ -270,7 +271,7 @@ Run these to drop and then rewrite the experiment references on the repo:
 dvc exp remove -A -g origin
 dvc exp push origin -A
 
-To create a PR from the `try-large-dataset` branch:
+To create a PR from the "try-large-dataset" branch:
 
 gh pr create -t "Try 40K dataset (4x data)" \
    -b "We are trying here a large dataset, since the smaller one looks unstable" \

@@ -44,6 +44,7 @@ source $BUILD_PATH/.venv/bin/activate
 
 TOTAL_TAGS=15
 STEP_TIME=100000
+SLEEP_TIME=30
 BEGIN_TIME=$(($(date +%s) - (${TOTAL_TAGS} * ${STEP_TIME})))
 export TAG_TIME=${BEGIN_TIME}
 export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
@@ -63,7 +64,11 @@ mkdir -p $REPO_PATH
 pushd $REPO_PATH
 
 git init -b main
-cp -r $HERE/code/ .
+cp $HERE/code/.gitignore .
+git add .gitignore
+cp $HERE/code/requirements.txt .
+cp $HERE/code/README.md .
+cp -R $HERE/code/.github .
 git add .
 tick
 git commit -m "Initialize Git repository with CI workflow"
@@ -81,7 +86,7 @@ fi
 
 echo "Create new models"
 mkdir models
-echo "1st version" >models/churn.pkl
+echo "1st version" > models/churn.pkl
 git add models requirements.txt
 tick
 git commit -am "Create models"
@@ -105,7 +110,7 @@ tick
 gto register cv-class --version v0.1.13
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 echo "Update the model"
@@ -121,32 +126,66 @@ tick
 gto register churn --bump-minor
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 echo "Promote models"
 tick
+gto assign churn --version v3.0.0 --stage dev
+if $PUSH; then
+  git push --tags
+  sleep $SLEEP_TIME
+fi
+
+tick
 gto assign churn HEAD --stage staging
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 tick
 gto assign churn --version v3.0.0 --stage prod
 if $PUSH; then
   git push --tags
-  sleep 30
+  sleep $SLEEP_TIME
 fi
 
 tick
+gto assign churn --version v3.1.0 --stage dev
 gto assign segment --version v0.4.1 --stage dev
 if $PUSH; then
   git push --tags
 fi
 
+echo "Add MLEM model"
+tick
+git checkout -b mlem
+rm -rf .github
+cp -R $HERE/code/mlem/ .
+pip install -r requirements.txt
+python train.py "The very first MLEM model"
+git add .
+git commit -m "Add MLEM model"
+
+tick
+gto assign churn --stage dev
+if $PUSH; then
+  git push --tags
+fi
+
+
 gto show
 gto history
+
+
+if $PUSH; then
+  git push --set-upstream origin main mlem -f
+  gh pr create --title "Add CI workflow to deploy MLEM model" \
+      --body "Deploy MLEM model in CI as Git tag with Stage assignment was pushed to the repo. Check out the Actions, you could see that the model was indeed deployed to Heroku. See MLEM documentation at https://mlem.ai/doc/" \
+      --base main \
+      --head mlem
+fi
 
 popd
 

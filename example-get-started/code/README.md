@@ -1,4 +1,4 @@
-[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=data-version-control)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/evaluation.json&query=avg_prec)](https://github.com/iterative/example-get-started/raw/main/evaluation.json)
+[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=data-version-control)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/evaluation/metrics.json&query=avg_prec)](https://github.com/iterative/example-get-started/raw/main/evaluation/metrics.json)
 
 # DVC Get Started
 
@@ -149,11 +149,17 @@ $ tree
 │       ├── test.tsv
 │       └── train.tsv
 ├── evaluation
-│   ├── importance.png    # <-- Feature importance plot
-│   └── plots             # <-- Data points for ROC, PRC, confusion matrix
-│       ├── confusion_matrix.json
-│       ├── precision_recall.json
-│       └── roc.json
+│   ├── metrics.json      # <-- Binary classifier final metrics (e.g. AUC)
+│   ├── plots             # <-- Data points for ROC, PRC, confusion matrix
+│   │   ├── importance.png      # <-- Feature importance plot
+│   │   ├── metrics
+│   │   │   ├── avg_prec.tsv
+│   │   │   └── roc_auc.tsv
+│   │   ├── prc.json
+│   │   └── sklearn
+│   │       ├── confusion_matrix.json
+│   │       └── roc.json
+│   └── report.html       # <-- DVCLive report to visualize plots
 ├── dvc.lock
 ├── dvc.yaml              # <-- DVC pipeline file
 ├── model.pkl             # <-- Trained model file
