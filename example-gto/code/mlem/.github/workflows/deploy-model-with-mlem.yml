@@ -9,7 +9,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  check:
+  parse-git-tag:
     name: Figure out what was registered/promoted
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
       stage: ${{ steps.gto.outputs.stage }}
       event: ${{ steps.gto.outputs.event }}
       path: ${{ steps.gto.outputs.path }}
-  deploy:
+  deploy-model:
     name: Deploy a MLEM model (act on assigning a new stage)
     needs: check
     if: needs.check.outputs.event == 'assignment'
