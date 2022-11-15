@@ -1,0 +1,49 @@
+name: Deploy MLEM model after GTO Stage assignment
+on:
+  push:
+    tags:
+      - "*"
+env:
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  parse-git-tag:
+    name: Figure out what was registered/promoted
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: "GTO: figure out what was registered/promoted and show the Registry state"
+      id: gto
+      uses: iterative/gto-action@v1
+      with:
+        show: true
+        history: true
+    # we define the Job outputs here to let the next Job use them
+    outputs:
+      name: ${{ steps.gto.outputs.name }}
+      stage: ${{ steps.gto.outputs.stage }}
+      event: ${{ steps.gto.outputs.event }}
+      path: ${{ steps.gto.outputs.path }}
+  deploy-model:
+    name: Deploy a MLEM model (act on assigning a new stage)
+    needs: check
+    if: needs.check.outputs.event == 'assignment'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+    - name: Run `mlem deploy``
+      run: |
+        mlem deployment run --load deploy/${{ needs.check.outputs.stage }} --model ${{ needs.check.outputs.path }}

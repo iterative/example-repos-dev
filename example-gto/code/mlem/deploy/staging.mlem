@@ -1,0 +1,3 @@
+object_type: deployment
+type: heroku
+app_name: gto-example-mlem-app-staging
