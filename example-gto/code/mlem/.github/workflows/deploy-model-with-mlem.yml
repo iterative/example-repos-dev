@@ -30,8 +30,8 @@ jobs:
       path: ${{ steps.gto.outputs.path }}
   deploy-model:
     name: Deploy a MLEM model (act on assigning a new stage)
-    needs: check
-    if: needs.check.outputs.event == 'assignment'
+    needs: parse-git-tag
+    if: needs.parse-git-tag.outputs.event == 'assignment'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -46,4 +46,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run `mlem deploy``
       run: |
-        mlem deployment run --load deploy/${{ needs.check.outputs.stage }} --model ${{ needs.check.outputs.path }}
+        mlem deployment run --load deploy/${{ needs.parse-git-tag.outputs.stage }} --model ${{ needs.parse-git-tag.outputs.path }}
