@@ -7,8 +7,8 @@ $ gto show
 ╒══════════╤══════════╤═════════╤═════════╤════════════╕
 │ name     │ latest   │ #dev    │ #prod   │ #staging   │
 ╞══════════╪══════════╪═════════╪═════════╪════════════╡
-│ churn    │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn@v3.1.1)   │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn#dev#5)  │ [v3.0.0](https://github.com/iterative/example-gto/releases/tag/churn#prod#3)  │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn#staging#2)     │
-│ segment  │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment@v0.4.1)   │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment#dev#1)  │ -       │ -          │
+│ churn    │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn@v3.1.1)   │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn%23dev%235)  │ [v3.0.0](https://github.com/iterative/example-gto/releases/tag/churn%23prod%233)  │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn%23staging%232)     │
+│ segment  │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment@v0.4.1)   │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment%23dev%231)  │ -       │ -          │
 │ cv-class │ [v0.1.13](https://github.com/iterative/example-gto/releases/tag/cv-class@v0.1.13)  │ -       │ -       │ -          │
 ╘══════════╧══════════╧═════════╧═════════╧════════════╛
 </pre></big>
@@ -23,8 +23,9 @@ $ gto show
 - [Github Actions page] of this repo have examples of workflows where we act
   upon these Git tags.
 
-Branch [`mlem`] contains a version that also uses [MLEM] to deploy a model upon
-deployment stage assignment.
+Branch [`mlem`] contains a version that also uses [MLEM] to deploy a model in CI/CD
+upon deployment stage assignment. Check out the deployed service at
+http://mlem-dev.herokuapp.com/docs.
 
 🧑‍💻 To continue learning, head to [Get Started with GTO].
 
