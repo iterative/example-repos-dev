@@ -1,40 +1,39 @@
-# GTO Get Started
+# Example GTO Model Registry
 
-This is an auto-generated repository for use in
-[GTO Get Started](https://github.com/iterative/gto). It is a step-by-step quick
-introduction into basic GTO concepts.
+This repo is an example of [Model Registry] built with [GTO]. The model dashboard:
 
-The branch `mlem` contains the example of using MLEM to deploy a model upon the
-stage assignment with GTO.
+<big><pre>
+$ gto show
+╒══════════╤══════════╤═════════╤═════════╤════════════╕
+│ name     │ latest   │ #dev    │ #prod   │ #staging   │
+╞══════════╪══════════╪═════════╪═════════╪════════════╡
+│ churn    │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn@v3.1.1)   │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn#dev#5)  │ [v3.0.0](https://github.com/iterative/example-gto/releases/tag/churn#prod#3)  │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn#staging#2)     │
+│ segment  │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment@v0.4.1)   │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment#dev#1)  │ -       │ -          │
+│ cv-class │ [v0.1.13](https://github.com/iterative/example-gto/releases/tag/cv-class@v0.1.13)  │ -       │ -       │ -          │
+╘══════════╧══════════╧═════════╧═════════╧════════════╛
+</pre></big>
 
-🐛 Please report any issues found in this project here -
-[example-repos-dev](https://github.com/iterative/example-repos-dev).
+- The `latest` column shows the latest model versions,
+- The `#dev` column represent model versions promoted to a Stage `dev` (same for
+  other columns starting with `#`),
+- Versions are registered and promoted to Stages by [Git tags] - you can click the
+  links to see the which specific Git tag did it,
+- Artifact metadata like `path` and `description` is stored in
+  [`artifacts.yaml`],
+- [Github Actions page] of this repo have examples of workflows where we act
+  upon these Git tags.
 
-## Installation
+Branch [`mlem`] contains a version that also uses [MLEM] to deploy a model upon
+deployment stage assignment.
 
-Python 3.7+ is required to run code from this repo.
+🧑‍💻 To continue learning, head to [Get Started with GTO].
 
-```console
-$ git clone https://github.com/iterative/example-gto
-$ cd example-gto
-```
-
-Now let's install the requirements. But before we do that, we **strongly**
-recommend creating a virtual environment with a tool such as
-[virtualenv](https://virtualenv.pypa.io/en/stable/):
-
-```console
-$ virtualenv -p python3 .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
-```
-
-## To see GTO in action
-
-Go ahead to the [GTO Getting Started](https://github.com/iterative/gto#readme)
-to try out the tool.
-
-To understand how this repo is generated, take a look at the
-[`example-gto/generate.sh` file](https://github.com/iterative/example-repos-dev/blob/add-gto-get-started/example-gto/generate.sh).
-To reproduce it locally, clone the repo, cd into `example-gto`, and run
-`bash generate.sh`.
+[github actions page]: https://github.com/iterative/example-gto/actions
+[get started with gto]: https://mlem.ai/doc/gto/get-started
+[model registry]: https://mlem.ai/doc/use-cases/model-registry
+[`mlem`]: https://github.com/iterative/example-gto/tree/mlem
+[mlem]: https://mlem.ai/
+[gto]: https://github.com/iterative/gto
+[git tags]: https://github.com/iterative/example-gto/tags
+[`artifacts.yaml`]:
+  https://github.com/iterative/example-gto/blob/main/artifacts.yaml
