@@ -40,7 +40,7 @@ http://mlem-dev.herokuapp.com/docs.
 [model registry]: https://mlem.ai/doc/use-cases/model-registry
 [`mlem`]: https://github.com/iterative/example-gto/tree/mlem
 [dvc]: https://github.com/iterative/dvc
-[mlem]: https://mlem.ai/
+[mlem]: https://github.com/iterative/mlem
 [gto]: https://github.com/iterative/gto
 [git tags]: https://github.com/iterative/example-gto/tags
 [`artifacts.yaml`]:
