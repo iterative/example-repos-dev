@@ -14,14 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: "GTO: figure out what was registered/promoted and show the Registry state"
       id: gto
       uses: iterative/gto-action@v1
-      with:
-        show: true
-        history: true
     # we define the Job outputs here to let the next Job use them
     outputs:
       name: ${{ steps.gto.outputs.name }}
@@ -35,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - uses: actions/setup-python@v2
       with:
         python-version: '3.10'
