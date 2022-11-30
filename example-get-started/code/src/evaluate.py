@@ -24,7 +24,7 @@ train_file = os.path.join(sys.argv[2], "train.pkl")
 test_file = os.path.join(sys.argv[2], "test.pkl")
 
 
-def evaluate(model, matrix, split):
+def evaluate(model, matrix, split, live):
     """Dump all evaluation metrics and plots for given datasets."""
     labels = matrix[:, 1].toarray().astype(int)
     x = matrix[:, 2:]
@@ -32,46 +32,45 @@ def evaluate(model, matrix, split):
     predictions_by_class = model.predict_proba(x)
     predictions = predictions_by_class[:, 1]
 
-    with Live(os.path.join(EVAL_PATH, "live", split)) as live:
+    # Use dvclive to log a few simple metrics...
+    avg_prec = metrics.average_precision_score(labels, predictions)
+    roc_auc = metrics.roc_auc_score(labels, predictions)
+    live.log_metric(f"avg_prec/{split}", avg_prec)
+    live.log_metric(f"roc_auc/{split}", roc_auc)
 
-        # Use dvclive to log a few simple metrics...
-        avg_prec = metrics.average_precision_score(labels, predictions)
-        roc_auc = metrics.roc_auc_score(labels, predictions)
-        live.log_metric("avg_prec", avg_prec)
-        live.log_metric("roc_auc", roc_auc)
+    # ... and plots...
+    live.log_sklearn_plot("roc", labels, predictions, name=f"roc/{split}")
 
-        # ... and plots...
-        live.log_sklearn_plot("roc", labels, predictions)
-
-        # ... but actually it can be done with dumping data points into a file:
-        # ROC has a drop_intermediate arg that reduces the number of points.
-        # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve.
-        # PRC lacks this arg, so we manually reduce to 1000 points as a rough estimate.
-        precision, recall, prc_thresholds = \
-                metrics.precision_recall_curve(labels, predictions)
-        nth_point = math.ceil(len(prc_thresholds) / 1000)
-        prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-        prc_dir = os.path.join(EVAL_PATH, "prc", split)
-        os.makedirs(prc_dir, exist_ok=True)
-        prc_file = os.path.join(prc_dir, "prc.json")
-        with open(prc_file, "w") as fd:
-            json.dump(
-                {
-                    "prc": [
-                        {"precision": p, "recall": r, "threshold": t}
-                        for p, r, t in prc_points
-                    ]
-                },
-                fd,
-                indent=4,
-            )
+    # ... but actually it can be done with dumping data points into a file:
+    # ROC has a drop_intermediate arg that reduces the number of points.
+    # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve.
+    # PRC lacks this arg, so we manually reduce to 1000 points as a rough estimate.
+    precision, recall, prc_thresholds = \
+            metrics.precision_recall_curve(labels, predictions)
+    nth_point = math.ceil(len(prc_thresholds) / 1000)
+    prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
+    prc_dir = os.path.join(EVAL_PATH, "prc")
+    os.makedirs(prc_dir, exist_ok=True)
+    prc_file = os.path.join(prc_dir, f"{split}.json")
+    with open(prc_file, "w") as fd:
+        json.dump(
+            {
+                "prc": [
+                    {"precision": p, "recall": r, "threshold": t}
+                    for p, r, t in prc_points
+                ]
+            },
+            fd,
+            indent=4,
+        )
 
 
-        # ... confusion matrix plot
-        live.log_sklearn_plot("confusion_matrix",
-                              labels.squeeze(),
-                              predictions_by_class.argmax(-1)
-                             )
+    # ... confusion matrix plot
+    live.log_sklearn_plot("confusion_matrix",
+                          labels.squeeze(),
+                          predictions_by_class.argmax(-1),
+                          name=f"cm/{split}"
+                         )
 
 
 # Load model and data.
@@ -85,8 +84,10 @@ with open(test_file, "rb") as fd:
     test, _ = pickle.load(fd)
 
 # Evaluate train and test datasets.
-evaluate(model, train, "train")
-evaluate(model, test, "test")
+live = Live(os.path.join(EVAL_PATH, "live"))
+evaluate(model, train, "train", live)
+evaluate(model, test, "test", live)
+live.make_summary()
 
 # Dump feature importance image and show it with your plots.
 fig, axes = plt.subplots(dpi=100)

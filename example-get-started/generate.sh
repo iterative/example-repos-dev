@@ -143,9 +143,8 @@ dvc push
 
 dvc run -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -o eval/importance.png -O eval/prc \
-  -O eval/live/train/plots -O eval/live/test/plots \
-  -M eval/live/train/metrics.json -M eval/live/test/metrics.json \
+  -o eval/importance.png -O eval/prc -O eval/live/plots \
+  -M eval/live/metrics.json \
   python src/evaluate.py model.pkl data/features
 git add .gitignore dvc.yaml dvc.lock eval
 tick
@@ -159,19 +158,19 @@ echo "plots:
   - Precision-Recall:
       x: recall
       y:
-        eval/prc/train/prc.json: precision
-        eval/prc/test/prc.json: precision
+        eval/prc/train.json: precision
+        eval/prc/test.json: precision
   - ROC:
       x: fpr
       y:
-        eval/live/train/plots/sklearn/roc.json: tpr
-        eval/live/test/plots/sklearn/roc.json: tpr
+        eval/live/plots/sklearn/roc/train.json: tpr
+        eval/live/plots/sklearn/roc/test.json: tpr
   - Confusion-Matrix:
       template: confusion
       x: actual
       y:
-        eval/live/train/plots/sklearn/confusion_matrix.json: predicted
-        eval/live/test/plots/sklearn/confusion_matrix.json: predicted" >> dvc.yaml
+        eval/live/plots/sklearn/cm/train.json: predicted
+        eval/live/plots/sklearn/cm/test.json: predicted" >> dvc.yaml
 git add dvc.yaml
 tick
 git commit -m "Configure plots"
@@ -213,7 +212,7 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-EXP=$(dvc exp show --csv --sort-by eval/live/test/metrics.json:avg_prec | tail -n 1 | cut -d , -f 1)
+EXP=$(dvc exp show --csv --sort-by avg_prec.test | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"
