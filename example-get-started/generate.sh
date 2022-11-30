@@ -146,12 +146,6 @@ dvc run -n evaluate \
   -o eval/importance.png -O eval/prc -O eval/live/plots \
   -M eval/live/metrics.json \
   python src/evaluate.py model.pkl data/features
-git add .gitignore dvc.yaml dvc.lock eval
-tick
-git commit -m "Create evaluation stage"
-git tag -a "8-evaluation" -m "Baseline evaluation stage created."
-dvc push
-
 
 echo "plots:
   - eval/importance.png
@@ -171,11 +165,12 @@ echo "plots:
       y:
         eval/live/plots/sklearn/cm/train.json: predicted
         eval/live/plots/sklearn/cm/test.json: predicted" >> dvc.yaml
-git add dvc.yaml
+git add .gitignore dvc.yaml dvc.lock eval
 tick
-git commit -m "Configure plots"
+git commit -m "Create evaluation stage"
+git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
-git tag -a "9-plots" -m "Plots configured for baseline experiment."
+dvc push
 
 
 sed -e "s/max_features: 100/max_features: 200/" -i".bkp" params.yaml
@@ -183,7 +178,7 @@ sed -e "s/ngrams: 1/ngrams: 2/" -i".bkp" params.yaml
 dvc repro train
 tick
 git commit -am "Reproduce model using bigrams"
-git tag -a "10-bigrams-model" -m "Model retrained using bigrams."
+git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 dvc push
 
 
@@ -191,7 +186,7 @@ dvc repro evaluate
 tick
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
-git tag -a "11-bigrams-experiment" -m "Evaluated bigrams model."
+git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 dvc push
 
 
@@ -217,7 +212,7 @@ dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
-git tag -a "12-random-forest-experiments" -m "Tuned random forest classifier."
+git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
 dvc push
 
 git checkout main
