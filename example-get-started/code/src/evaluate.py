@@ -35,8 +35,10 @@ def evaluate(model, matrix, split, live):
     # Use dvclive to log a few simple metrics...
     avg_prec = metrics.average_precision_score(labels, predictions)
     roc_auc = metrics.roc_auc_score(labels, predictions)
-    live.log_metric(f"avg_prec/{split}", avg_prec)
-    live.log_metric(f"roc_auc/{split}", roc_auc)
+    if not live.summary:
+        live.summary = {"avg_prec": {}, "roc_auc": {}}
+    live.summary["avg_prec"][split] = avg_prec
+    live.summary["roc_auc"][split] = roc_auc
 
     # ... and plots...
     live.log_sklearn_plot("roc", labels, predictions, name=f"roc/{split}")
