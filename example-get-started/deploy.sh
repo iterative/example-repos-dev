@@ -31,6 +31,8 @@ if [ $PROD == 'prod' ]; then
     cmp $PACKAGE $TEST_PACKAGE  # Expected output: nothing
     rm -f $TEST_PACKAGE
     cp -f $PACKAGE_DIR/README.md $TEST_DIR
+    cp -f $PACKAGE_DIR/.devcontainer.json $TEST_DIR
+    cp -f $PACKAGE_DIR/.gitattributes $TEST_DIR
     diff -r $PACKAGE_DIR $TEST_DIR  # Expected output: nothing
     rm -fR $TEST_DIR
 

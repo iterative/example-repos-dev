@@ -110,11 +110,12 @@ git commit -m "Add source code files to repo"
 git tag -a "5-source-code" -m "Source code added."
 
 
-dvc run -n prepare \
+dvc stage add -n prepare \
   -p prepare.seed,prepare.split \
   -d src/prepare.py -d data/data.xml \
   -o data/prepared \
   python src/prepare.py data/data.xml
+dvc repro
 git add data/.gitignore dvc.yaml dvc.lock
 tick
 git commit -m "Create data preparation stage"
@@ -122,31 +123,30 @@ git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created
 dvc push
 
 
-dvc run -n featurize \
+dvc stage add -n featurize \
   -p featurize.max_features,featurize.ngrams \
   -d src/featurization.py -d data/prepared \
   -o data/features \
   python src/featurization.py \
   data/prepared data/features
-git add data/.gitignore dvc.yaml dvc.lock
-dvc run -n train \
+dvc stage add -n train \
   -p train.seed,train.n_est,train.min_split \
   -d src/train.py -d data/features \
   -o model.pkl \
   python src/train.py data/features model.pkl
-git add .gitignore dvc.yaml dvc.lock
+dvc repro
+git add .gitignore data/.gitignore dvc.yaml dvc.lock
 tick
 git commit -m "Create ML pipeline stages"
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
 dvc push
 
 
-dvc run -n evaluate \
+dvc stage add -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
   -o eval/importance.png -O eval/prc -O eval/live/plots \
   -M eval/live/metrics.json \
   python src/evaluate.py model.pkl data/features
-
 echo "plots:
   - eval/importance.png
   - Precision-Recall:
@@ -165,6 +165,7 @@ echo "plots:
       y:
         eval/live/plots/sklearn/cm/train.json: predicted
         eval/live/plots/sklearn/cm/test.json: predicted" >> dvc.yaml
+dvc repro
 git add .gitignore dvc.yaml dvc.lock eval
 tick
 git commit -m "Create evaluation stage"
