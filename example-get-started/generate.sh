@@ -144,24 +144,33 @@ dvc push
 
 dvc stage add -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -M evaluation/metrics.json \
-  -O evaluation/plots/metrics \
-  --plots-no-cache evaluation/plots/sklearn/roc.json \
-  --plots-no-cache evaluation/plots/sklearn/confusion_matrix.json \
-  --plots-no-cache evaluation/plots/prc.json \
-  --plots evaluation/plots/importance.png \
+  -o eval/importance.png -O eval/prc -O eval/live/plots \
+  -M eval/live/metrics.json \
   python src/evaluate.py model.pkl data/features
-dvc plots modify evaluation/plots/sklearn/roc.json -x fpr -y tpr
-dvc plots modify evaluation/plots/sklearn/confusion_matrix.json \
-    -x actual -y predicted -t confusion
-dvc plots modify evaluation/plots/prc.json -x recall \
-    -y precision
+echo "plots:
+  - eval/importance.png
+  - Precision-Recall:
+      x: recall
+      y:
+        eval/prc/train.json: precision
+        eval/prc/test.json: precision
+  - ROC:
+      x: fpr
+      y:
+        eval/live/plots/sklearn/roc/train.json: tpr
+        eval/live/plots/sklearn/roc/test.json: tpr
+  - Confusion-Matrix:
+      template: confusion
+      x: actual
+      y:
+        eval/live/plots/sklearn/cm/train.json: predicted
+        eval/live/plots/sklearn/cm/test.json: predicted" >> dvc.yaml
 dvc repro
-git add .gitignore dvc.yaml dvc.lock evaluation
+git add .gitignore dvc.yaml dvc.lock eval
 tick
 git commit -m "Create evaluation stage"
-git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
+git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 dvc push
 
 
@@ -199,7 +208,8 @@ dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
 dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
 dvc exp run --run-all -j 2
 # Apply best experiment
-dvc exp apply $(dvc exp show --sort-by avg_prec --csv | tail -n 1 | cut -d , -f 1)
+EXP=$(dvc exp show --csv --sort-by avg_prec.test | tail -n 1 | cut -d , -f 1)
+dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning random forest params"
 git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"

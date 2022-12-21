@@ -148,23 +148,25 @@ $ tree
 │   └── prepared          # <-- Processed dataset (split and TSV formatted)
 │       ├── test.tsv
 │       └── train.tsv
-├── evaluation
-│   ├── metrics.json      # <-- Binary classifier final metrics (e.g. AUC)
-│   ├── plots             # <-- Data points for ROC, PRC, confusion matrix
-│   │   ├── importance.png      # <-- Feature importance plot
-│   │   ├── metrics
-│   │   │   ├── avg_prec.tsv
-│   │   │   └── roc_auc.tsv
-│   │   ├── prc.json
-│   │   └── sklearn
-│   │       ├── confusion_matrix.json
-│   │       └── roc.json
-│   └── report.html       # <-- DVCLive report to visualize plots
 ├── dvc.lock
 ├── dvc.yaml              # <-- DVC pipeline file
+├── eval
+│   ├── importance.png    # <-- Feature importance plot
+│   ├── live
+│   │   ├── metrics.json  # <-- Binary classifier final metrics (e.g. AUC)
+│   │   └── plots         # <-- Data points for ROC, confusion matrix
+│   │       └── sklearn
+│   │           ├── cm
+│   │           │   ├── test.json
+│   │           │   └── train.json
+│   │           └── roc
+│   │               ├── test.json
+│   │               └── train.json
+│   └── prc               # <-- Data points for custom PRC
+│       ├── test.json
+│       └── train.json
 ├── model.pkl             # <-- Trained model file
 ├── params.yaml           # <-- Parameters file
-├── evaluation.json       # <-- Binary classifier final metrics (e.g. AUC)
 └── src                   # <-- Source code to run the pipeline stages
     ├── evaluate.py
     ├── featurization.py
