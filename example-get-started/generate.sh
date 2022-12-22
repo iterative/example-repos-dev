@@ -272,6 +272,12 @@ gh pr create -t "Try 40K dataset (4x data)" \
    -b "We are trying here a large dataset, since the smaller one looks unstable" \
    -B main -H try-large-dataset
 
+To create a PR from the "tune-hyperparams" branch:
+
+gh pr create -t "Run experiments tuning random forest params" \
+   -b "Better RF split and number of estimators based on small grid search." \
+   -B main -H tune-hyperparams
+
 Finally, return to the directory where you started:
 
 cd ../..
