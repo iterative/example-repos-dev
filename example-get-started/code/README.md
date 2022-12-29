@@ -1,4 +1,4 @@
-[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=data-version-control)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/evaluation/metrics.json&query=avg_prec)](https://github.com/iterative/example-get-started/raw/main/evaluation/metrics.json)
+[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=dvc)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/eval/live/metrics.json&query=avg_prec.test)](https://github.com/iterative/example-get-started/raw/main/eval/live/metrics.json)
 
 # DVC Get Started
 
