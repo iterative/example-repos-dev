@@ -144,16 +144,10 @@ dvc push
 
 dvc stage add -n evaluate \
   -d src/evaluate.py -d model.pkl -d data/features \
-  -o eval/importance.png -O eval/prc -O eval/live/plots \
-  -M eval/live/metrics.json \
+  -M eval/live/metrics.json -O eval/live/plots \
+  -O eval/prc -o eval/importance.png \
   python src/evaluate.py model.pkl data/features
 echo "plots:
-  - eval/importance.png
-  - Precision-Recall:
-      x: recall
-      y:
-        eval/prc/train.json: precision
-        eval/prc/test.json: precision
   - ROC:
       x: fpr
       y:
@@ -164,7 +158,13 @@ echo "plots:
       x: actual
       y:
         eval/live/plots/sklearn/cm/train.json: predicted
-        eval/live/plots/sklearn/cm/test.json: predicted" >> dvc.yaml
+        eval/live/plots/sklearn/cm/test.json: predicted
+  - Precision-Recall:
+      x: recall
+      y:
+        eval/prc/train.json: precision
+        eval/prc/test.json: precision
+  - eval/importance.png" >> dvc.yaml
 dvc repro
 git add .gitignore dvc.yaml dvc.lock eval
 tick
