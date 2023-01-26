@@ -51,6 +51,7 @@ cp $HERE/code/README.md .
 cp $HERE/code/.devcontainer.json .
 cp $HERE/code/.gitattributes .
 cp $HERE/code/requirements.txt .
+cp -r $HERE/code/.github .
 
 git add .
 tick
