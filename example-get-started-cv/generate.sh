@@ -68,7 +68,7 @@ git commit -m "Add data"
 dvc pull
 
 # Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://diglesia-bucket
+dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
