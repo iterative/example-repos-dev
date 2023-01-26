@@ -61,13 +61,14 @@ dvc init
 tick
 git commit -m "Initialize DVC project"
 
-cp $HERE/code/data .
+cp -r $HERE/code/data .
 git add data/.gitignore data/pool_data.dvc
 tick
 git commit -m "Add data"
+dvc pull
 
 # Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
+dvc remote add -d --local storage s3://diglesia-bucket
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
@@ -76,17 +77,17 @@ git commit -m "Configure default remote"
 dvc push
 
 
-cp $HERE/code/notebooks .
-pip install -r src/requirements.txt
+cp -r $HERE/code/notebooks .
+pip install -r requirements.txt
 pip install jupyter
-jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb'
+jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
 git add .
 tick
 git commit -m "Add notebook using DVCLive"
 git tag -a "1-notebook-dvclive" -m "Notebook added."
 
-cp $HERE/code/src
-cp $HERE/code/params.yaml
+cp -r $HERE/code/src .
+cp $HERE/code/params.yaml .
 
 dvc stage add -n data_split \
   -p base,data_split \
@@ -142,7 +143,7 @@ dvc exp run --queue --set-param train.arch=squeezenet1_1
 
 dvc exp run --run-all
 # Apply best experiment
-EXP=$(dvc exp show --csv --sort-by dice_multi | tail -n 1 | cut -d , -f 1)
+EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning architecture"
