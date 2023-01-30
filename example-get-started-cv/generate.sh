@@ -58,12 +58,19 @@ git commit -m "Initialize Git repository"
 
 dvc init
 # Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
+#dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
 tick
 git commit -m "Initialize DVC project"
+
+
+cp -r $HERE/code/data .
+git add data/.gitignore data/pool_data.dvc
+tick
+git commit -m "Add data"
+dvc pull
 
 
 cp -r $HERE/code/notebooks .
@@ -102,13 +109,6 @@ dvc stage add -n evaluate \
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"
-
-
-cp -r $HERE/code/data .
-git add data/.gitignore data/pool_data.dvc
-tick
-git commit -m "Add data"
-dvc pull
 
 
 dvc exp run
