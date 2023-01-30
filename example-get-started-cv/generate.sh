@@ -58,7 +58,7 @@ git commit -m "Initialize Git repository"
 
 dvc init
 # Remote active on this env only, for writing to HTTP redirect below.
-#dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
+dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
@@ -74,13 +74,19 @@ dvc pull
 
 
 cp -r $HERE/code/notebooks .
+git add .
+git commit -m "Add notebook using DVCLive."
+
 pip install -r requirements.txt
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
+# Apply best experiment
+EXP=$(dvc exp show --csv --sort-by evaluate/dice_multi | tail -n 1 | cut -d , -f 1)
+dvc exp apply $EXP
 git add .
 tick
-git commit -m "Add notebook using DVCLive"
-git tag -a "1-notebook-dvclive" -m "Notebook added."
+git commit -m "Run notebook and apply best experiment."
+git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 
 cp -r $HERE/code/src .
@@ -115,7 +121,7 @@ dvc exp run
 git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
-git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
+git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline."
 dvc push
 
 
@@ -134,14 +140,15 @@ dvc exp run --queue --set-param train.arch=resnet34
 dvc exp run --queue --set-param train.arch=squeezenet1_1
 
 dvc exp run --run-all
+dvc exp push
 # Apply best experiment
 EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning architecture. Apply best one."
-dvc push
 
 git checkout main
+dvc gc -c --all-experiments
 
 popd
 
