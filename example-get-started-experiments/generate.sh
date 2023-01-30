@@ -140,15 +140,14 @@ dvc exp run --queue --set-param train.arch=resnet34
 dvc exp run --queue --set-param train.arch=squeezenet1_1
 
 dvc exp run --run-all
-dvc exp push
 # Apply best experiment
 EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning architecture. Apply best one."
+dvc push
 
 git checkout main
-dvc gc -c --all-experiments
 
 popd
 
