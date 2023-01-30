@@ -12,15 +12,15 @@ we split the original 4k images into tiles of 1024x1024 pixels.
 
 
 🐛 Please report any issues found in this project here -
-[dvc-get-started-cv](https://github.com/iterative/dvc-get-started-cv).
+[dvc-get-started-experiments](https://github.com/iterative/dvc-get-started-experiments).
 
 ## Installation
 
 Python 3.8+ is required to run code from this repo.
 
 ```console
-$ git clone https://github.com/iterative/example-get-started-cv
-$ cd example-get-started-cv
+$ git clone https://github.com/iterative/example-get-started-experiments
+$ cd example-get-started-experiments
 ```
 
 Now let's install the requirements. But before we do that, we **strongly**

@@ -5,7 +5,6 @@
 #   u   Treat unset variables as an error when substituting.
 #   x   Print commands and their arguments as they are executed.
 set -eux
-
 HERE="$( cd "$(dirname "$0")" ; pwd -P )"
 REPO_NAME="example-get-started-experiments"
 REPO_PATH="$HERE/build/$REPO_NAME"
@@ -43,7 +42,7 @@ echo '.venv/' > .gitignore
 
 # Installing from main since we'd like to update repo before
 # the release
-pip install "git+https://github.com/iterative/dvc#egg=dvc[all]"
+pip install "git+https://github.com/iterative/dvc#egg=dvc[s3]"
 
 git init
 cp $HERE/code/README.md .
@@ -54,11 +53,13 @@ cp -r $HERE/code/.github .
 git add .
 tick
 git commit -m "Initialize Git repository"
+git branch -M main
 
 
 dvc init
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
+dvc remote modify --local storage profile iterative-sandbox
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
