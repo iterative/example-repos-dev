@@ -41,7 +41,6 @@ read-only HTTP remote.
 ```console
 $ dvc remote list
 public_storage  https://remote.dvc.org/get-started-pools
-storage s3://dvc-public/remote/get-started-pools
 ```
 
 You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
