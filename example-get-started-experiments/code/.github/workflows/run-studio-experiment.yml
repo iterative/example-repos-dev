@@ -16,9 +16,9 @@ jobs:
       - uses: iterative/setup-cml@v1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: us-east-1
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+          role-duration-seconds: 43200
       - name: Create Runner
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
