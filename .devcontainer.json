@@ -1,0 +1,14 @@
+{
+  "name": "example-repos-dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"],
+  "features": {
+      "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+          "installCudnn": true
+      },
+      "ghcr.io/saml-to/devcontainer-features/assume-aws-role:1": {
+          "role": "arn:aws:iam::342840881361:role/iterative-saml-codespaces"
+      },
+    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  }
+}
