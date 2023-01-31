@@ -81,8 +81,10 @@ pip install -r requirements.txt
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
 # Apply best experiment
-EXP=$(dvc exp show --csv --sort-by evaluate/dice_multi | tail -n 1 | cut -d , -f 1)
-dvc exp apply $EXP
+BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
+BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
+BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
+dvc exp apply $BEST_EXP_NAME
 git add .
 tick
 git commit -m "Run notebook and apply best experiment."
@@ -91,6 +93,7 @@ git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
+ sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 
 dvc stage add -n data_split \
   -p base,data_split \
