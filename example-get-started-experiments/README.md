@@ -1,6 +1,5 @@
 Generate the actual repo by running: 
 
-
 ```
 bash generate.sh
 ```
@@ -33,15 +32,27 @@ And this to clean the remote cache to only contain the last iteration:
 dvc gc -c --all-experiments
 ```
 
+- `tune-architecture` P.R.
+
 To create a PR from the "tune-architecture" branch:
 
+```
 gh pr create -t "Run experiments tuning architecture" \
    -B main -H tune-architecture
+```
 
 Finally, return to the directory where you started:
 
+```
 cd ../..
+```
 
 You may remove the generated repo with:
 
+```
 rm -fR build
+```
+
+- Manual Studio P.R.
+
+Once the repo has been generated and pushed, go to the [corresponding Studio projec](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) and create a P.R. using the `Experiment` button, increasing epochs from `8` to `12`.

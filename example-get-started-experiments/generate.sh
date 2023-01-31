@@ -15,7 +15,7 @@ if [ -d "$REPO_PATH" ]; then
   exit 1
 fi
 
-TOTAL_TAGS=15
+TOTAL_TAGS=3
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 export TAG_TIME=${BEGIN_TIME}
@@ -59,7 +59,6 @@ git branch -M main
 dvc init
 # Remote active on this env only, for writing to HTTP redirect below.
 dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
-dvc remote modify --local storage profile iterative-sandbox
 # Actual remote for generated project (read-only). Redirect of S3 bucket above.
 dvc remote add -d storage https://remote.dvc.org/get-started-pools
 git add .
