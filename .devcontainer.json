@@ -10,5 +10,17 @@
           "role": "arn:aws:iam::342840881361:role/iterative-saml-codespaces"
       },
     "ghcr.io/devcontainers/features/aws-cli:1": {}
+  },
+  "customizations": {
+    "codespaces": {
+      "repositories": {
+        "iterative/example-get-started": {
+          "permissions": "write-all"
+        },
+        "iterative/example-get-started-experiments": {
+          "permissions": "write-all"
+        }
+      }
+    }
   }
 }
