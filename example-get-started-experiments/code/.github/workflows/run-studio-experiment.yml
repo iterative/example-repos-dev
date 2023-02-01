@@ -50,6 +50,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           dvc pull -R data 
+          cml ci --fetch-depth 0
           cml comment create --publish --watch results/train/report.md & dvc exp run
           dvc push --run-cache
           cml pr --squash --skip-ci .
