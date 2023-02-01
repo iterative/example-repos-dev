@@ -42,11 +42,6 @@ jobs:
       options: --gpus all --ipc host
     steps:
       - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: us-east-2
-          role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
-          role-duration-seconds: 43200
       - name: training
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -54,8 +49,8 @@ jobs:
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           pip install -r requirements.txt
-          dvc pull
+          dvc pull data --run-cache
           cml comment create --publish --watch results/train/report.md & dvc exp run
-          dvc push
+          dvc push --run-cache
           cml pr --squash --skip-ci .
           cml comment create --pr --publish results/evaluate/report.md
