@@ -10,6 +10,7 @@ on:
 jobs:
   deploy-runner:
     if: github.actor == 'iterative-studio[bot]'
+    environment: cloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
