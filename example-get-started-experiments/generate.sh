@@ -138,9 +138,7 @@ git checkout -b "tune-architecture"
 unset GIT_AUTHOR_DATE
 unset GIT_COMMITTER_DATE
 
-dvc exp run --queue --set-param train.arch=alexnet
-dvc exp run --queue --set-param train.arch=resnet34
-dvc exp run --queue --set-param train.arch=squeezenet1_1
+dvc exp run --queue --set-param 'train.arch=alexnet,train.arch=resnet34,train.arch=squeezenet1_1'
 
 dvc exp run --run-all
 # Apply best experiment
