@@ -147,7 +147,7 @@ git commit -am "Run experiments tuning architecture. Apply best one"
 
 git checkout main
 
-dvc push -A --run-cache
+dvc push -A
 
 popd
 
