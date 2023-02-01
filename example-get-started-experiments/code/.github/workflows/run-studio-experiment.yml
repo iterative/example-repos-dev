@@ -49,7 +49,7 @@ jobs:
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           pip install -r requirements.txt
-          dvc pull data 
+          dvc pull -R data 
           cml comment create --publish --watch results/train/report.md & dvc exp run
           dvc push --run-cache
           cml pr --squash --skip-ci .
