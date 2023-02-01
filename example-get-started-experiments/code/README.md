@@ -6,9 +6,10 @@
 This is an auto-generated repository for use in [DVC](https://dvc.org)
 [Get Started: Experiments](https://dvc.org/doc/start/experiment-management).
 
-This is a Computer Vision (CV) project that solves the problem of segmenting out swimming pools 
-from satellite images. We use a slightly modified version of the 
-[BH-Pools dataset](http://patreo.dcc.ufmg.br/2020/07/29/bh-pools-watertanks-datasets/):
+This is a Computer Vision (CV) project that solves the problem of segmenting out 
+swimming pools from satellite images. 
+
+We use a slightly modified version of the [BH-Pools dataset](http://patreo.dcc.ufmg.br/2020/07/29/bh-pools-watertanks-datasets/):
 we split the original 4k images into tiles of 1024x1024 pixels.
 
 
@@ -84,16 +85,24 @@ There is a couple of git tags in this project :
 
 ### [1-notebook-dvclive](https://github.com/iterative/example-get-started-experiments/tree/1-notebook-dvclive)
 
-Contains an end-to-end Jupyter notebook that loads data, trains a model and reports model performance. [DVCLive](https://dvc.org/doc/dvclive) is used for experiment tracking. See this [blog post](https://iterative.ai/blog/exp-tracking-dvc-python) for more details.
+Contains an end-to-end Jupyter notebook that loads data, trains a model and 
+reports model performance. 
+[DVCLive](https://dvc.org/doc/dvclive) is used for experiment tracking. 
+See this [blog post](https://iterative.ai/blog/exp-tracking-dvc-python) for more
+details.
 
 ### [2-dvc-pipeline](https://github.com/iterative/example-get-started-experiments/tree/2-dvc-pipeline)
 
-Contains a DVC pipeline `dvc.yaml` that was created by refactoring the above notebook into individual pipeline stages. 
+Contains a DVC pipeline `dvc.yaml` that was created by refactoring the above 
+notebook into individual pipeline stages. 
 
-The pipeline artifacts (processed data, model file, etc) are automatically versioned. 
+The pipeline artifacts (processed data, model file, etc) are automatically 
+versioned. 
 
-This tag also contains a GitHub Actions workflow that reruns the pipeline if any changes are introduced to the pipeline-related files. 
-[CML](https://cml.dev/) is used in this workflow to provision a cloud-based GPU machine as well as report model performance results in Pull Requests.
+This tag also contains a GitHub Actions workflow that reruns the pipeline if any
+ changes are introduced to the pipeline-related files. 
+[CML](https://cml.dev/) is used in this workflow to provision a cloud-based GPU 
+machine as well as report model performance results in Pull Requests.
 
 ## Project structure
 
@@ -116,7 +125,7 @@ $ tree -L 2
 ├── models
 │   └── model.pkl    # <-- Trained model file
 ├── notebooks
-│   └── TrainSegModel.ipynb # <-- Initial e2e notebook (later refactored into `dvc.yaml`) 
+│   └── TrainSegModel.ipynb # <-- Initial notebook (refactored into `dvc.yaml`) 
 ├── params.yaml      # <-- Parameters file
 ├── requirements.txt # <-- Python dependencies needed in the project
 ├── results          # <-- DVCLive reports and plots

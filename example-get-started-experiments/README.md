@@ -4,10 +4,10 @@ Generate the actual repo by running:
 bash generate.sh
 ```
 
-The repo generated in `build/example-get-started-experiments` is intended to be published on
-https://github.com/iterative/example-get-started-experiments. 
-Make sure the Github repo
-exists first and that you have appropriate write permissions.
+The repo generated in `build/example-get-started-experiments` is intended to be 
+published on https://github.com/iterative/example-get-started-experiments. 
+Make sure the Github repo exists first and that you have appropriate write 
+permissions.
 
 Run these commands to force push it:
 
@@ -55,4 +55,7 @@ rm -fR build
 
 - Manual Studio P.R.
 
-Once the repo has been generated and pushed, go to the [corresponding Studio projec](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) and create a P.R. using the `Experiment` button, increasing epochs from `8` to `12`.
+Once the repo has been generated and pushed, go to the 
+[corresponding Studio projec](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
+and create a P.R. using the `Experiment` button, increasing epochs from `8` to 
+`12`.
