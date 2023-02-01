@@ -125,8 +125,6 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-dvc push --run-cache
-
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
@@ -146,9 +144,10 @@ EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | ta
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning architecture. Apply best one"
-dvc push --run-cache
 
 git checkout main
+
+dvc push -A --run-cache
 
 popd
 
