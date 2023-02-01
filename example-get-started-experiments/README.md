@@ -56,6 +56,6 @@ rm -fR build
 - Manual Studio P.R.
 
 Once the repo has been generated and pushed, go to the 
-[corresponding Studio projec](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
+[corresponding Studio project](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
 and create a P.R. using the `Experiment` button, increasing epochs from `8` to 
 `12`.
