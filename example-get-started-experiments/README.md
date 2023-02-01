@@ -22,6 +22,7 @@ git push --force origin --tags
 Run these to drop and then rewrite the experiment references on the repo:
 
 ```
+source .venv/bin/activate
 dvc exp remove -A -g origin
 dvc exp push origin -A
 ```
