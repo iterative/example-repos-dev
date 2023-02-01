@@ -75,7 +75,7 @@ dvc pull
 
 cp -r $HERE/code/notebooks .
 git add .
-git commit -m "Add notebook using DVCLive."
+git commit -m "Add notebook using DVCLive"
 
 pip install -r requirements.txt
 pip install jupyter
@@ -87,7 +87,7 @@ BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
 dvc exp apply $BEST_EXP_NAME
 git add .
 tick
-git commit -m "Run notebook and apply best experiment."
+git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 
@@ -124,7 +124,7 @@ dvc exp run
 git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
-git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline."
+git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
 dvc push
 
 
@@ -147,7 +147,7 @@ dvc exp run --run-all
 EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | tail -n 1 | cut -d , -f 1)
 dvc exp apply $EXP
 tick
-git commit -am "Run experiments tuning architecture. Apply best one."
+git commit -am "Run experiments tuning architecture. Apply best one"
 dvc push
 
 git checkout main
