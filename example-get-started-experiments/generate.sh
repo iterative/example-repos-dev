@@ -93,7 +93,8 @@ git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
- sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
+sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
+rm params.yaml.bkp
 
 dvc stage add -n data_split \
   -p base,data_split \
@@ -125,8 +126,6 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-dvc push
-
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
@@ -138,9 +137,7 @@ git checkout -b "tune-architecture"
 unset GIT_AUTHOR_DATE
 unset GIT_COMMITTER_DATE
 
-dvc exp run --queue --set-param train.arch=alexnet
-dvc exp run --queue --set-param train.arch=resnet34
-dvc exp run --queue --set-param train.arch=squeezenet1_1
+dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1'
 
 dvc exp run --run-all
 # Apply best experiment
@@ -148,9 +145,10 @@ EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | ta
 dvc exp apply $EXP
 tick
 git commit -am "Run experiments tuning architecture. Apply best one"
-dvc push
 
 git checkout main
+
+dvc push -A
 
 popd
 

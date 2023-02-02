@@ -7,6 +7,10 @@ on:
       - "src/**"
       - "params.yaml"
       - "dvc.*"
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
 jobs:
   deploy-runner:
     if: github.actor == 'iterative-studio[bot]'
@@ -33,6 +37,7 @@ jobs:
   runner-job:
     needs: deploy-runner
     runs-on: [ self-hosted, cml ]
+    environment: cloud
     container:
       image: iterativeai/cml:0-dvc2-base1-gpu
       options: --gpus all --ipc host
@@ -40,9 +45,9 @@ jobs:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: us-east-1
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+          role-duration-seconds: 43200
       - name: training
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -50,8 +55,10 @@ jobs:
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           pip install -r requirements.txt
-          dvc pull
+          dvc pull -R data 
+          cml ci --fetch-depth 0
           cml comment create --publish --watch results/train/report.md & dvc exp run
-          dvc push
+          dvc remote add --local push_remote s3://dvc-public/remote/get-started-pools 
+          dvc push -r push_remote
           cml pr --squash --skip-ci .
           cml comment create --pr --publish results/evaluate/report.md
