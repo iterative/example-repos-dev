@@ -93,7 +93,8 @@ git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
- sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
+sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
+rm params.yaml.bkp
 
 dvc stage add -n data_split \
   -p base,data_split \
