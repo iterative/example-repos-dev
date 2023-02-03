@@ -86,7 +86,7 @@ with open(test_file, "rb") as fd:
     test, _ = pickle.load(fd)
 
 # Evaluate train and test datasets.
-live = Live(os.path.join(EVAL_PATH, "live"))
+live = Live(os.path.join(EVAL_PATH, "live"), dvcyaml=False)
 evaluate(model, train, "train", live)
 evaluate(model, test, "test", live)
 live.make_summary()
