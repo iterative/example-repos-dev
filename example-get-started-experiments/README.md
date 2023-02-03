@@ -22,6 +22,7 @@ git push --force origin --tags
 Run these to drop and then rewrite the experiment references on the repo:
 
 ```
+source .venv/bin/activate
 dvc exp remove -A -g origin
 dvc exp push origin -A
 ```
@@ -29,7 +30,7 @@ dvc exp push origin -A
 And this to clean the remote cache to only contain the last iteration:
 
 ```
-dvc gc -c --all-experiments
+dvc gc -c --all-commits --all-experiments
 ```
 
 - `tune-architecture` P.R.
