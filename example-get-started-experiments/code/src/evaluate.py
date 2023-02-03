@@ -37,8 +37,8 @@ def stack_images(im1, im2):
     return dst
 
 
-def get_overlay_image(img_fpath, mask_true, mask_pred, img_size):
-    img_pil = Image.open(img_fpath).resize((img_size, img_size))
+def get_overlay_image(img_fpath, mask_true, mask_pred):
+    img_pil = Image.open(img_fpath)
     overlay_img_true = Image.blend(
         img_pil.convert("RGBA"), paint_mask(mask_true).convert("RGBA"), 0.5
     )
@@ -72,23 +72,25 @@ def evaluate():
     test_img_fpaths = get_files(Path("data") / "test_data", extensions=".jpg")
     test_dl = learn.dls.test_dl(test_img_fpaths)
     preds, _ = learn.get_preds(dl=test_dl)
-    masks_pred = np.array(preds[:, 1, :] > 0.5, dtype=int)
+    masks_pred = np.array(preds[:, 1, :] > 0.5, dtype=np.uint8)
     test_mask_fpaths = [
         get_mask_path(fpath, Path("data") / "test_data") for fpath in test_img_fpaths
     ]
     masks_true = [Image.open(mask_path) for mask_path in test_mask_fpaths]
-    masks_true = [
-        np.array(img.resize((img_size, img_size)), dtype=int) for img in masks_true
-    ]
     with Live("results/evaluate", report="md") as live:
         dice_multi = 0.0
         for ii in range(len(masks_true)):
             mask_pred, mask_true = masks_pred[ii], masks_true[ii]
+            mask_pred = np.array(
+                Image.fromarray(mask_pred).resize((mask_true.shape[1], mask_true.shape[0])),
+                dtype=int
+            )
+            mask_true = np.array(mask_true, dtype=int)
             dice_multi += dice(mask_true, mask_pred) / len(masks_true)
 
             if ii < params.evaluate.n_samples_to_save:
                 stacked_image = get_overlay_image(
-                    test_img_fpaths[ii], mask_true, mask_pred, img_size
+                    test_img_fpaths[ii], mask_true, mask_pred
                 )
                 live.log_image(f"{Path(test_img_fpaths[ii]).stem}.png", stacked_image)
 
