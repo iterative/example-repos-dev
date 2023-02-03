@@ -50,8 +50,11 @@ You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 ```console
 $ dvc pull
 ```
+If you get an error when you `dvc pull`, don't worry you will still be able to run your experiments, this is because (of DVC shared cache? guessinghttps://dvc.org/doc/user-guide/how-to/share-a-dvc-cache#configure-the-shared-cache)
 
 ## Running in your environment
+
+If you plan to use Iterative Studio to view real-time, live metrics, please refer to [these instructions](https://dvc.org/doc/studio/user-guide/projects-and-experiments/live-metrics-and-plots) first. 
 
 Run [`dvc exp run`](https://man.dvc.org/exp/run) to reproduce the
 [pipeline](https://dvc.org/doc/user-guide/pipelines/defining-pipelinese):
