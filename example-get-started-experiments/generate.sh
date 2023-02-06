@@ -117,6 +117,7 @@ dvc stage add -n evaluate \
   --plots-no-cache results/evaluate/plots \
   python src/evaluate.py
 
+rm results/train/dvc.yaml
 git rm --cached results/train/dvc.yaml
 git add .
 tick
