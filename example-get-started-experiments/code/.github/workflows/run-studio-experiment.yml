@@ -56,7 +56,7 @@ jobs:
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           pip install -r requirements.txt
-          dvc pull -R data 
+          dvc pull
           cml ci --fetch-depth 0
           cml comment create --publish --watch results/train/report.md & dvc exp run
           dvc remote add --local push_remote s3://dvc-public/remote/get-started-pools 
