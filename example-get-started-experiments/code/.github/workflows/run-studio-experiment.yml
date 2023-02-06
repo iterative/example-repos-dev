@@ -52,6 +52,7 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           STUDIO_TOKEN: ${{ secrets.STUDIO_TOKEN }}
+          STUDIO_REPO_URL: ${{ secrets.STUDIO_REPO_URL }}
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           pip install -r requirements.txt
