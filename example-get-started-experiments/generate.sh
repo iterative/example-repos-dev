@@ -15,7 +15,7 @@ if [ -d "$REPO_PATH" ]; then
   exit 1
 fi
 
-TOTAL_TAGS=3
+TOTAL_TAGS=8
 STEP_TIME=100000
 BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
 export TAG_TIME=${BEGIN_TIME}
@@ -116,6 +116,8 @@ dvc stage add -n evaluate \
   -M results/evaluate/metrics.json \
   --plots-no-cache results/evaluate/plots \
   python src/evaluate.py
+
+git rm --cached results/train/dvc.yaml
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"
