@@ -280,6 +280,10 @@ gh pr create -t "Run experiments tuning random forest params" \
    -b "Better RF split and number of estimators based on small grid search." \
    -B main -H tune-hyperparams
 
+To update the project in Studio, follow the instructions at:
+
+https://github.com/iterative/studio/wiki/Updating-and-synchronizing-demo-project
+
 Finally, return to the directory where you started:
 
 cd ../..
