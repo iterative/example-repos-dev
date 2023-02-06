@@ -50,7 +50,6 @@ You can run [`dvc pull`](https://man.dvc.org/pull) to download the data:
 ```console
 $ dvc pull
 ```
-If you get an error when you `dvc pull`, don't worry you will still be able to run your experiments, this is because (of DVC shared cache? guessinghttps://dvc.org/doc/user-guide/how-to/share-a-dvc-cache#configure-the-shared-cache)
 
 ## Running in your environment
 
