@@ -13,9 +13,8 @@ def main():
 
     save(
         rf,
-        "rf",
+        "models/rf",
         sample_data=data,
-        description="Random Forest Classifier",
     )
 
 
