@@ -1,7 +1,0 @@
-{
-  "name": "fixture-model-registry",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "postCreateCommand": "pip3 install -r code/requirements.txt"
-}
