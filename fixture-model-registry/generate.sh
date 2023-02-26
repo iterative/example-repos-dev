@@ -1,0 +1,203 @@
+#!/bin/bash
+
+# Setup script env:
+#   e   Exit immediately if a command exits with a non-zero exit status.
+#   u   Treat unset variables as an error when substituting.
+#   x   Print commands and their arguments as they are executed.
+set -eux
+
+while read var; do
+  [ -z "${!var+x}" ] && { echo "$var is empty or not set"; exit 1; }
+done << EOF
+AZURE_STORAGE_CONNECTION_STRING
+EOF
+
+HERE="$( cd "$(dirname "$0")" ; pwd -P )"
+USER_NAME="iterative"
+REPO_NAME="fixture-model-registry"
+
+BUILD_PATH="$HERE/build"
+
+mkdir -p $BUILD_PATH
+pushd $BUILD_PATH
+if [ ! -d "$BUILD_PATH/.venv" ]; then
+  virtualenv -p python3 .venv
+  export VIRTUAL_ENV_DISABLE_PROMPT=true
+  source .venv/bin/activate
+  echo '.venv/' > .gitignore
+  pip install -r $HERE/code/requirements.txt
+  pip install git+https://github.com/iterative/gto
+#  pip install -e ~/Git/iterative/gto/
+fi
+popd
+
+source $BUILD_PATH/.venv/bin/activate
+
+REPO_PATH="$HERE/build/$REPO_NAME"
+
+if [ -d "$REPO_PATH" ]; then
+  echo "Repo $REPO_PATH already exists, please remove it first."
+  exit 1
+fi
+
+TOTAL_TAGS=30
+STEP_TIME=100000
+BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
+export TAG_TIME=${BEGIN_TIME}
+export GIT_AUTHOR_DATE=${TAG_TIME}
+export GIT_COMMITTER_DATE=${TAG_TIME}
+tick(){
+  export TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+  export GIT_AUTHOR_DATE=${TAG_TIME}
+  export GIT_COMMITTER_DATE=${TAG_TIME}
+}
+
+export GIT_AUTHOR_NAME="Alexander Guschin"
+export GIT_AUTHOR_EMAIL="1aguschin@gmail.com"
+export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+
+
+
+mkdir -p $REPO_PATH
+pushd $REPO_PATH
+
+
+git init -b main
+cp -r $HERE/code/ .
+pip freeze > requirements.txt
+git add .
+tick
+git commit -m "Initialize Git repository"
+
+
+echo "Create new models"
+dvc init
+mlem init
+tick
+git add .mlem.yaml .dvc
+git commit -m "Initialize MLEM and DVC project"
+
+
+python train.py
+git add models
+tick
+git commit -m "Train the model"
+git tag -a "2-train" -m "Model trained."
+
+
+python -c "import mlem; a = lambda x: x; mlem.api.save(a, 'models/mlem-only')"
+python -c "import mlem; a = lambda x: x; mlem.api.save(a, 'models/lambda-1')"
+python -c "import mlem; b = lambda x: x; mlem.api.save(b, 'models/lambda-2')"
+echo "1st version" > models/churn.pkl
+git add models requirements.txt
+tick
+git commit -am "Create models"
+
+gto annotate gto-mlem-in-mlem-dir --type model --path models/rf --must-exist
+gto annotate gto-only --type model --path models/churn.pkl --must-exist
+gto annotate gto-external-s3 --type model --path s3://mycorp/proj-ml/segm-model-2022-04-15.pt
+gto annotate gto-no-path --type model
+gto --tb annotate gto-mlem-not-in-mlem-dir --type model --path models/lambda-1  # --must-exist
+git add artifacts.yaml
+tick
+git commit -m "Annotate models with GTO"
+
+
+echo "Register new model"
+tick
+gto --tb register gto-mlem-in-mlem-dir --version v3.0.0
+tick
+gto register gto-only --version v0.4.1
+tick
+gto promote gto-only --stage dev
+tick
+gto promote gto-no-path --stage dev
+tick
+gto promote gto-external-s3 --stage prod
+tick
+gto promote gto-mlem-not-in-mlem-dir --stage test
+tick
+gto register gto-no-artifacts-yaml --version v9.9.9
+gto promote gto-no-artifacts-yaml --stage prod
+tick
+
+
+echo "stages: [dev, prod, stage]" > .gto
+gto annotate gto-mlem-not-in-mlem-dir --type model --path models/lambda-2  # --must-exist
+tick
+git add artifacts.yaml .gto
+git commit -m "Change path to a GTO model"
+gto promote gto-mlem-not-in-mlem-dir --stage stage
+
+### GTO+DVC+MLEM
+
+dvc remote add myremote --local azure://contrainer-for-mlem-tests
+dvc remote add default -d https://examplemlem.blob.core.windows.net/contrainer-for-mlem-tests
+mlem config set core.storage.type dvc
+echo "/**/?*.mlem" > .dvcignore
+git add .dvc .dvcignore models
+tick
+git commit -m "Add DVC remote and set up MLEM to use it"
+
+python -c "import mlem; a = lambda x: 'some output text'; mlem.api.save(a, 'models/constant-model', sample_data='some input text')"
+gto annotate gto-mlem-dvc --type model --path models/constant-model
+dvc add models/constant-model
+git add artifacts.yaml models
+git commit -am "add DVC+MLEM+GTO model"
+
+gto register gto-mlem-dvc --version v3.0.0
+gto promote gto-mlem-dvc --stage dev
+gto promote gto-mlem-dvc --stage prod
+
+dvc push -r myremote
+
+### second branch
+
+git checkout -b other-branch
+gto annotate gto-other-branch-annotated --type model --path s3://path/some
+git add artifacts.yaml
+git commit -am "add GTO model on other branch"
+
+gto register gto-other-branch-annotated --version v3.0.0
+gto register gto-other-branch-no-artifacts-yaml --version v1.11.111
+gto promote gto-other-branch-no-artifacts-yaml --stage dev
+gto promote gto-other-branch-no-artifacts-yaml --stage stage
+
+gto show
+gto history
+
+popd
+
+unset TAG_TIME
+unset GIT_AUTHOR_DATE
+unset GIT_COMMITTER_DATE
+unset GIT_AUTHOR_NAME
+unset GIT_AUTHOR_EMAIL
+unset GIT_COMMITTER_NAME
+unset GIT_COMMITTER_EMAIL
+
+cat <<EOF
+
+The Git repo generated by this script is intended to be published on
+https://github.com/aguschin/fixture-model-registry.
+Make sure the Github repo exists first and that you have
+appropriate write permissions.
+
+To create it with https://cli.github.com/, run:
+
+gh repo create aguschin/fixture-model-registry --public \
+     -d "Fixture for Model Registry"
+
+Run these commands to force push it:
+
+cd build/fixture-model-registry
+git remote add origin  https://github.com/aguschin/fixture-model-registry
+git push --force origin main other-branch
+git push --force origin --tags
+cd ../../
+
+You may remove the generated repo with:
+
+rm -fR build
+EOF
