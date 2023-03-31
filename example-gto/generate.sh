@@ -91,9 +91,19 @@ git add models requirements.txt
 tick
 git commit -am "Create models"
 
-gto annotate churn --type model --path models/churn.pkl --must-exist
-gto annotate segment --type model --path s3://mycorp/proj-ml/segm-model-2022-04-15.pt
-gto annotate cv-class --type model --path s3://mycorp/proj-ml/classif-v2.pt
+cat >> dvc.yaml<< EOF
+artifacts:
+  churn:
+    type: model
+    path: models/churn.pkl
+  segment:
+    type: model
+    path: s3://mycorp/proj-ml/segm-model-2022-04-15.pt
+  cv-class:
+    type: model
+    path: s3://mycorp/proj-ml/classif-v2.pt
+EOF
+
 git add artifacts.yaml
 tick
 git commit -m "Annotate models with GTO"

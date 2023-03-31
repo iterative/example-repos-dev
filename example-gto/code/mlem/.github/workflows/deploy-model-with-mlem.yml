@@ -16,13 +16,15 @@ jobs:
     - uses: actions/checkout@v3
     - name: "GTO: figure out what was registered/promoted and show the Registry state"
       id: gto
-      uses: iterative/gto-action@v1
+      uses: iterative/gto-action@v2
+      with:
+        download: true
     # we define the Job outputs here to let the next Job use them
     outputs:
       name: ${{ steps.gto.outputs.name }}
       stage: ${{ steps.gto.outputs.stage }}
       event: ${{ steps.gto.outputs.event }}
-      path: ${{ steps.gto.outputs.path }}
+      path: ${{ steps.gto.outputs.path }}  # the path the model was `dvc get` to
   deploy-model:
     name: Deploy a MLEM model (act on assigning a new stage)
     needs: parse-git-tag
