@@ -106,15 +106,11 @@ dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
   -o models/model.pkl \
-  -M results/train/metrics.json \
-  --plots-no-cache results/train/plots \
   python src/train.py
 
 dvc stage add -n evaluate \
   -p base,evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  -M results/evaluate/metrics.json \
-  --plots-no-cache results/evaluate/plots \
   python src/evaluate.py
 
 rm results/train/dvc.yaml
