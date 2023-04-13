@@ -95,6 +95,7 @@ cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
+dvc remove models/model.pkl.dvc
 
 dvc stage add -n data_split \
   -p base,data_split \
