@@ -11,7 +11,6 @@ from fastai.metrics import DiceMulti
 from fastai.vision.all import (
     Resize,
     SegmentationDataLoaders,
-    aug_transforms,
     imagenet_stats,
     models,
     unet_learner,
@@ -42,7 +41,6 @@ def train():
         valid_pct=params.train.valid_pct,
         item_tfms=Resize(params.train.img_size),
         batch_tfms=[
-            *aug_transforms(size=params.train.img_size),
             Normalize.from_stats(*imagenet_stats),
         ],
     )
