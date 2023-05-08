@@ -13,8 +13,7 @@ yaml = YAML(typ="safe")
 def data_split():
     params = ConfigBox(yaml.load(open("params.yaml", encoding="utf-8")))
     np.random.seed(params.base.random_seed)
-    img_fpaths = get_files(Path("data") / "pool_data" / "images", extensions=".jpg")
-
+    img_fpaths = sorted(list(get_files(Path("data") / "pool_data" / "images", extensions=".jpg")))
     train_data_dir = Path("data") / "train_data"
     train_data_dir.mkdir(exist_ok=True)
     test_data_dir = Path("data") / "test_data"
