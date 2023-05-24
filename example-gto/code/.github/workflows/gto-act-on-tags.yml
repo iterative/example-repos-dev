@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: "GTO: figure out what was registered/promoted and show the Registry state"
       id: gto
-      uses: iterative/gto-action@v1
+      uses: iterative/gto-action@v2
     - uses: actions/setup-python@v2
     - name: Install dependencies
       run: |

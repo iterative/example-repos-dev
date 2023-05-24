@@ -44,7 +44,7 @@ source $BUILD_PATH/.venv/bin/activate
 
 TOTAL_TAGS=15
 STEP_TIME=100000
-SLEEP_TIME=30
+SLEEP_TIME=90
 BEGIN_TIME=$(($(date +%s) - (${TOTAL_TAGS} * ${STEP_TIME})))
 export TAG_TIME=${BEGIN_TIME}
 export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
@@ -84,6 +84,9 @@ if $PUSH; then
   git ls-remote --tags origin | awk '/^(.*)(\s+)(.*[a-zA-Z0-9])$/ {print ":" $2}' | xargs git push origin
 fi
 
+echo "Initialize DVC"
+dvc init
+git commit -m "Initialize DVC"
 echo "Create new models"
 mkdir models
 echo "1st version" > models/churn.pkl
@@ -91,10 +94,20 @@ git add models requirements.txt
 tick
 git commit -am "Create models"
 
-gto annotate churn --type model --path models/churn.pkl --must-exist
-gto annotate segment --type model --path s3://mycorp/proj-ml/segm-model-2022-04-15.pt
-gto annotate cv-class --type model --path s3://mycorp/proj-ml/classif-v2.pt
-git add artifacts.yaml
+cat >> dvc.yaml<< EOF
+artifacts:
+  churn:
+    type: model
+    path: models/churn.pkl
+  segment:
+    type: model
+    path: s3://mycorp/proj-ml/segm-model-2022-04-15.pt
+  cv-class:
+    type: model
+    path: s3://mycorp/proj-ml/classif-v2.pt
+EOF
+git add dvc.yaml
+
 tick
 git commit -m "Annotate models with GTO"
 if $PUSH; then
