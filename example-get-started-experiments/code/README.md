@@ -108,6 +108,17 @@ This tag also contains a GitHub Actions workflow that reruns the pipeline if any
 [CML](https://cml.dev/) is used in this workflow to provision a cloud-based GPU 
 machine as well as report model performance results in Pull Requests.
 
+## Deploying the model
+
+Check out the [PR](https://github.com/iterative/example-get-started-experiments/pulls)
+that adds this model to 
+[Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
+You can [trigger CI/CD](https://dvc.org/doc/studio/user-guide/model-registry/use-models)
+by [registering versions](https://dvc.org/doc/studio/user-guide/model-registry/register-version)
+and [assigning stages](https://dvc.org/doc/studio/user-guide/model-registry/assign-stage)
+in Model Registry, building and publishing Docker images with the model,
+or deploying the model to the cloud.
+
 ## Project structure
 
 The data files, DVC files, and results change as stages are created one by one.
