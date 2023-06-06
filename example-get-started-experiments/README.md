@@ -60,3 +60,11 @@ Once the repo has been generated and pushed, go to the
 [corresponding Studio project](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
 and create a P.R. using the `Experiment` button, increasing epochs from `8` to 
 `12`.
+
+- Add a model to Studio Model Registry
+
+Go to Studio MR and click "Add a model". Fill the `path=models/model.pkl` and add a model to a separate branch. 
+Copy other details from the existing repo or fill them from scratch. 
+Register new version and assign `dev` stage to it.
+Open the public MR from studio.iterative.ai, find the model, copy URL to model details page.
+Post that url in the PR created by Studio.
