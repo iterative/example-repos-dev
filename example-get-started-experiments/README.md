@@ -15,7 +15,6 @@ Run these commands to force push it:
 cd build/example-get-started-experiments
 git remote add origin https://github.com/iterative/example-get-started-experiments.git
 git push --force origin main
-git push --force origin tune-architecture
 git push --force origin --tags
 ```
 
@@ -31,15 +30,6 @@ And this to clean the remote cache to only contain the last iteration:
 
 ```
 dvc gc -c --all-commits --all-experiments
-```
-
-- `tune-architecture` P.R.
-
-To create a PR from the "tune-architecture" branch:
-
-```
-gh pr create -t "Run experiments tuning architecture" \
-   -B main -H tune-architecture
 ```
 
 Finally, return to the directory where you started:
@@ -58,8 +48,7 @@ rm -fR build
 
 Once the repo has been generated and pushed, go to the 
 [corresponding Studio project](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
-and create a P.R. using the `Experiment` button, increasing epochs from `8` to 
-`12`.
+and create a P.R. from the best of the 3 experiments that are found in the latest commit of `main` branch.
 
 - Add a model to Studio Model Registry
 

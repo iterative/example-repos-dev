@@ -132,21 +132,8 @@ export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-git checkout -b "tune-architecture"
-
-unset GIT_AUTHOR_DATE
-unset GIT_COMMITTER_DATE
-
 dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1'
-
 dvc exp run --run-all
-# Apply best experiment
-EXP=$(dvc exp show --csv --sort-by results/evaluate/metrics.json:dice_multi | tail -n 1 | cut -d , -f 1)
-dvc exp apply $EXP
-tick
-git commit -am "Run experiments tuning architecture. Apply best one"
-
-git checkout main
 
 dvc push -A
 
