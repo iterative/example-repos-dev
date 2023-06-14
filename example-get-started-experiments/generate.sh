@@ -132,7 +132,7 @@ export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1'
+dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1' --message 'Tune train.arch'
 dvc exp run --run-all
 
 dvc push -A
