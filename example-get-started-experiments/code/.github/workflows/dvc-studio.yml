@@ -55,6 +55,6 @@ jobs:
         run: |
           pip install -r requirements.txt
           cml ci --fetch-depth 0
-          dvc exp run --pull --allow-missing ${{ github.event.inputs.exp-run-args }} -v
           dvc remote add --local push_remote s3://dvc-public/remote/get-started-pools
+          dvc exp run --pull --allow-missing ${{ github.event.inputs.exp-run-args }} -v
           dvc exp push origin --rev HEAD -v
