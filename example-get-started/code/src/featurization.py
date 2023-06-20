@@ -56,7 +56,7 @@ def generate_and_save_train_features(train_input, train_output, bag_of_words, tf
         tfidf (sklearn.feature_extraction.text.TfidfTransformer): TF-IDF transformer.
     """
     df_train = get_df(train_input)
-    train_words = np.array(df_train.text.str.lower().values.astype("U"))
+    train_words = np.array(df_train.text.str.lower().values)
 
     bag_of_words.fit(train_words)
 
@@ -80,7 +80,7 @@ def generate_and_save_test_features(test_input, test_output, bag_of_words, tfidf
         tfidf (sklearn.feature_extraction.text.TfidfTransformer): TF-IDF transformer.
     """
     df_test = get_df(test_input)
-    test_words = np.array(df_test.text.str.lower().values.astype("U"))
+    test_words = np.array(df_test.text.str.lower().values)
 
     test_words_binary_matrix = bag_of_words.transform(test_words)
     test_words_tfidf_matrix = tfidf.transform(test_words_binary_matrix)
