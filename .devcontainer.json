@@ -9,7 +9,8 @@
       "ghcr.io/saml-to/devcontainer-features/assume-aws-role:1": {
           "role": "arn:aws:iam::342840881361:role/iterative-saml-codespaces"
       },
-    "ghcr.io/devcontainers/features/aws-cli:1": {}
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "customizations": {
     "codespaces": {

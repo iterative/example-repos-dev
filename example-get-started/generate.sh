@@ -286,6 +286,9 @@ git remote add origin git@github.com:<slug>/example-get-started.git
 git push --force origin main
 git push --force origin try-large-dataset
 git push --force origin tune-hyperparams
+# we push GTO git tags in chunks (no more than 3 at once) for Studio to receive webhooks
+git push --force origin text-classification@v1.0.0 text-classification@v1.1.0 text-classification@v1.2.0
+git push --force origin text-classification#prod#1 text-classification#stage#2 text-classification#dev#3
 git push --force origin --tags
 
 Run these to drop and then rewrite the experiment references on the repo:
