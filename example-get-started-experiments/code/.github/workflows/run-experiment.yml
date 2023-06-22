@@ -59,15 +59,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Trrain
+      - name: Train
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           STUDIO_TOKEN: ${{ secrets.STUDIO_TOKEN }}
           DVCLIVE_LOGLEVEL: DEBUG
         run: |
           cml ci --fetch-depth 0
-          dvc pull
-          dvc exp run ${{ github.event.inputs.exp-run-args }}
+          dvc exp run --pull --allow-missing ${{ github.event.inputs.exp-run-args }}
           dvc remote add --local push_remote s3://dvc-public/remote/get-started-pools 
 
       - name: Workflow Dispatch Sharing
@@ -75,7 +74,7 @@ jobs:
         env:
           STUDIO_TOKEN: ${{ secrets.STUDIO_TOKEN }}
         run: |
-          dvc exp push origin --rev HEAD -r push_remote
+          dvc exp push origin -r push_remote
 
       - name: Commit-based Sharing
         if: github.actor == 'iterative-studio[bot]'
