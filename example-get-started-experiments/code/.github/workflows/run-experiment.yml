@@ -1,15 +1,14 @@
 name: Run Experiment
 on: 
+
+  push:
+
   workflow_dispatch:
     inputs:
       exp-run-args:
         description: 'Args to be passed to dvc exp run call'
         required: false
         default: ''
-
-  pull_request:
-    branches:    
-      - main
 
 permissions:
   contents: write
@@ -22,6 +21,7 @@ jobs:
     if: ${{ (github.actor == 'iterative-studio[bot]') || (github.event_name == 'workflow_dispatch') }} 
     environment: cloud
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v1
@@ -48,6 +48,7 @@ jobs:
     container:
       image: iterativeai/cml:0-dvc2-base1-gpu
       options: --gpus all --ipc host
+
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
