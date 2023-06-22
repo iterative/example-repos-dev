@@ -196,6 +196,7 @@ git commit -m "Create evaluation stage"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 gto register text-classification --version v1.0.0
+gto assign text-classification --version v1.0.0 --stage prod
 dvc push
 
 
@@ -206,6 +207,7 @@ tick
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
 gto register text-classification --version v1.1.0
+gto assign text-classification --version v1.1.0 --stage stage
 dvc push
 
 
@@ -215,6 +217,7 @@ git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
 gto register text-classification --version v1.2.0
+gto assign text-classification --version v1.2.0 --stage dev
 dvc push
 
 
