@@ -40,7 +40,7 @@ jobs:
           dvc pull eval/importance.png
           cp eval/importance.png importance_previous.png
 
-          dvc_report=$(dvc exp diff $PREVIOUS_REF --show-md)
+          dvc_report=$(dvc exp diff $PREVIOUS_REF --md)
 
           cat <<EOF > report.md
           # CML Report

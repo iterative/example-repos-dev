@@ -52,7 +52,14 @@ and create a P.R. from the best of the 3 experiments that are found in the lates
 
 - Add a model to Studio Model Registry
 
-Go to Studio MR and click "Add a model". Fill the `path=models/model.pkl` and add a model to a separate branch. 
+Go to Studio MR and click "Add a model". Details:
+```
+name: pool-segmentation
+path: models/model.pkl
+description: "This is a Computer Vision (CV) model that solves the problem of segmenting out swimming pools from satellite images"
+labels: cv, satellite-images, segmentation
+```
+Fill the `path=models/model.pkl` and add a model to a separate branch. 
 Copy other details from the existing repo or fill them from scratch. 
 Register new version and assign `dev` stage to it.
 Open the public MR from studio.iterative.ai, find the model, copy URL to model details page.
