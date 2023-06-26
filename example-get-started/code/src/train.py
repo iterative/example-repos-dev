@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import yaml
 from sklearn.ensemble import RandomForestClassifier
+from dvclive import Live
 
 
 def train(seed, n_est, min_split, matrix):
@@ -59,6 +60,15 @@ def main():
     # Save the model
     with open(output, "wb") as fd:
         pickle.dump(clf, fd)
+
+    with Live() as live:
+        live.log_artifact(
+            output,
+            type="model",
+            name="text-classification",
+            desc="Detect whether the given stackoverflow question has R language tag",
+            labels=["nlp", "classification", "stackoverflow"],
+        )
 
 
 if __name__ == "__main__":

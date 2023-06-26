@@ -143,21 +143,7 @@ dvc stage add -n train \
   -o model.pkl \
   python src/train.py data/features model.pkl
 dvc repro
-python <<EOF
-from dvc.repo import Repo
-from dvc.annotations import Artifact
-
-repo = Repo(".")
-artifact = Artifact(
-  path="model.pkl", 
-  type="model",
-  desc="Detect whether the given stackoverflow question should have R language tag",
-  labels=["nlp", "classification", "stackoverflow"]
-)
-repo.artifacts.add("text-classification", artifact)
-EOF
-
-git add .gitignore data/.gitignore dvc.yaml dvc.lock
+git add .gitignore data/.gitignore dvc.yaml dvc.lock dvclive
 tick
 git commit -m "Create ML pipeline stages"
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
@@ -192,7 +178,7 @@ echo "plots:
 dvc repro
 git add .gitignore dvc.yaml dvc.lock eval
 tick
-git commit -m "Create evaluation stage"
+git commit -am "Create evaluation stage"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
 gto register text-classification --version v1.0.0
