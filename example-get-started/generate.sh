@@ -63,14 +63,11 @@ git tag -a "1-dvc-init" -m "DVC initialized."
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
   get-started/data.xml -o data/data.xml
-python <<EOF
-from dvc.repo import Repo
-from dvc.annotations import Artifact
-
-repo = Repo(".")
-artifact = Artifact(path="data/data.xml", desc="Initial XML StackOverflow dataset (raw data)")
-repo.artifacts.add("stackoverflow-dataset", artifact)
-EOF
+echo "artifacts:
+  stackoverflow-dataset:
+    path: data/data.xml
+    type: model
+    desc: Initial XML StackOverflow dataset (raw data)" >> dvc.yaml
 
 dvc add data/data.xml
 git add data/.gitignore data/data.xml.dvc
@@ -143,7 +140,21 @@ dvc stage add -n train \
   -o model.pkl \
   python src/train.py data/features model.pkl
 dvc repro
-git add .gitignore data/.gitignore dvc.yaml dvc.lock dvclive
+
+python <<EOF
+from dvc.repo import Repo
+from dvc.annotations import Artifact
+repo = Repo(".")
+artifact = Artifact(
+  path="model.pkl", 
+  type="model",
+  desc="Detect whether the given stackoverflow question should have R language tag",
+  labels=["nlp", "classification", "stackoverflow"]
+)
+repo.artifacts.add("text-classification", artifact)
+EOF
+
+git add .gitignore data/.gitignore dvc.yaml dvc.lock
 tick
 git commit -m "Create ML pipeline stages"
 git tag -a "7-ml-pipeline" -m "ML pipeline created."
@@ -181,8 +192,8 @@ tick
 git commit -am "Create evaluation stage"
 git tag -a "8-evaluation" -m "Baseline evaluation stage created."
 git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
-gto register dvclive:text-classification --version v1.0.0
-gto assign dvclive:text-classification --version v1.0.0 --stage prod
+gto register text-classification --version v1.0.0
+gto assign text-classification --version v1.0.0 --stage prod
 dvc push
 
 
@@ -192,8 +203,8 @@ dvc repro train
 tick
 git commit -am "Reproduce model using bigrams"
 git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
-gto register dvclive:text-classification --version v1.1.0
-gto assign dvclive:text-classification --version v1.1.0 --stage stage
+gto register text-classification --version v1.1.0
+gto assign text-classification --version v1.1.0 --stage stage
 dvc push
 
 
@@ -202,8 +213,8 @@ tick
 git commit -am "Evaluate bigrams model"
 git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
 git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
-gto register dvclive:text-classification --version v1.2.0
-gto assign dvclive:text-classification --version v1.2.0 --stage dev
+gto register text-classification --version v1.2.0
+gto assign text-classification --version v1.2.0 --stage dev
 dvc push
 
 
@@ -276,10 +287,8 @@ git remote add origin git@github.com:<slug>/example-get-started.git
 git push --force origin main
 git push --force origin try-large-dataset
 git push --force origin tune-hyperparams
-# we push GTO git tags in chunks (no more than 3 at once) for Studio to receive webhooks
-git push --force origin dvclive=text-classification@v1.0.0 dvclive=text-classification@v1.1.0 dvclive=text-classification@v1.2.0
-git push --force origin dvclive=text-classification#dev#1 dvclive=text-classification#prod#1 dvclive=text-classification#stage#1
-git push --force origin --tags
+# we push git tags one by one for Studio to receive webhooks:
+git tag --sort=creatordate | xargs -n 1 git push --force origin
 
 Run these to drop and then rewrite the experiment references on the repo:
 

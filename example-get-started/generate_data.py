@@ -4,7 +4,7 @@ import random
 import sys
 import xml.etree.ElementTree
 
-# This file is not part of the poject but is used to generate a slice of
+# This file is not part of the project but is used to generate a slice of
 # data from the full SO dump https://archive.org/details/stackexchange
 
 
