@@ -91,7 +91,7 @@ tick
 git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 gto register results/train:pool-segmentation --version v1.0.0
-gto assign results/train:pool-segmentation --version v1.0.0 --stage stage
+gto assign results/train:pool-segmentation --version v1.0.0 --stage dev
 
 
 cp -r $HERE/code/src .
@@ -131,7 +131,7 @@ git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
 gto register results/train:pool-segmentation --version v1.0.1
 gto assign results/train:pool-segmentation --version v1.0.0 --stage prod
-gto assign results/train:pool-segmentation --version v1.0.1 --stage stage
+gto assign results/train:pool-segmentation --version v1.0.1 --stage dev
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"

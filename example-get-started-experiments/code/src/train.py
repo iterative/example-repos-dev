@@ -56,18 +56,18 @@ def train():
     if params.train.arch not in model_names:
         raise ValueError(f"Unsupported model, must be one of:\n{model_names}")
 
-    learn = unet_learner(
-        data_loader, arch=getattr(models, params.train.arch), metrics=DiceMulti
-    )
-
-    learn.fine_tune(
-        **params.train.fine_tune_args,
-        cbs=[DVCLiveCallback(dir="results/train", report="md")],
-    )
-    models_dir = Path("models")
-    models_dir.mkdir(exist_ok=True)
-    learn.export(fname=(models_dir / "model.pkl").absolute())
     with Live("results/train") as live:
+        learn = unet_learner(
+            data_loader, arch=getattr(models, params.train.arch), metrics=DiceMulti
+        )
+
+        learn.fine_tune(
+            **params.train.fine_tune_args,
+            cbs=[DVCLiveCallback(dir="results/train", report="md")],
+        )
+        models_dir = Path("models")
+        models_dir.mkdir(exist_ok=True)
+        learn.export(fname=(models_dir / "model.pkl").absolute())
         live.log_artifact(
             str(models_dir / "model.pkl"),
             type="model",

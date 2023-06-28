@@ -15,7 +15,8 @@ Run these commands to force push it:
 cd build/example-get-started-experiments
 git remote add origin https://github.com/iterative/example-get-started-experiments.git
 git push --force origin main
-git push --force origin --tags
+# we push git tags one by one for Studio to receive webhooks:
+git tag --sort=creatordate | xargs -n 1 git push --force origin
 ```
 
 Run these to drop and then rewrite the experiment references on the repo:
