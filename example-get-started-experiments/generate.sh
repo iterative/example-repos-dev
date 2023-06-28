@@ -89,6 +89,7 @@ git add .
 tick
 git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
+gto register dvclive:pool-segmentation --version v1.0.0
 
 
 cp -r $HERE/code/src .
@@ -126,6 +127,7 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
+gto register dvclive:pool-segmentation --version v1.0.1
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
