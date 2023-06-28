@@ -67,7 +67,7 @@ def train():
     models_dir = Path("models")
     models_dir.mkdir(exist_ok=True)
     learn.export(fname=(models_dir / "model.pkl").absolute())
-    with Live() as live:
+    with Live("results/train") as live:
         live.log_artifact(
             str(models_dir / "model.pkl"),
             type="model",
