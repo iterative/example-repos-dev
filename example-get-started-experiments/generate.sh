@@ -42,7 +42,7 @@ echo '.venv/' > .gitignore
 
 # Installing from main since we'd like to update repo before
 # the release
-pip install "git+https://github.com/iterative/dvc#egg=dvc[s3]"
+pip install "git+https://github.com/iterative/dvc#egg=dvc[s3]" gto
 
 git init
 cp $HERE/code/README.md .
@@ -77,6 +77,7 @@ cp -r $HERE/code/notebooks .
 git add .
 git commit -m "Add notebook using DVCLive"
 
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
@@ -89,6 +90,8 @@ git add .
 tick
 git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
+gto register results/train:pool-segmentation --version v1.0.0
+gto assign results/train:pool-segmentation --version v1.0.0 --stage dev
 
 
 cp -r $HERE/code/src .
@@ -126,6 +129,9 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
+gto register results/train:pool-segmentation --version v1.0.1
+gto assign results/train:pool-segmentation --version v1.0.0 --stage prod
+gto assign results/train:pool-segmentation --version v1.0.1 --stage dev
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"

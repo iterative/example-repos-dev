@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from box import ConfigBox
+from dvclive import Live
 from dvclive.fastai import DVCLiveCallback
 from fastai.data.all import Normalize, get_files
 from fastai.metrics import DiceMulti
@@ -55,17 +56,25 @@ def train():
     if params.train.arch not in model_names:
         raise ValueError(f"Unsupported model, must be one of:\n{model_names}")
 
-    learn = unet_learner(
-        data_loader, arch=getattr(models, params.train.arch), metrics=DiceMulti
-    )
+    with Live("results/train") as live:
+        learn = unet_learner(
+            data_loader, arch=getattr(models, params.train.arch), metrics=DiceMulti
+        )
 
-    learn.fine_tune(
-        **params.train.fine_tune_args,
-        cbs=[DVCLiveCallback(dir="results/train", report="md")],
-    )
-    models_dir = Path("models")
-    models_dir.mkdir(exist_ok=True)
-    learn.export(fname=(models_dir / "model.pkl").absolute())
+        learn.fine_tune(
+            **params.train.fine_tune_args,
+            cbs=[DVCLiveCallback(live=live)],
+        )
+        models_dir = Path("models")
+        models_dir.mkdir(exist_ok=True)
+        learn.export(fname=(models_dir / "model.pkl").absolute())
+        live.log_artifact(
+            str(models_dir / "model.pkl"),
+            type="model",
+            name="pool-segmentation",
+            desc="This is a Computer Vision (CV) model that's segmenting out swimming pools from satellite images.",
+            labels=["cv", "segmentation", "satellite-images", params.train.arch],
+        )
 
 
 if __name__ == "__main__":

@@ -15,7 +15,8 @@ Run these commands to force push it:
 cd build/example-get-started-experiments
 git remote add origin https://github.com/iterative/example-get-started-experiments.git
 git push --force origin main
-git push --force origin --tags
+# we push git tags one by one for Studio to receive webhooks:
+git tag --sort=creatordate | xargs -n 1 git push --force origin
 ```
 
 Run these to drop and then rewrite the experiment references on the repo:
@@ -44,16 +45,12 @@ You may remove the generated repo with:
 rm -fR build
 ```
 
+Note that you may need to reparse the repo. Pay attention to whether experiments shown
+in experiments table are "detached" or if the experiments you just pushed doesn't
+show up in the Project table.
+
 - Manual Studio P.R.
 
 Once the repo has been generated and pushed, go to the 
 [corresponding Studio project](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
 and create a P.R. from the best of the 3 experiments that are found in the latest commit of `main` branch.
-
-- Add a model to Studio Model Registry
-
-Go to Studio MR and click "Add a model". Fill the `path=models/model.pkl` and add a model to a separate branch. 
-Copy other details from the existing repo or fill them from scratch. 
-Register new version and assign `dev` stage to it.
-Open the public MR from studio.iterative.ai, find the model, copy URL to model details page.
-Post that url in the PR created by Studio.
