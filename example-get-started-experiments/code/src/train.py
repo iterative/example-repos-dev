@@ -63,7 +63,7 @@ def train():
 
         learn.fine_tune(
             **params.train.fine_tune_args,
-            cbs=[DVCLiveCallback(dir="results/train", report="md")],
+            cbs=[DVCLiveCallback(live=live)],
         )
         models_dir = Path("models")
         models_dir.mkdir(exist_ok=True)
