@@ -45,6 +45,10 @@ You may remove the generated repo with:
 rm -fR build
 ```
 
+Note that you may need to reparse the repo. Pay attention to whether experiments shown
+in experiments table are "detached" or if the experiments you just pushed doesn't
+show up in the Project table.
+
 - Manual Studio P.R.
 
 Once the repo has been generated and pushed, go to the 
