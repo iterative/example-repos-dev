@@ -98,7 +98,6 @@ cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
-dvc remove models/model.pkl.dvc
 
 dvc stage add -n data_split \
   -p base,data_split \
@@ -106,11 +105,11 @@ dvc stage add -n data_split \
   -o data/train_data -o  data/test_data \
   python src/data_split.py
 
+dvc remove models/model.pkl.dvc
 dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
   -o models/model.pkl \
-  --plots dvclive/plots/images \
   python src/train.py
 
 dvc stage add -n evaluate \
@@ -118,8 +117,6 @@ dvc stage add -n evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
   python src/evaluate.py
 
-rm results/train/dvc.yaml
-git rm --cached results/train/dvc.yaml
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"

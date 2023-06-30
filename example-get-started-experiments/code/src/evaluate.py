@@ -77,7 +77,7 @@ def evaluate():
         get_mask_path(fpath, Path("data") / "test_data") for fpath in test_img_fpaths
     ]
     masks_true = [Image.open(mask_path) for mask_path in test_mask_fpaths]
-    with Live("results/evaluate", report=None) as live:
+    with Live("results/evaluate", report=None, cache_images=True) as live:
         dice_multi = 0.0
         for ii in range(len(masks_true)):
             mask_pred, mask_true = masks_pred[ii], masks_true[ii]
