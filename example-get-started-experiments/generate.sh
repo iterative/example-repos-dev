@@ -110,6 +110,7 @@ dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
   -o models/model.pkl \
+  --plots dvclive/plots/images \
   python src/train.py
 
 dvc stage add -n evaluate \
