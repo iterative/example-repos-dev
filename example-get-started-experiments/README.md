@@ -33,6 +33,17 @@ And this to clean the remote cache to only contain the last iteration:
 dvc gc -c --all-commits --all-experiments
 ```
 
+To push a copy to GitLab:
+
+```
+git remote add gitlab git@gitlab.com:iterative.ai/example-get-started-experiments.git
+git push --force gitlab main
+# we push git tags one by one for Studio to receive webhooks:
+git tag --sort=creatordate | xargs -n 1 git push --force gitlab
+# push experiments
+dvc exp remove -A -g gitlab
+dvc exp push gitlab -A
+```
 Finally, return to the directory where you started:
 
 ```
