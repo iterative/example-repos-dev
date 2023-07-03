@@ -77,7 +77,7 @@ cp -r $HERE/code/notebooks .
 git add .
 git commit -m "Add notebook using DVCLive"
 
-pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
 # Apply best experiment
