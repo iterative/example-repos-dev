@@ -66,10 +66,9 @@ def get_mask_path(x, train_data_dir):
 
 def evaluate():
     params = ConfigBox(yaml.load(open("params.yaml", encoding="utf-8")))
-    img_size = params.train.img_size
     model_fpath = Path("models") / "model.pkl"
     learn = load_learner(model_fpath, cpu=False)
-    test_img_fpaths = get_files(Path("data") / "test_data", extensions=".jpg")
+    test_img_fpaths = sorted(get_files(Path("data") / "test_data", extensions=".jpg"))
     test_dl = learn.dls.test_dl(test_img_fpaths)
     preds, _ = learn.get_preds(dl=test_dl)
     masks_pred = np.array(preds[:, 1, :] > 0.5, dtype=np.uint8)
