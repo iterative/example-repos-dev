@@ -56,7 +56,7 @@ def train():
     if params.train.arch not in model_names:
         raise ValueError(f"Unsupported model, must be one of:\n{model_names}")
 
-    with Live("results/train") as live:
+    with Live("results/train", report=None) as live:
         learn = unet_learner(
             data_loader, arch=getattr(models, params.train.arch), metrics=DiceMulti
         )

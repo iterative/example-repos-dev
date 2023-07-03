@@ -77,8 +77,7 @@ cp -r $HERE/code/notebooks .
 git add .
 git commit -m "Add notebook using DVCLive"
 
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
 # Apply best experiment
@@ -98,7 +97,6 @@ cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
-dvc remove models/model.pkl.dvc
 
 dvc stage add -n data_split \
   -p base,data_split \
@@ -106,6 +104,7 @@ dvc stage add -n data_split \
   -o data/train_data -o  data/test_data \
   python src/data_split.py
 
+dvc remove models/model.pkl.dvc
 dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
@@ -117,8 +116,6 @@ dvc stage add -n evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
   python src/evaluate.py
 
-rm results/train/dvc.yaml
-git rm --cached results/train/dvc.yaml
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"

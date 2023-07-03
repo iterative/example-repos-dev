@@ -21,7 +21,7 @@ def data_split():
     test_data_dir.mkdir(exist_ok=True)
     for img_path in img_fpaths:
         msk_path = Path("data") / "pool_data" / "masks" / f"{img_path.stem}.png"
-        if np.random.uniform() <= params.data_split.test_pct:
+        if any(region in str(img_path) for region in params.data_split.test_regions):
             shutil.copy(img_path, test_data_dir)
             shutil.copy(msk_path, test_data_dir)
         else:

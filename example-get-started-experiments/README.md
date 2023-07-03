@@ -14,9 +14,12 @@ Run these commands to force push it:
 ```
 cd build/example-get-started-experiments
 git remote add origin https://github.com/iterative/example-get-started-experiments.git
+git remote add frozen https://github.com/iterative/example-get-started-experiments-frozen.git
 git push --force origin main
+git push --force frozen main
 # we push git tags one by one for Studio to receive webhooks:
 git tag --sort=creatordate | xargs -n 1 git push --force origin
+git tag --sort=creatordate | xargs -n 1 git push --force frozen
 ```
 
 Run these to drop and then rewrite the experiment references on the repo:
@@ -24,7 +27,9 @@ Run these to drop and then rewrite the experiment references on the repo:
 ```
 source .venv/bin/activate
 dvc exp remove -A -g origin
+dvc exp remove -A -g frozen
 dvc exp push origin -A
+dvc exp push frozen -A
 ```
 
 And this to clean the remote cache to only contain the last iteration:
@@ -33,6 +38,17 @@ And this to clean the remote cache to only contain the last iteration:
 dvc gc -c --all-commits --all-experiments
 ```
 
+To push a copy to GitLab:
+
+```
+git remote add gitlab git@gitlab.com:iterative.ai/example-get-started-experiments.git
+git push --force gitlab main
+# we push git tags one by one for Studio to receive webhooks:
+git tag --sort=creatordate | xargs -n 1 git push --force gitlab
+# push experiments
+dvc exp remove -A -g gitlab
+dvc exp push gitlab -A
+```
 Finally, return to the directory where you started:
 
 ```

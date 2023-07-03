@@ -2,7 +2,8 @@ base:
   random_seed: 42
 
 data_split:
-  test_pct: 0.15
+  test_regions: 
+    - REGION_1
 
 train:
   valid_pct: 0.1
