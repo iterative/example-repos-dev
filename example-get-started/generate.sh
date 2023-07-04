@@ -1,41 +1,106 @@
 #!/bin/bash
-# See https://dvc.org/doc/tutorials/get-started
+# See https://dvc.org/get-started
 
-# Setup script env:
-#   e   Exit immediately if a command exits with a non-zero exit status.
-#   u   Treat unset variables as an error when substituting.
-#   x   Print commands and their arguments as they are executed.
 set -eux
 
-HERE="$( cd "$(dirname "$0")" ; pwd -P )"
+HERE=$( cd "$(dirname "$0")" ; pwd -P )
 REPO_NAME="example-get-started"
-REPO_PATH="$HERE/build/$REPO_NAME"
+REPO_PATH_BASE="$HERE/build/$REPO_NAME"
 PROD=${1:-false}
 
+# Some additional options to tune the exact repo structure that we generate.
+# It useful to generate nested (monorepo), private storages, a mix of those
+# cases to be used in Studio fixtures or QA.
+OPT_TESTING_REPO='true' # Default false.
+OPT_SUBDIR='' # No leading or trailing slashes. Default "".
+OPT_INIT_GIT='true' # Default true.
+OPT_INIT_DVC='true' # Default true.
+OPT_NON_DVC='false' # Default false.
+OPT_BRANCHES='false' # Default true.
+OPT_REMOTE="public-s3" # Default "private-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
+OPT_DVC_TRACKED_METRICS='false' # Default false.
+OPT_REGISTER_MODELS='false' # Default true.
+
+
+if [ -z $OPT_SUBDIR ]; then
+  COMMIT_PREFIX=""
+  GIT_TAG_SUFFIX=""
+  GTO_PREFIX=""
+  MAIN_REPO_README=""
+else
+  [ -d "$REPO_PATH_BASE" ] && cp -r "$REPO_PATH_BASE" "${REPO_PATH_BASE}-backup-$(date +%s)"
+  MODIFIER=$(echo ${OPT_SUBDIR} | tr / -)
+  COMMIT_PREFIX="[$MODIFIER] "
+  GIT_TAG_SUFFIX="-$MODIFIER"
+  # In GTO we use : as a separator to get the full model name
+  GTO_PREFIX="${OPT_SUBDIR}:"
+  MAIN_REPO_README="${REPO_PATH_BASE}/README.md"
+fi
+
+REPO_PATH="${REPO_PATH_BASE}/${OPT_SUBDIR}"
 if [ -d "$REPO_PATH" ]; then
   echo "Repo $REPO_PATH already exists, please remove it first."
   exit 1
 fi
 
-TOTAL_TAGS=15
-STEP_TIME=100000
-BEGIN_TIME=$(( $(date +%s) - ( ${TOTAL_TAGS} * ${STEP_TIME}) ))
+
+init_remote_storage() {
+  if [ $OPT_REMOTE == 'public-s3' ]; then
+    # Remote active on this env only, for writing to HTTP redirect below.
+    dvc remote add -d --local $OPT_REMOTE s3://dvc-public/remote/get-started
+    # Actual remote for generated project (read-only). Redirect of S3 bucket above.
+    dvc remote add -d $OPT_REMOTE https://remote.dvc.org/get-started
+  fi
+
+  if [ $OPT_REMOTE == 'private-s3' ]; then
+    # Remote active on this env only, for writing to HTTP redirect below.
+    dvc remote add -d $OPT_REMOTE s3://dvc-private/remote/get-started
+  fi
+
+  if [ $OPT_REMOTE == 'private-http' ]; then
+    dvc remote add -d --local storage ssh://dvc@35.194.53.251/home/dvc/storage
+    dvc remote modify --local storage keyfile /Users/ivan/.ssh/dvc_gcp_remotes_rsa
+    dvc remote add -d $OPT_REMOTE http://35.194.53.251
+  fi
+
+  if [ $OPT_REMOTE == 'private-ssh' ]; then
+    dvc remote add -d $OPT_REMOTE ssh://dvc@35.194.53.251/home/dvc/storage
+    dvc remote modify $OPT_REMOTE keyfile /Users/ivan/.ssh/dvc_gcp_remotes_rsa
+  fi
+}
+
+mkdir -p $REPO_PATH
+pushd $REPO_PATH
+
+TOTAL_TAGS=50
+STEP_TIME=500000
+
+if [ $(git rev-parse --show-toplevel) == $REPO_PATH_BASE ]; then
+  BEGIN_TIME=$(git log -1 --format=%ct)
+else
+  BEGIN_TIME=$(( $(date +%s) - (${TOTAL_TAGS} * ${STEP_TIME}) ))
+fi
+
 export TAG_TIME=${BEGIN_TIME}
 export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
 export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
+
 tick(){
-  export TAG_TIME=$(( ${TAG_TIME} + ${STEP_TIME} ))
+  TICK_DELTA=$(python3 -c "print(int(${STEP_TIME} * ($RANDOM+1)/32767))")
+  export TAG_TIME=$(( ${TAG_TIME} + ${TICK_DELTA} ))
   export GIT_AUTHOR_DATE="${TAG_TIME} +0000"
   export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
 }
 
-export GIT_AUTHOR_NAME="Ivan Shcheklein"
-export GIT_AUTHOR_EMAIL="shcheklein@gmail.com"
+if [ $OPT_TESTING_REPO == 'true' ]; then
+  export GIT_AUTHOR_NAME="R. Daneel Olivaw"
+  export GIT_AUTHOR_EMAIL="olivaw@iterative.ai"
+else
+  export GIT_AUTHOR_NAME="Ivan Shcheklein"
+  export GIT_AUTHOR_EMAIL="shcheklein@gmail.com"
+fi
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-
-mkdir -p $REPO_PATH
-pushd $REPO_PATH
 
 virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
@@ -46,53 +111,91 @@ echo '.venv/' > .gitignore
 # the release
 pip install "git+https://github.com/iterative/dvc#egg=dvc[all]" gto
 
-git init
-cp $HERE/code/README.md .
-cp $HERE/code/.devcontainer.json .
-cp $HERE/code/.gitattributes .
-git add .
-tick
-git commit -m "Initialize Git repository"
-git tag -a "0-git-init" -m "Git initialized."
 
-dvc init
-tick
-git commit -m "Initialize DVC project"
-git tag -a "1-dvc-init" -m "DVC initialized."
+if [ $OPT_INIT_GIT == 'true' ]; then
+  git init
+  cp $HERE/code/README.md .
+  cp $HERE/code/.devcontainer.json .
+  cp $HERE/code/.gitattributes .
+  git add .
+else
+  git checkout main
+fi
+
+# Dump the config for the repo into README if we are generating a testing repo.
+if [ $OPT_TESTING_REPO == 'true' ]; then
+  echo -e "This is a [DVC Studio](https://studio.iterative.ai) testing (fixture) repository." > README.md
+  echo -e "\n## \`<root>/${OPT_SUBDIR}\` config\n\n\`\`\`bash" | tee -a README.md $MAIN_REPO_README
+  while read var; do
+    echo "$var='$(eval "echo \"\$$var\"")'" | tee -a README.md $MAIN_REPO_README
+  done < <( declare -p | cut -d " " -f 2 | grep = | grep "^OPT_" | cut -f 1 -d '=')
+  echo '```' | tee -a README.md $MAIN_REPO_README
+  git add $REPO_PATH_BASE/.
+fi
+
+if [ $OPT_INIT_GIT == 'true' ] || [ $OPT_TESTING_REPO == 'true']; then
+  if [ $OPT_INIT_GIT == 'true' ]; then
+    tick
+    git commit -m "${COMMIT_PREFIX}Initialize Git repository"
+    git tag -a "0-git-init${GIT_TAG_SUFFIX}" -m "Git initialized."
+  else
+    tick
+    git commit -m "${COMMIT_PREFIX}Add readme for testing repo"
+    git tag -a "0-git-init${GIT_TAG_SUFFIX}" -m "Testing repo initialized."
+  fi
+fi
+
+if [ $OPT_INIT_DVC == 'true' ]; then
+  dvc init --subdir
+  tick
+  git commit -m "${COMMIT_PREFIX}Initialize DVC project"
+  git tag -a "1-dvc-init${GIT_TAG_SUFFIX}" -m "DVC initialized."
+fi
+
 
 mkdir data
 dvc get https://github.com/iterative/dataset-registry \
   get-started/data.xml -o data/data.xml
-echo "artifacts:
+
+if [ $OPT_NON_DVC == 'false' ]; then
+  if [ $OPT_REGISTER_MODELS == "true" ]; then
+    echo "artifacts:
   stackoverflow-dataset:
     path: data/data.xml
     type: dataset
     desc: Initial XML StackOverflow dataset (raw data)" >> dvc.yaml
-
-dvc add data/data.xml
-git add data/.gitignore data/data.xml.dvc
+  fi
+  dvc add data/data.xml
+  git add data/data.xml.dvc
+else
+  echo "data.xml" > data/.gitignore
+fi
+git add data/.gitignore
 tick
-git commit -m "Add raw data"
-git tag -a "2-track-data" -m "Data file added."
+git commit -m "${COMMIT_PREFIX}Add raw data"
+git tag -a "2-track-data${GIT_TAG_SUFFIX}" -m "Data file added."
 
-# Remote active on this env only, for writing to HTTP redirect below.
-dvc remote add -d --local storage s3://dvc-public/remote/get-started
-# Actual remote for generated project (read-only). Redirect of S3 bucket above.
-dvc remote add -d storage https://remote.dvc.org/get-started
-git add .
-tick
-git commit -m "Configure default remote"
-git tag -a "3-config-remote" -m "Read-only remote storage configured."
-dvc push
 
-rm data/data.xml data/data.xml.dvc
-dvc import https://github.com/iterative/dataset-registry \
-  get-started/data.xml -o data/data.xml
-git add data/data.xml.dvc
-tick
-git commit -m "Import raw data (overwrite)"
-git tag -a "4-import-data" -m "Data file overwritten with an import."
-dvc push
+if [ $OPT_NON_DVC == 'false' ]; then
+  init_remote_storage
+
+  git add $REPO_PATH_BASE/.
+  tick
+  git commit -m "${COMMIT_PREFIX}Configure default remote"
+  git tag -a "3-config-remote${GIT_TAG_SUFFIX}" -m "Remote storage configured."
+  dvc push
+fi
+
+if [ $OPT_NON_DVC == 'false' ]; then
+  rm data/data.xml data/data.xml.dvc
+  dvc import https://github.com/iterative/dataset-registry \
+    get-started/data.xml -o data/data.xml
+  git add data/data.xml.dvc
+  tick
+  git commit -m "${COMMIT_PREFIX}Import raw data (overwrite)"
+  git tag -a "4-import-data${GIT_TAG_SUFFIX}" -m "Data file overwritten with an import."
+  dvc push
+fi
 
 # Deploy code
 pushd $HERE
@@ -110,38 +213,52 @@ unzip code.zip
 rm -f code.zip
 pip install -r src/requirements.txt
 git add .
+if [ $OPT_NON_DVC == 'true' ]; then
+cat <<EOF >> metrics.json
+{
+    "avg_prec": {
+        "train": 0.9743681430252835,
+        "test": 0.9249974999612706
+    },
+    "roc_auc": {
+        "train": 0.9866678562450621,
+        "test": 0.9460213440787918
+    }
+}
+EOF
+fi
 tick
-git commit -m "Add source code files to repo"
-git tag -a "5-source-code" -m "Source code added."
+git commit -m "${COMMIT_PREFIX}Add source code files to repo"
+git tag -a "5-source-code${GIT_TAG_SUFFIX}" -m "Source code added."
 
+if [ $OPT_NON_DVC == 'false' ]; then
+  dvc stage add -n prepare \
+    -p prepare.seed,prepare.split \
+    -d src/prepare.py -d data/data.xml \
+    -o data/prepared \
+    python src/prepare.py data/data.xml
+  dvc repro
+  git add data/.gitignore dvc.yaml dvc.lock
+  tick
+  git commit -m "${COMMIT_PREFIX}Create data preparation stage"
+  git tag -a "6-prepare-stage${GIT_TAG_SUFFIX}" -m "First pipeline stage (data preparation) created."
+  dvc push
 
-dvc stage add -n prepare \
-  -p prepare.seed,prepare.split \
-  -d src/prepare.py -d data/data.xml \
-  -o data/prepared \
-  python src/prepare.py data/data.xml
-dvc repro
-git add data/.gitignore dvc.yaml dvc.lock
-tick
-git commit -m "Create data preparation stage"
-git tag -a "6-prepare-stage" -m "First pipeline stage (data preparation) created."
-dvc push
+  dvc stage add -n featurize \
+    -p featurize.max_features,featurize.ngrams \
+    -d src/featurization.py -d data/prepared \
+    -o data/features \
+    python src/featurization.py \
+    data/prepared data/features
+  dvc stage add -n train \
+    -p train.seed,train.n_est,train.min_split \
+    -d src/train.py -d data/features \
+    -o model.pkl \
+    python src/train.py data/features model.pkl
+  dvc repro
 
-
-dvc stage add -n featurize \
-  -p featurize.max_features,featurize.ngrams \
-  -d src/featurization.py -d data/prepared \
-  -o data/features \
-  python src/featurization.py \
-  data/prepared data/features
-dvc stage add -n train \
-  -p train.seed,train.n_est,train.min_split \
-  -d src/train.py -d data/features \
-  -o model.pkl \
-  python src/train.py data/features model.pkl
-dvc repro
-
-python <<EOF
+  if [ $OPT_REGISTER_MODELS == "true" ]; then
+  python <<EOF
 from dvc.repo import Repo
 from dvc.annotations import Artifact
 repo = Repo(".")
@@ -153,110 +270,130 @@ artifact = Artifact(
 )
 repo.artifacts.add("text-classification", artifact)
 EOF
+  fi
 
-git add .gitignore data/.gitignore dvc.yaml dvc.lock
-tick
-git commit -m "Create ML pipeline stages"
-git tag -a "7-ml-pipeline" -m "ML pipeline created."
-dvc push
+  git add .gitignore data/.gitignore dvc.yaml dvc.lock
+  tick
+  git commit -m "${COMMIT_PREFIX}Create ML pipeline stages"
+  git tag -a "7-ml-pipeline${GIT_TAG_SUFFIX}" -m "ML pipeline created."
+  dvc push
 
+  if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
+    dvc stage add -n evaluate \
+      -d src/evaluate.py -d model.pkl -d data/features \
+      -m eval/live/metrics.json -o eval/live/plots \
+      -o eval/prc -o eval/importance.png \
+      python src/evaluate.py model.pkl data/features
+  else
+    dvc stage add -n evaluate \
+      -d src/evaluate.py -d model.pkl -d data/features \
+      -M eval/live/metrics.json -O eval/live/plots \
+      -O eval/prc -o eval/importance.png \
+      python src/evaluate.py model.pkl data/features
+  fi
 
-dvc stage add -n evaluate \
-  -d src/evaluate.py -d model.pkl -d data/features \
-  -M eval/live/metrics.json -O eval/live/plots \
-  -O eval/prc -o eval/importance.png \
-  python src/evaluate.py model.pkl data/features
-echo "plots:
-  - ROC:
-      template: simple
-      x: fpr
-      y:
-        eval/live/plots/sklearn/roc/train.json: tpr
-        eval/live/plots/sklearn/roc/test.json: tpr
-  - Confusion-Matrix:
-      template: confusion
-      x: actual
-      y:
-        eval/live/plots/sklearn/cm/train.json: predicted
-        eval/live/plots/sklearn/cm/test.json: predicted
-  - Precision-Recall:
-      template: simple
-      x: recall
-      y:
-        eval/prc/train.json: precision
-        eval/prc/test.json: precision
-  - eval/importance.png" >> dvc.yaml
-dvc repro
-git add .gitignore dvc.yaml dvc.lock eval
-tick
-git commit -am "Create evaluation stage"
-git tag -a "8-evaluation" -m "Baseline evaluation stage created."
-git tag -a "baseline-experiment" -m "Baseline experiment evaluation"
-gto register text-classification --version v1.0.0
-gto assign text-classification --version v1.0.0 --stage prod
-dvc push
-
-
-sed -e "s/max_features: 100/max_features: 200/" -i".bkp" params.yaml
-sed -e "s/ngrams: 1/ngrams: 2/" -i".bkp" params.yaml
-dvc repro train
-tick
-git commit -am "Reproduce model using bigrams"
-git tag -a "9-bigrams-model" -m "Model retrained using bigrams."
-gto register text-classification --version v1.1.0
-gto assign text-classification --version v1.1.0 --stage stage
-dvc push
-
-
-dvc repro evaluate
-tick
-git commit -am "Evaluate bigrams model"
-git tag -a "bigrams-experiment" -m "Bigrams experiment evaluation"
-git tag -a "10-bigrams-experiment" -m "Evaluated bigrams model."
-gto register text-classification --version v1.2.0
-gto assign text-classification --version v1.2.0 --stage dev
-dvc push
+  echo "plots:
+- ROC:
+    template: simple
+    x: fpr
+    y:
+      eval/live/plots/sklearn/roc/train.json: tpr
+      eval/live/plots/sklearn/roc/test.json: tpr
+- Confusion-Matrix:
+    template: confusion
+    x: actual
+    y:
+      eval/live/plots/sklearn/cm/train.json: predicted
+      eval/live/plots/sklearn/cm/test.json: predicted
+- Precision-Recall:
+    template: simple
+    x: recall
+    y:
+      eval/prc/train.json: precision
+      eval/prc/test.json: precision
+- eval/importance.png" >> dvc.yaml
+  dvc repro
+  git add .gitignore dvc.yaml dvc.lock eval
+  tick
+  git commit -am "${COMMIT_PREFIX}Create evaluation stage"
+  git tag -a "8-evaluation${GIT_TAG_SUFFIX}" -m "Baseline evaluation stage created."
+  git tag -a "baseline-experiment${GIT_TAG_SUFFIX}" -m "Baseline experiment evaluation"
+  if [ $OPT_REGISTER_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}text-classification" --version v1.0.0
+    gto assign "${GTO_PREFIX}text-classification" --version v1.0.0 --stage prod
+  fi
+  dvc push
 
 
-export GIT_AUTHOR_NAME="Dave Berenbaum"
-export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
-export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+  sed -e "s/max_features: 100/max_features: 200/" -i".bck" params.yaml
+  sed -e "s/ngrams: 1/ngrams: 2/" -i".bck" params.yaml
+  rm -f params.yaml.bck
+  dvc repro train
+  tick
+  git commit -am "${COMMIT_PREFIX}Reproduce model using bigrams"
+  git tag -a "9-bigrams-model${GIT_TAG_SUFFIX}" -m "Model retrained using bigrams."
+  if [ $OPT_REGISTER_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}text-classification" --version v1.1.0
+    gto assign "${GTO_PREFIX}text-classification" --version v1.1.0 --stage stage
+  fi
+  dvc push
 
-git checkout -b "tune-hyperparams"
 
-unset GIT_AUTHOR_DATE
-unset GIT_COMMITTER_DATE
+  dvc repro evaluate
+  tick
+  git commit -am "${COMMIT_PREFIX}Evaluate bigrams model"
+  git tag -a "bigrams-experiment${GIT_TAG_SUFFIX}" -m "Bigrams experiment evaluation"
+  git tag -a "10-bigrams-experiment${GIT_TAG_SUFFIX}" -m "Evaluated bigrams model."
+  if [ $OPT_REGISTER_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}text-classification" --version v1.2.0
+    gto assign "${GTO_PREFIX}text-classification" --version v1.2.0 --stage dev
+  fi
+  dvc push
+fi
 
-dvc exp run --queue --set-param train.min_split=8
-dvc exp run --queue --set-param train.min_split=64
-dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
-dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
-dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
-dvc exp run --run-all -j 2
-# Apply best experiment
-EXP=$(dvc exp show --csv --sort-by avg_prec.test | tail -n 1 | cut -d , -f 1)
-dvc exp apply $EXP
-tick
-git commit -am "Run experiments tuning random forest params"
-git tag -a "random-forest-experiments" -m "Run experiments to tune random forest params"
-git tag -a "11-random-forest-experiments" -m "Tuned random forest classifier."
-dvc push
 
-git checkout main
+if [ $OPT_NON_DVC == 'false' ] && [ $OPT_BRANCHES == 'true' ]; then
+  export GIT_AUTHOR_NAME="Dave Berenbaum"
+  export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
+  export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+  export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-export GIT_AUTHOR_NAME="Dmitry Petrov"
-export GIT_AUTHOR_EMAIL="dmitry.petrov@nevesomo.com"
-export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+  git checkout -b "tune-hyperparams${GIT_TAG_SUFFIX}"
 
-git checkout -b "try-large-dataset"
+  unset GIT_AUTHOR_DATE
+  unset GIT_COMMITTER_DATE
 
-dvc update data/data.xml.dvc --rev get-started-40K
-sed -e "s/max_features: 200/max_features: 500/" -i".bkp" params.yaml
-dvc repro
-dvc push
-git commit -am "Try a 40K dataset (4x data)"
+  dvc exp run --queue --set-param train.min_split=8
+  dvc exp run --queue --set-param train.min_split=64
+  dvc exp run --queue --set-param train.min_split=2 --set-param train.n_est=100
+  dvc exp run --queue --set-param train.min_split=8 --set-param train.n_est=100
+  dvc exp run --queue --set-param train.min_split=64 --set-param train.n_est=100
+  dvc exp run --run-all -j 2
+  # Apply best experiment
+  EXP=$(dvc exp show --csv --sort-by avg_prec.test | tail -n 1 | cut -d , -f 1)
+  dvc exp apply $EXP
+  tick
+  git commit -am "${COMMIT_PREFIX}Run experiments tuning random forest params"
+  git tag -a "random-forest-experiments${GIT_TAG_SUFFIX}" -m "Run experiments to tune random forest params"
+  git tag -a "11-random-forest-experiments${GIT_TAG_SUFFIX}" -m "Tuned random forest classifier."
+  dvc push
+
+  git checkout main
+
+  export GIT_AUTHOR_NAME="Dmitry Petrov"
+  export GIT_AUTHOR_EMAIL="dmitry.petrov@nevesomo.com"
+  export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+  export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+
+  git checkout -b "try-large-dataset${GIT_TAG_SUFFIX}"
+
+  dvc update data/data.xml.dvc --rev get-started-40K
+  sed -e "s/max_features: 200/max_features: 500/" -i".bck" params.yaml
+  rm -f params.yaml.bck
+  dvc repro
+  dvc push
+  git commit -am "${COMMIT_PREFIX}Try a 40K dataset (4x data)"
+fi
 
 popd
 
@@ -268,55 +405,9 @@ unset GIT_AUTHOR_EMAIL
 unset GIT_COMMITTER_NAME
 unset GIT_COMMITTER_EMAIL
 
-echo "`cat <<EOF-
-
-The Git repo generated by this script is intended to be published on
-https://github.com/iterative/example-get-started. Make sure the Github repo
-exists first and that you have appropriate write permissions.
-
-To create it with https://cli.github.com/, run:
-
-gh repo create iterative/example-get-started --public \
-     -d "Get Started DVC project" -h "https://dvc.org/doc/get-started"
-
-Run these commands to force push it:
-
-cd build/example-get-started
-source .venv/bin/activate
-git remote add origin git@github.com:<slug>/example-get-started.git
-git push --force origin main
-git push --force origin try-large-dataset
-git push --force origin tune-hyperparams
-# we push git tags one by one for Studio to receive webhooks:
-git tag --sort=creatordate | xargs -n 1 git push --force origin
-
-Run these to drop and then rewrite the experiment references on the repo:
-
-dvc exp remove -A -g origin
-dvc exp push origin -A
-
-To create a PR from the "try-large-dataset" branch:
-
-gh pr create -t "Try 40K dataset (4x data)" \
-   -b "We are trying here a large dataset, since the smaller one looks unstable" \
-   -B main -H try-large-dataset
-
-To create a PR from the "tune-hyperparams" branch:
-
-gh pr create -t "Run experiments tuning random forest params" \
-   -b "Better RF split and number of estimators based on small grid search." \
-   -B main -H tune-hyperparams
-
-To update the project in Studio, follow the instructions at:
-
-https://github.com/iterative/studio/wiki/Updating-and-synchronizing-demo-project
-
-Finally, return to the directory where you started:
-
-cd ../..
-
-You may remove the generated repo with:
-
-rm -fR build
-
-`"
+set +eux
+echo
+echo "=========================================="
+echo "Done! Read README for the next steps."
+echo "=========================================="
+echo
