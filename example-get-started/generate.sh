@@ -66,7 +66,7 @@ dvc get https://github.com/iterative/dataset-registry \
 echo "artifacts:
   stackoverflow-dataset:
     path: data/data.xml
-    type: model
+    type: dataset
     desc: Initial XML StackOverflow dataset (raw data)" >> dvc.yaml
 
 dvc add data/data.xml
