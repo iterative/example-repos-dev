@@ -11,15 +11,15 @@ PROD=${1:-false}
 # Some additional options to tune the exact repo structure that we generate.
 # It useful to generate nested (monorepo), private storages, a mix of those
 # cases to be used in Studio fixtures or QA.
-OPT_TESTING_REPO='true' # Default false.
+OPT_TESTING_REPO='false' # Default false.
 OPT_SUBDIR='' # No leading or trailing slashes. Default "".
 OPT_INIT_GIT='true' # Default true.
 OPT_INIT_DVC='true' # Default true.
 OPT_NON_DVC='false' # Default false.
-OPT_BRANCHES='false' # Default true.
-OPT_REMOTE="public-s3" # Default "private-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
+OPT_BRANCHES='true' # Default true.
+OPT_REMOTE="public-s3" # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
 OPT_DVC_TRACKED_METRICS='false' # Default false.
-OPT_REGISTER_MODELS='false' # Default true.
+OPT_REGISTER_MODELS='true' # Default true.
 
 
 if [ -z $OPT_SUBDIR ]; then
@@ -47,24 +47,24 @@ fi
 init_remote_storage() {
   if [ $OPT_REMOTE == 'public-s3' ]; then
     # Remote active on this env only, for writing to HTTP redirect below.
-    dvc remote add -d --local $OPT_REMOTE s3://dvc-public/remote/get-started
+    dvc remote add -f -d --local $OPT_REMOTE s3://dvc-public/remote/get-started
     # Actual remote for generated project (read-only). Redirect of S3 bucket above.
-    dvc remote add -d $OPT_REMOTE https://remote.dvc.org/get-started
+    dvc remote add -f -d $OPT_REMOTE https://remote.dvc.org/get-started
   fi
 
   if [ $OPT_REMOTE == 'private-s3' ]; then
     # Remote active on this env only, for writing to HTTP redirect below.
-    dvc remote add -d $OPT_REMOTE s3://dvc-private/remote/get-started
+    dvc remote add -f -d $OPT_REMOTE s3://dvc-private/remote/get-started
   fi
 
   if [ $OPT_REMOTE == 'private-http' ]; then
-    dvc remote add -d --local storage ssh://dvc@35.194.53.251/home/dvc/storage
+    dvc remote add -f -d --local storage ssh://dvc@35.194.53.251/home/dvc/storage
     dvc remote modify --local storage keyfile /Users/ivan/.ssh/dvc_gcp_remotes_rsa
-    dvc remote add -d $OPT_REMOTE http://35.194.53.251
+    dvc remote add -f -d $OPT_REMOTE http://35.194.53.251
   fi
 
   if [ $OPT_REMOTE == 'private-ssh' ]; then
-    dvc remote add -d $OPT_REMOTE ssh://dvc@35.194.53.251/home/dvc/storage
+    dvc remote add -f -d $OPT_REMOTE ssh://dvc@35.194.53.251/home/dvc/storage
     dvc remote modify $OPT_REMOTE keyfile /Users/ivan/.ssh/dvc_gcp_remotes_rsa
   fi
 }
@@ -133,7 +133,7 @@ if [ $OPT_TESTING_REPO == 'true' ]; then
   git add $REPO_PATH_BASE/.
 fi
 
-if [ $OPT_INIT_GIT == 'true' ] || [ $OPT_TESTING_REPO == 'true']; then
+if [ $OPT_INIT_GIT == 'true' ] || [ $OPT_TESTING_REPO == 'true' ]; then
   if [ $OPT_INIT_GIT == 'true' ]; then
     tick
     git commit -m "${COMMIT_PREFIX}Initialize Git repository"
