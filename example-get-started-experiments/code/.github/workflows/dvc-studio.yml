@@ -1,5 +1,6 @@
-name: Run Experiment
-on: 
+name: DVC Studio Experiment
+
+on:
 
   push:
 
@@ -8,8 +9,41 @@ on:
       exp-run-args:
         description: 'Args to be passed to dvc exp run call'
         required: false
+        type: string
         default: ''
-
+      cloud:
+        description: 'Cloud compute provider to host the runner'
+        required: false
+        default: 'aws'
+        type: choice
+        options:
+          - aws
+          - azure
+          - gcp
+      type:
+        description: 'https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#machine-type'
+        required: false
+        default: 'm'
+      region:
+        description: 'https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#cloud-region'
+        required: false
+        default: 'us-east'
+      spot:
+        description: 'Request a spot instance'
+        required: false
+        default: false
+        type: boolean
+      storage:
+        description: 'Disk size in GB'
+        required: false
+        default: 100
+        type: number
+      timeout:
+        description: 'Timeout in seconds'
+        required: false
+        default: 3600
+        type: number
+  
 permissions:
   contents: write
   id-token: write
@@ -36,10 +70,12 @@ jobs:
         run: |
           cml runner launch --single \
             --labels=cml \
-            --cloud=aws \
-            --cloud-region=us-east \
-            --cloud-hdd-size=40 \
-            --cloud-type=g5.2xlarge
+            --cloud=${{ inputs.cloud }} \
+            --cloud-region=${{ inputs.region }} \
+            --cloud-hdd-size=${{ inputs.storage }} \
+            --cloud-type=${{ inputs.type }} \
+            --idle-timeout=${{ inputs.timeout }} \
+             ${{ inputs.spot && '--cloud-spot' || '' }}
 
   runner-job:
     needs: deploy-runner
