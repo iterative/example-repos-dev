@@ -125,6 +125,15 @@ repositories and/or use different remote types.
   plots from the remote storage).
 - `OPT_REGISTER_MODELS='false'` - (default `true`). Use the `gto` to register
   models. It supports nested repos.
+- `OPT_TAGS='true'` - (default `true`). Generate Git tags for commits.
+  Independent of `OPT_REGISTER_MODELS` and `OPT_TAG_MODELS`.
+- `OPT_SQUASH_COMMITS='false'` - (default `false`). Squash commits into one
+  after generating a repo or a sub repo. It speedups parsing in tests. Be
+  careful with Git tags (disable them for example).
+- `OPT_TAG_MODELS='true'` - (default `true`). Creates Git tags using GTO.
+  Independent of `OPT_REGISTER_MODELS` and `OPT_TAGS`.
+- `OPT_MODEL_NAME='text-classification'` - (default `text-classification`).
+  Model name to register.
 
 ## Remotes
 

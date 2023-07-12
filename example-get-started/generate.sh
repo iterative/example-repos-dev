@@ -17,9 +17,13 @@ OPT_INIT_GIT='true' # Default true.
 OPT_INIT_DVC='true' # Default true.
 OPT_NON_DVC='false' # Default false.
 OPT_BRANCHES='true' # Default true.
-OPT_REMOTE="public-s3" # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
+OPT_TAGS='false' # Default true.
+OPT_REMOTE='public-s3' # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
 OPT_DVC_TRACKED_METRICS='false' # Default false.
 OPT_REGISTER_MODELS='true' # Default true.
+OPT_MODEL_NAME='text-classification' # Default "text-classification".
+OPT_TAG_MODELS='true' # Default true.
+OPT_SQUASH_COMMITS='false' # Default false.
 
 
 if [ -z $OPT_SUBDIR ]; then
@@ -43,6 +47,11 @@ if [ -d "$REPO_PATH" ]; then
   exit 1
 fi
 
+create_tag() {
+  if [ $OPT_TAGS == 'true' ]; then
+    git tag -a "$1" -m "$2"
+  fi
+}
 
 init_remote_storage() {
   if [ $OPT_REMOTE == 'public-s3' ]; then
@@ -137,19 +146,21 @@ if [ $OPT_INIT_GIT == 'true' ] || [ $OPT_TESTING_REPO == 'true' ]; then
   if [ $OPT_INIT_GIT == 'true' ]; then
     tick
     git commit -m "${COMMIT_PREFIX}Initialize Git repository"
-    git tag -a "0-git-init${GIT_TAG_SUFFIX}" -m "Git initialized."
+    create_tag "0-git-init${GIT_TAG_SUFFIX}" "Git initialized."
   else
     tick
-    git commit -m "${COMMIT_PREFIX}Add readme for testing repo"
-    git tag -a "0-git-init${GIT_TAG_SUFFIX}" -m "Testing repo initialized."
+    git commit -m "${COMMIT_PREFIX}Add testing repo"
+    create_tag "0-git-init${GIT_TAG_SUFFIX}" "Testing repo initialized."
   fi
 fi
+
+BASE_COMMT=$(git rev-parse HEAD)
 
 if [ $OPT_INIT_DVC == 'true' ]; then
   dvc init --subdir
   tick
   git commit -m "${COMMIT_PREFIX}Initialize DVC project"
-  git tag -a "1-dvc-init${GIT_TAG_SUFFIX}" -m "DVC initialized."
+  create_tag "1-dvc-init${GIT_TAG_SUFFIX}" "DVC initialized."
 fi
 
 
@@ -173,7 +184,7 @@ fi
 git add data/.gitignore
 tick
 git commit -m "${COMMIT_PREFIX}Add raw data"
-git tag -a "2-track-data${GIT_TAG_SUFFIX}" -m "Data file added."
+create_tag "2-track-data${GIT_TAG_SUFFIX}" "Data file added."
 
 
 if [ $OPT_NON_DVC == 'false' ]; then
@@ -182,7 +193,7 @@ if [ $OPT_NON_DVC == 'false' ]; then
   git add $REPO_PATH_BASE/.
   tick
   git commit -m "${COMMIT_PREFIX}Configure default remote"
-  git tag -a "3-config-remote${GIT_TAG_SUFFIX}" -m "Remote storage configured."
+  create_tag "3-config-remote${GIT_TAG_SUFFIX}" "Remote storage configured."
   dvc push
 fi
 
@@ -193,7 +204,7 @@ if [ $OPT_NON_DVC == 'false' ]; then
   git add data/data.xml.dvc
   tick
   git commit -m "${COMMIT_PREFIX}Import raw data (overwrite)"
-  git tag -a "4-import-data${GIT_TAG_SUFFIX}" -m "Data file overwritten with an import."
+  create_tag "4-import-data${GIT_TAG_SUFFIX}" "Data file overwritten with an import."
   dvc push
 fi
 
@@ -229,7 +240,7 @@ EOF
 fi
 tick
 git commit -m "${COMMIT_PREFIX}Add source code files to repo"
-git tag -a "5-source-code${GIT_TAG_SUFFIX}" -m "Source code added."
+create_tag "5-source-code${GIT_TAG_SUFFIX}" "Source code added."
 
 if [ $OPT_NON_DVC == 'false' ]; then
   dvc stage add -n prepare \
@@ -241,7 +252,7 @@ if [ $OPT_NON_DVC == 'false' ]; then
   git add data/.gitignore dvc.yaml dvc.lock
   tick
   git commit -m "${COMMIT_PREFIX}Create data preparation stage"
-  git tag -a "6-prepare-stage${GIT_TAG_SUFFIX}" -m "First pipeline stage (data preparation) created."
+  create_tag "6-prepare-stage${GIT_TAG_SUFFIX}" "First pipeline stage (data preparation) created."
   dvc push
 
   dvc stage add -n featurize \
@@ -268,14 +279,14 @@ artifact = Artifact(
   desc="Detect whether the given stackoverflow question should have R language tag",
   labels=["nlp", "classification", "stackoverflow"]
 )
-repo.artifacts.add("text-classification", artifact)
+repo.artifacts.add("$OPT_MODEL_NAME", artifact)
 EOF
   fi
 
   git add .gitignore data/.gitignore dvc.yaml dvc.lock
   tick
   git commit -m "${COMMIT_PREFIX}Create ML pipeline stages"
-  git tag -a "7-ml-pipeline${GIT_TAG_SUFFIX}" -m "ML pipeline created."
+  create_tag "7-ml-pipeline${GIT_TAG_SUFFIX}" "ML pipeline created."
   dvc push
 
   if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
@@ -316,11 +327,11 @@ EOF
   git add .gitignore dvc.yaml dvc.lock eval
   tick
   git commit -am "${COMMIT_PREFIX}Create evaluation stage"
-  git tag -a "8-evaluation${GIT_TAG_SUFFIX}" -m "Baseline evaluation stage created."
-  git tag -a "baseline-experiment${GIT_TAG_SUFFIX}" -m "Baseline experiment evaluation"
-  if [ $OPT_REGISTER_MODELS == "true" ]; then
-    gto register "${GTO_PREFIX}text-classification" --version v1.0.0
-    gto assign "${GTO_PREFIX}text-classification" --version v1.0.0 --stage prod
+  create_tag "8-evaluation${GIT_TAG_SUFFIX}" "Baseline evaluation stage created."
+  create_tag "baseline-experiment${GIT_TAG_SUFFIX}" "Baseline experiment evaluation"
+  if [ $OPT_TAG_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.0.0
+    gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.0.0 --stage prod
   fi
   dvc push
 
@@ -331,10 +342,10 @@ EOF
   dvc repro train
   tick
   git commit -am "${COMMIT_PREFIX}Reproduce model using bigrams"
-  git tag -a "9-bigrams-model${GIT_TAG_SUFFIX}" -m "Model retrained using bigrams."
-  if [ $OPT_REGISTER_MODELS == "true" ]; then
-    gto register "${GTO_PREFIX}text-classification" --version v1.1.0
-    gto assign "${GTO_PREFIX}text-classification" --version v1.1.0 --stage stage
+  create_tag "9-bigrams-model${GIT_TAG_SUFFIX}" "Model retrained using bigrams."
+  if [ $OPT_TAG_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0
+    gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0 --stage stage
   fi
   dvc push
 
@@ -342,15 +353,19 @@ EOF
   dvc repro evaluate
   tick
   git commit -am "${COMMIT_PREFIX}Evaluate bigrams model"
-  git tag -a "bigrams-experiment${GIT_TAG_SUFFIX}" -m "Bigrams experiment evaluation"
-  git tag -a "10-bigrams-experiment${GIT_TAG_SUFFIX}" -m "Evaluated bigrams model."
-  if [ $OPT_REGISTER_MODELS == "true" ]; then
-    gto register "${GTO_PREFIX}text-classification" --version v1.2.0
-    gto assign "${GTO_PREFIX}text-classification" --version v1.2.0 --stage dev
+  create_tag "bigrams-experiment${GIT_TAG_SUFFIX}" "Bigrams experiment evaluation"
+  create_tag "10-bigrams-experiment${GIT_TAG_SUFFIX}" "Evaluated bigrams model."
+  if [ $OPT_TAG_MODELS == "true" ]; then
+    gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0
+    gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0 --stage dev
   fi
   dvc push
 fi
 
+if [ $OPT_SQUASH_COMMITS == 'true' ]; then
+  git reset --soft $BASE_COMMT
+  git commit --amend --no-edit
+fi
 
 if [ $OPT_NON_DVC == 'false' ] && [ $OPT_BRANCHES == 'true' ]; then
   export GIT_AUTHOR_NAME="Dave Berenbaum"
@@ -374,8 +389,8 @@ if [ $OPT_NON_DVC == 'false' ] && [ $OPT_BRANCHES == 'true' ]; then
   dvc exp apply $EXP
   tick
   git commit -am "${COMMIT_PREFIX}Run experiments tuning random forest params"
-  git tag -a "random-forest-experiments${GIT_TAG_SUFFIX}" -m "Run experiments to tune random forest params"
-  git tag -a "11-random-forest-experiments${GIT_TAG_SUFFIX}" -m "Tuned random forest classifier."
+  create_tag "random-forest-experiments${GIT_TAG_SUFFIX}" "Run experiments to tune random forest params"
+  create_tag "11-random-forest-experiments${GIT_TAG_SUFFIX}" "Tuned random forest classifier."
   dvc push
 
   git checkout main
