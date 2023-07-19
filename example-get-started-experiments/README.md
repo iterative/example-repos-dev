@@ -9,11 +9,15 @@ published on https://github.com/iterative/example-get-started-experiments.
 Make sure the Github repo exists first and that you have appropriate write 
 permissions.
 
-Run these commands to force push it:
+Run the commands below to force push it. 
+Modify `ORIGIN` on demmand, for example use
+`git@gitlab.com:iterative.ai/example-get-started-experiments.git` to force
+push a copy to GitLab.
 
 ```shell
 cd build/example-get-started-experiments
-git remote add origin git remote add origin git@github.com:<slug>/example-get-started-experiments.git
+export ORIGIN=https://github.com/iterative/example-get-started-experiments.git
+git remote add origin ${ORIGIN}
 git push --force origin main
 # we push git tags one by one for Studio to receive webhooks:
 git tag --sort=creatordate | xargs -n 1 git push --force origin
@@ -25,18 +29,6 @@ Run these to drop and then rewrite the experiment references on the repo:
 source .venv/bin/activate
 dvc exp remove -A -g origin
 dvc exp push origin -A
-```
-
-To push a copy to GitLab:
-
-```shell
-git remote add gitlab git@gitlab.com:iterative.ai/example-get-started-experiments.git
-git push --force gitlab main
-# we push git tags one by one for Studio to receive webhooks:
-git tag --sort=creatordate | xargs -n 1 git push --force gitlab
-# push experiments
-dvc exp remove -A -g gitlab
-dvc exp push gitlab -A
 ```
 
 Finally, return to the directory where you started:

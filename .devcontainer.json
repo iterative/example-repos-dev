@@ -20,12 +20,6 @@
         },
         "iterative/example-get-started-experiments": {
           "permissions": "write-all"
-        },
-        "iterative/example-get-started-frozen": {
-          "permissions": "write-all"
-        },
-        "iterative/example-get-started-experiments-frozen": {
-          "permissions": "write-all"
         }
       }
     }
