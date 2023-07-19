@@ -20,12 +20,6 @@
         },
         "iterative/example-get-started-experiments": {
           "permissions": "write-all"
-        },
-        "iterative/example-get-started-fixture": {
-          "permissions": "write-all"
-        },
-        "iterative/example-get-started-experiments-fixture": {
-          "permissions": "write-all"
         }
       }
     }
