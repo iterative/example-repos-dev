@@ -56,7 +56,9 @@ def evaluate(model, matrix, split, live, save_path):
             {
                 "prc": [
                     {"precision": p, "recall": r, "threshold": t}
-                    for p, r, t in prc_points
+                    # https://github.com/scikit-learn/scikit-learn/pull/26194/files
+                    # Threshold can be inf now and Vega CLI tools don't like it.
+                    for p, r, t in prc_points if math.isfinite(t)
                 ]
             },
             fd,
