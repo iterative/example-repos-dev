@@ -12,6 +12,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
+      # Needed for https://github.com/iterative/example-repos-dev/issues/225
+      - name: Installs JSON5
+        run: npm install -g json5
       - name: Generate metrics report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,15 +28,15 @@ jobs:
           fi
 
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets ROC > vega.json
+            --show-vega --targets ROC | json5 > vega.json
           vl2svg vega.json roc.svg
 
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets Precision-Recall > vega.json
+            --show-vega --targets Precision-Recall | json5 > vega.json
           vl2svg vega.json prc.svg
 
           dvc plots diff $PREVIOUS_REF workspace \
-            --show-vega --targets Confusion-Matrix > vega.json
+            --show-vega --targets Confusion-Matrix | json5 > vega.json
           vl2svg vega.json confusion.svg
 
           dvc pull eval/importance.png
