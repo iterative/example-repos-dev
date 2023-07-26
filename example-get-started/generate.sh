@@ -18,7 +18,9 @@ OPT_INIT_DVC='true' # Default true.
 OPT_NON_DVC='false' # Default false.
 OPT_BRANCHES='true' # Default true.
 OPT_TAGS='true' # Default true.
-OPT_REMOTE='public-s3' # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
+# Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
+# See the details below in the `init_remote_storage` and in the README.
+OPT_REMOTE='public-s3'
 OPT_DVC_TRACKED_METRICS='false' # Default false.
 OPT_REGISTER_MODELS='true' # Default true.
 OPT_MODEL_NAME='text-classification' # Default "text-classification".
@@ -55,14 +57,13 @@ create_tag() {
 
 init_remote_storage() {
   if [ $OPT_REMOTE == 'public-s3' ]; then
-    # Remote active on this env only, for writing to HTTP redirect below.
+    # Remote active on this env only, for writing.
     dvc remote add -f -d --local $OPT_REMOTE s3://dvc-public/remote/get-started
     # Actual remote for generated project (read-only). Redirect of S3 bucket above.
     dvc remote add -f -d $OPT_REMOTE https://remote.dvc.org/get-started
   fi
 
   if [ $OPT_REMOTE == 'private-s3' ]; then
-    # Remote active on this env only, for writing to HTTP redirect below.
     dvc remote add -f -d $OPT_REMOTE s3://dvc-private/remote/get-started
   fi
 
@@ -75,6 +76,14 @@ init_remote_storage() {
   if [ $OPT_REMOTE == 'private-ssh' ]; then
     dvc remote add -f -d $OPT_REMOTE ssh://dvc@35.194.53.251/home/dvc/storage
     dvc remote modify $OPT_REMOTE keyfile /Users/ivan/.ssh/dvc_gcp_remotes_rsa
+  fi
+
+  if [ $OPT_REMOTE == 'private-azure' ]; then
+    # Make sure that you have connection string in your env or some other way
+    # provide credentials for the `dvcprivate` storage account. Copy the connection
+    # string from the Azure portal and export it with
+    # `AZURE_STORAGE_CONNECTION_STRING`
+    dvc remote add -f -d $OPT_REMOTE azure://nlp
   fi
 }
 
