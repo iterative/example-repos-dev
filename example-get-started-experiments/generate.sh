@@ -75,17 +75,17 @@ dvc pull
 
 
 cp -r $HERE/code/notebooks .
+cp -r $HERE/code/sagemaker .
 git add .
 git commit -m "Add notebook using DVCLive"
 
+sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install jupyter
+yolo settings datasets_dir=/workspaces/example-repos-dev/example-get-started-experiments/build/example-get-started-experiments/data
+yolo settings runs_dir=/workspaces/example-repos-dev/example-get-started-experiments/build/example-get-started-experiments/runs
+yolo settings dvc=false
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
-# Apply best experiment
-BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
-BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
-BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
-dvc exp apply $BEST_EXP_NAME
 git add .
 tick
 git commit -m "Run notebook and apply best experiment"
@@ -96,26 +96,15 @@ gto assign results/train:pool-segmentation --version v1.0.0 --stage dev
 
 cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
-sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
-rm params.yaml.bkp
 
-dvc stage add -n data_split \
-  -p base,data_split \
-  -d src/data_split.py -d data/pool_data \
-  -o data/train_data -o  data/test_data \
-  python src/data_split.py
+dvc stage add -n create_yolo_dataset \
+  -d src/create_yolo_dataset.py -d data/pool_data \
+  -o data/yolo_dataset/train -o  data/yolo_dataset/val \
+  "python src/create_yolo_dataset.py \${create_yolo_dataset}"
 
-dvc remove models/model.pkl.dvc
 dvc stage add -n train \
-  -p base,train \
-  -d src/train.py -d data/train_data \
-  -o models/model.pkl \
-  python src/train.py
-
-dvc stage add -n evaluate \
-  -p base,evaluate \
-  -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  python src/evaluate.py
+  -d src/train.py -d data/yolo_dataset/train -d data/yolo_dataset/val\
+  "yolo settings datasets_dir=data dvc=false && python src/train.py \${train}"
 
 git add .
 tick
@@ -136,7 +125,7 @@ export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1' --message 'Tune train.arch'
+dvc exp run --queue --set-param 'train.model=yolov8s-seg.pt,yolov8m-seg.pt,yolov8l-seg.pt' --message 'Tune model'
 dvc exp run --run-all
 
 dvc push -A
