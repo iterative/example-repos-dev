@@ -33,15 +33,12 @@ def deploy(
         },
     )
 
-    if name is None:
-        name = f"pool-segmentation-{datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f')}"
 
     return model.deploy(
         initial_instance_count=1,
         instance_type=instance_type,
         deserializer=JSONDeserializer(),
-        endpoint_name=name,
-        update_endpoint=True
+        endpoint_name=f"{name}-{datetime.utcnow().strftime('%Y-%m-%d-%H-%M')}"
     )
 
 
