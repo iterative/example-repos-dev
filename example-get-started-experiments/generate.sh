@@ -38,7 +38,8 @@ pushd $REPO_PATH
 virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
-echo '.venv/' > .gitignore
+echo '.venv/' >> .gitignore
+echo 'yolo*.pt' >> .gitignore
 
 # Installing from main since we'd like to update repo before
 # the release
