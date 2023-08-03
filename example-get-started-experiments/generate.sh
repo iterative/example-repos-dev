@@ -27,8 +27,8 @@ tick(){
   export GIT_COMMITTER_DATE="${TAG_TIME} +0000"
 }
 
-export GIT_AUTHOR_NAME="Alex Kim"
-export GIT_AUTHOR_EMAIL="alex000kim@gmail.com"
+export GIT_AUTHOR_NAME="David de la Iglesia"
+export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
@@ -38,7 +38,10 @@ pushd $REPO_PATH
 virtualenv -p python3 .venv
 export VIRTUAL_ENV_DISABLE_PROMPT=true
 source .venv/bin/activate
-echo '.venv/' > .gitignore
+echo '.venv/' >> .gitignore
+echo 'yolo*.pt' >> .gitignore
+echo '/runs' >> .gitignore
+echo '/weights' >> .gitignore
 
 # Installing from main since we'd like to update repo before
 # the release
@@ -67,56 +70,45 @@ tick
 git commit -m "Initialize DVC project"
 
 
-cp -r $HERE/code/data .
-git add data/.gitignore data/pool_data.dvc
+cp -r $HERE/code/datasets .
+git add datasets/.gitignore datasets/pool_data.dvc
 tick
 git commit -m "Add data"
 dvc pull
 
 
-cp -r $HERE/code/notebooks .
+cp -r $HERE/code/TrainSegModel.ipynb .
 git add .
 git commit -m "Add notebook using DVCLive"
 
+sudo apt-get update && sudo apt-get install ffmpeg libsm6 libxext6 -y
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install jupyter
-jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
-# Apply best experiment
-BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
-BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
-BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
-dvc exp apply $BEST_EXP_NAME
+yolo settings datasets_dir="/workspaces/example-repos-dev/example-get-started-experiments/build/example-get-started-experiments/datasets/"
+yolo settings runs_dir="/workspaces/example-repos-dev/example-get-started-experiments/build/example-get-started-experiments/runs/"
+yolo settings weights_dir="/workspaces/example-repos-dev/example-get-started-experiments/build/example-get-started-experiments/weights/"
+jupyter nbconvert --execute 'TrainSegModel.ipynb' --inplace
 git add .
 tick
 git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
-gto register results/train:pool-segmentation --version v1.0.0
-gto assign results/train:pool-segmentation --version v1.0.0 --stage dev
+gto register dvclive:pool-segmentation --version v0.1.0
+gto assign dvclive:pool-segmentation --version v0.1.0 --stage dev
 
 
 cp -r $HERE/code/src .
 cp $HERE/code/params.yaml .
-sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
-rm params.yaml.bkp
 
-dvc stage add -n data_split \
-  -p base,data_split \
-  -d src/data_split.py -d data/pool_data \
-  -o data/train_data -o  data/test_data \
-  python src/data_split.py
+dvc stage add -n create_yolo_dataset \
+  -d src/create_yolo_dataset.py -d datasets/pool_data \
+  -o datasets/yolo_dataset/train -o  datasets/yolo_dataset/val \
+  "python src/create_yolo_dataset.py \${create_yolo_dataset}"
 
-dvc remove models/model.pkl.dvc
 dvc stage add -n train \
-  -p base,train \
-  -d src/train.py -d data/train_data \
-  -o models/model.pkl \
-  python src/train.py
+  -d src/train.py -d datasets/yolo_dataset/train -d datasets/yolo_dataset/val \
+  "python src/train.py \${train}"
 
-dvc stage add -n evaluate \
-  -p base,evaluate \
-  -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  python src/evaluate.py
-
+git rm TrainSegModel.ipynb
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"
@@ -127,16 +119,16 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-gto register results/train:pool-segmentation --version v1.0.1
-gto assign results/train:pool-segmentation --version v1.0.0 --stage prod
-gto assign results/train:pool-segmentation --version v1.0.1 --stage dev
+gto register dvclive:pool-segmentation --version v0.2.0
+gto assign dvclive:pool-segmentation --version v0.1.0 --stage prod
+gto assign dvclive:pool-segmentation --version v0.2.0 --stage dev
 
-export GIT_AUTHOR_NAME="David de la Iglesia"
-export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
+export GIT_AUTHOR_NAME="Dave Berenbaum"
+export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-dvc exp run --queue --set-param 'train.arch=alexnet,resnet34,squeezenet1_1' --message 'Tune train.arch'
+dvc exp run --queue --set-param 'train.model=yolov8s-seg.pt,yolov8m-seg.pt,yolov8l-seg.pt' --message 'Tune model'
 dvc exp run --run-all
 
 dvc push -A

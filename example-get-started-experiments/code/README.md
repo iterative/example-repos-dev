@@ -1,7 +1,5 @@
-[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=dvc)](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
-[![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Dice%20Metric&url=https://github.com/iterative/example-get-started-experiments/raw/main/results/evaluate/metrics.json&query=dice_multi)](https://github.com/iterative/example-get-started-experiments/raw/main/results/evaluate/metrics.json)
-
-[Train Report](./results/train/report.md) - [Evaluation Report](./results/evaluate/report.md)
+[![DVC Studio](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=dvc)](https://studio.iterative.ai/team/Iterative/projects/example-get-started-experiments-y8toqd433r) 
+[![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Dice%20Metric&url=https://github.com/iterative/example-get-started-experiments/raw/main/dvclive/metrics.json&query=dice_multi)](https://github.com/iterative/example-get-started-experiments/raw/main/dvclive/metrics.json)
 
 # DVC Get Started: Experiments
 
@@ -10,8 +8,6 @@ This is an auto-generated repository for use in [DVC](https://dvc.org)
 
 This is a Computer Vision (CV) project that solves the problem of segmenting out 
 swimming pools from satellite images. 
-
-[Example results](./results/evaluate/plots/images/)
 
 We use a slightly modified version of the [BH-Pools dataset](http://patreo.dcc.ufmg.br/2020/07/29/bh-pools-watertanks-datasets/):
 we split the original 4k images into tiles of 1024x1024 pixels.
@@ -58,7 +54,7 @@ $ dvc pull
 ## Running in your environment
 
 Run [`dvc exp run`](https://man.dvc.org/exp/run) to reproduce the
-[pipeline](https://dvc.org/doc/user-guide/pipelines/defining-pipelinese):
+[pipeline](https://dvc.org/doc/user-guide/pipelines/defining-pipelines):
 
 ```console
 $ dvc exp run
@@ -107,47 +103,3 @@ This tag also contains a GitHub Actions workflow that reruns the pipeline if any
  changes are introduced to the pipeline-related files. 
 [CML](https://cml.dev/) is used in this workflow to provision a cloud-based GPU 
 machine as well as report model performance results in Pull Requests.
-
-## Deploying the model
-
-Check out the [PR](https://github.com/iterative/example-get-started-experiments/pulls)
-that adds this model to 
-[Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
-You can [trigger CI/CD](https://dvc.org/doc/studio/user-guide/model-registry/use-models#deploying-and-publishing-models-in-cicd)
-by [registering versions](https://dvc.org/doc/studio/user-guide/model-registry/register-version)
-and [assigning stages](https://dvc.org/doc/studio/user-guide/model-registry/assign-stage)
-in Model Registry, building and publishing Docker images with the model,
-or deploying the model to the cloud.
-
-## Project structure
-
-The data files, DVC files, and results change as stages are created one by one.
-After cloning and using [`dvc pull`](https://man.dvc.org/pull) to download
-data, models, and plots tracked by DVC, the workspace should look like this:
-
-```console
-$ tree -L 2
-.
-├── LICENSE
-├── README.md
-├── data.            # <-- Directory with raw and intermediate data
-│   ├── pool_data    # <-- Raw image data
-│   ├── pool_data.dvc # <-- .dvc file - a placeholder/pointer to raw data
-│   ├── test_data    # <-- Processed test data
-│   └── train_data   # <-- Processed train data
-├── dvc.lock
-├── dvc.yaml         # <-- DVC pipeline file
-├── models
-│   └── model.pkl    # <-- Trained model file
-├── notebooks
-│   └── TrainSegModel.ipynb # <-- Initial notebook (refactored into `dvc.yaml`) 
-├── params.yaml      # <-- Parameters file
-├── requirements.txt # <-- Python dependencies needed in the project
-├── results          # <-- DVCLive reports and plots
-│   ├── evaluate
-│   └── train
-└── src              # <-- Source code to run the pipeline stages
-    ├── data_split.py
-    ├── evaluate.py
-    └── train.py
-```
