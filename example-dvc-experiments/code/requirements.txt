@@ -1,4 +1,0 @@
-tensorflow>=2.5
-ruamel.yaml>=0.17,<0.18
-imageio>=2.9,<3
-dvclive>=1.0
