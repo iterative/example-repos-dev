@@ -42,6 +42,7 @@ echo '.venv/' >> .gitignore
 echo 'yolo*.pt' >> .gitignore
 echo '/runs' >> .gitignore
 echo '/weights' >> .gitignore
+echo 'dvclive/report.html' >> .gitignore
 
 # Installing from main since we'd like to update repo before
 # the release
