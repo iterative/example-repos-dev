@@ -93,8 +93,8 @@ git add .
 tick
 git commit -m "Run notebook and apply best experiment"
 git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
-gto register dvclive:pool-segmentation --version v0.1.0
-gto assign dvclive:pool-segmentation --version v0.1.0 --stage dev
+gto register dvclive:best --version v0.1.0
+gto assign dvclive:best --version v0.1.0 --stage dev
 
 
 cp -r $HERE/code/src .
@@ -120,9 +120,9 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-gto register dvclive:pool-segmentation --version v0.2.0
-gto assign dvclive:pool-segmentation --version v0.1.0 --stage prod
-gto assign dvclive:pool-segmentation --version v0.2.0 --stage dev
+gto register dvclive:best --version v0.2.0
+gto assign dvclive:best --version v0.1.0 --stage prod
+gto assign dvclive:best --version v0.2.0 --stage dev
 
 export GIT_AUTHOR_NAME="Dave Berenbaum"
 export GIT_AUTHOR_EMAIL="dave.berenbaum@gmail.com"
