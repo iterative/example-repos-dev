@@ -117,7 +117,7 @@ to deploy the model to [AWS Sagemaker](https://aws.amazon.com/es/sagemaker/) whe
 You can query the deployed endpoint to get predictions:
 
 ```bash
-python src/inference.py \
+python src/endpoint_predict.py \
 --img_path data/test_data/REGION_1-24_0_1024_0_1024.jpg \
 --endpoint_name results-train-pool-segmentation-v0-1-0
 ```
