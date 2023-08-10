@@ -110,14 +110,17 @@ machine as well as report model performance results in Pull Requests.
 
 ## Deploying the model
 
-Check out the [PR](https://github.com/iterative/example-get-started-experiments/pulls)
-that adds this model to 
-[Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
-You can [trigger CI/CD](https://dvc.org/doc/studio/user-guide/model-registry/use-models#deploying-and-publishing-models-in-cicd)
-by [registering versions](https://dvc.org/doc/studio/user-guide/model-registry/register-version)
-and [assigning stages](https://dvc.org/doc/studio/user-guide/model-registry/assign-stage)
-in Model Registry, building and publishing Docker images with the model,
-or deploying the model to the cloud.
+Check out the [GitHub Workflow](https://github.com/iterative/example-get-started-experiments/pulls)
+that uses the [Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
+to deploy the model to [AWS Sagemaker](https://aws.amazon.com/es/sagemaker/) whenever a new [version is registered](https://dvc.org/doc/studio/user-guide/model-registry/register-version).
+
+You can query the deployed endpoint to get predictions:
+
+```bash
+python src/inference.py \
+--img_path data/test_data/REGION_1-24_0_1024_0_1024.jpg \
+--endpoint_name results-train-pool-segmentation-v0-1-0
+```
 
 ## Project structure
 
