@@ -15,6 +15,7 @@ on:
 
 jobs:
   deploy-model:
+    environment: cloud
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -26,9 +27,9 @@ jobs:
 
     - uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-region: us-east-1
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+        role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+        role-duration-seconds: 43200
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -38,13 +39,15 @@ jobs:
         cache-dependency-path: requirements.txt
 
     - run: pip install -r requirements.txt
+
     - run:  dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
 
     - env:
         VERSION: ${{steps.clean_version_name.outputs.version}}
       run: |
+        MODEL_DATA=$(dvc get --show-url . model.tar.gz)
         python sagemaker/deploy_model.py \
         --name $VERSION \
-        --model_data ${{ dvc get --show-url . model.tar.gz }} \
-        --role ${{ secrets.AWS_ROLE_TO_ASSUME }} \
+        --model_data $MODEL_DATA \
+        --role arn:aws:iam::342840881361:role/SandboxUser \
         --instance_type 'ml.c4.xlarge'
