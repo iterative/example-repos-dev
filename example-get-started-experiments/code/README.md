@@ -110,7 +110,7 @@ machine as well as report model performance results in Pull Requests.
 
 ## Deploying the model
 
-Check out the [GitHub Workflow](https://github.com/iterative/example-get-started-experiments/pulls)
+Check out the [GitHub Workflow](https://github.com/iterative/example-get-started-experiments/blob/main/.github/workflows/deploy-model.yml)
 that uses the [Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
 to deploy the model to [AWS Sagemaker](https://aws.amazon.com/es/sagemaker/) whenever a new [version is registered](https://dvc.org/doc/studio/user-guide/model-registry/register-version).
 
