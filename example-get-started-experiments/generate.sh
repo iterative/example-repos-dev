@@ -95,6 +95,7 @@ gto assign results/train:pool-segmentation --version v1.0.0 --stage dev
 
 
 cp -r $HERE/code/src .
+cp -r $HERE/code/sagemaker .
 cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
@@ -109,13 +110,17 @@ dvc remove models/model.pkl.dvc
 dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
-  -o models/model.pkl \
+  -o models/model.pkl -o models/model.pth \
   python src/train.py
 
 dvc stage add -n evaluate \
   -p base,evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
   python src/evaluate.py
+
+dvc stage add -n sagemaker \
+  -d models/model.pth -o model.tar.gz \
+  'cp models/model.pth sagemaker/code/model.pth && cd sagemaker && tar -cpzf model.tar.gz code/ && cd .. && mv sagemaker/model.tar.gz .  && rm sagemaker/code/model.pth'
 
 git add .
 tick
