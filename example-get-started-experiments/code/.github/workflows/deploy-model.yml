@@ -32,7 +32,7 @@ jobs:
     - uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-region: us-east-2
-        role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         role-duration-seconds: 43200
 
     - name: Set up Python
@@ -53,5 +53,5 @@ jobs:
         python sagemaker/deploy_model.py \
         --name $VERSION \
         --model_data $MODEL_DATA \
-        --role arn:aws:iam::342840881361:role/SandboxUser \
+        --role ${{ secrets.AWS_ROLE_TO_ASSUME }} \
         --instance_type 'ml.c4.xlarge'
