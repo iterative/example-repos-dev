@@ -1,4 +1,5 @@
 import logging
+import re
 import sys
 
 from sagemaker.deserializers import JSONDeserializer
@@ -23,6 +24,7 @@ max_concurrency = {
 def deploy(
     name: str,
     stage: str,
+    version: str,
     model_data: str,
     role: str,
 ):
@@ -30,8 +32,11 @@ def deploy(
     sagemaker_logger.setLevel(logging.DEBUG)
     sagemaker_logger.addHandler(logging.StreamHandler(sys.stdout))
 
+    composed_name =  re.sub(
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}-{stage}")
+    
     model = PyTorchModel(
-        name=name,
+        name=composed_name,
         model_data=model_data,
         framework_version="1.12",
         py_version="py38",
