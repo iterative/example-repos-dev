@@ -54,7 +54,7 @@ def deploy(
     return model.deploy(
         initial_instance_count=1,
         deserializer=JSONDeserializer(),
-        endpoint_name=name,
+        endpoint_name=composed_name,
         serverless_inference_config=ServerlessInferenceConfig(
             memory_size_in_mb=memory_size[stage],
             max_concurrency=max_concurrency[stage]
