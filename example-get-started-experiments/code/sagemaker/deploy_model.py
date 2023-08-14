@@ -69,4 +69,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    deploy(name=args.name, model_data=args.model_data, role=args.role, instance_type=args.instance_type)
+    deploy(name=args.name, stage=args.stage, model_data=args.model_data, role=args.role)
