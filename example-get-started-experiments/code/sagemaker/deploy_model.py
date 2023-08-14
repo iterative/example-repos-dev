@@ -3,8 +3,23 @@ import sys
 
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.pytorch import PyTorchModel
+from sagemaker.serverless import ServerlessInferenceConfig
 
- "ml.c4.large"
+
+memory_size = { 
+    "dev": 1024,
+    "staging": 1024,
+    "prod": 2048,
+    "default": 1024,
+}
+max_concurrency = { 
+    "dev": 5,
+    "staging": 5,
+    "prod": 10,
+    "default": 5,
+}
+
+
 def deploy(
     name: str,
     stage: str,
@@ -33,21 +48,24 @@ def deploy(
 
     return model.deploy(
         initial_instance_count=1,
-        instance_type=instance_type,
         deserializer=JSONDeserializer(),
         endpoint_name=name,
+        serverless_inference_config=ServerlessInferenceConfig(
+            memory_size_in_mb=memory_size[stage],
+            max_concurrency=max_concurrency[stage]
+        )
     )
 
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='Deploy a model to Amazon SageMaker')
+    parser = argparse.ArgumentParser(description="Deploy a model to Amazon SageMaker")
 
-    parser.add_argument('--name', type=str, required=True, help='Name of the model')
-    parser.add_argument('--stage', type=str, required=True, help='Stage of the model')
-    parser.add_argument('--model_data', type=str, required=True, help='S3 location of the model data')
-    parser.add_argument('--role', type=str, required=True, help='ARN of the IAM role to use')
+    parser.add_argument("--name", type=str, required=True, help="Name of the model")
+    parser.add_argument("--stage", type=str, required=True, help="Stage of the model")
+    parser.add_argument("--model_data", type=str, required=True, help="S3 location of the model data")
+    parser.add_argument("--role", type=str, required=True, help="ARN of the IAM role to use")
 
     args = parser.parse_args()
 
