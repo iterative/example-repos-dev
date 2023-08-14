@@ -29,9 +29,9 @@ jobs:
     - id: clean_version_name
       run: echo "version=$(echo ${{ github.ref_name || github.event.inputs.version }} | sed 's/[^a-zA-Z0-9-]/-/g')" >> "$GITHUB_OUTPUT"
 
-    - uses: aws-actions/configure-aws-credentials@v1
+    - uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-region: us-east-1
+        aws-region: us-east-2
         role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
         role-duration-seconds: 43200
 
