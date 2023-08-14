@@ -31,7 +31,7 @@ jobs:
 
     - uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-region: us-east-2
+        aws-region: us-east-1
         role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
         role-duration-seconds: 43200
 
