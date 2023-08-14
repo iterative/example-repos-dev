@@ -4,12 +4,12 @@ import sys
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.pytorch import PyTorchModel
 
-
+ "ml.c4.large"
 def deploy(
     name: str,
+    stage: str,
     model_data: str,
     role: str,
-    instance_type: str = "ml.c4.large",
 ):
     sagemaker_logger = logging.getLogger("sagemaker")
     sagemaker_logger.setLevel(logging.DEBUG)
@@ -45,9 +45,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Deploy a model to Amazon SageMaker')
 
     parser.add_argument('--name', type=str, required=True, help='Name of the model')
+    parser.add_argument('--stage', type=str, required=True, help='Stage of the model')
     parser.add_argument('--model_data', type=str, required=True, help='S3 location of the model data')
     parser.add_argument('--role', type=str, required=True, help='ARN of the IAM role to use')
-    parser.add_argument('--instance_type', type=str, default='ml.c4.xlarge', help='Type of instance to use')
 
     args = parser.parse_args()
 
