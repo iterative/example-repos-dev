@@ -69,9 +69,10 @@ if __name__ == "__main__":
 
     parser.add_argument("--name", type=str, required=True, help="Name of the model")
     parser.add_argument("--stage", type=str, required=True, help="Stage of the model")
+    parser.add_argument("--version", type=str, required=True, help="Version of the model")
     parser.add_argument("--model_data", type=str, required=True, help="S3 location of the model data")
     parser.add_argument("--role", type=str, required=True, help="ARN of the IAM role to use")
 
     args = parser.parse_args()
 
-    deploy(name=args.name, stage=args.stage, model_data=args.model_data, role=args.role)
+    deploy(name=args.name, stage=args.stage, version=args.version, model_data=args.model_data, role=args.role)

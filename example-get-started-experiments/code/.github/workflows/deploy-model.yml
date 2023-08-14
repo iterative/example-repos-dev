@@ -29,6 +29,7 @@ jobs:
       uses: iterative/gto-action@14723404a00bb0c1e759c02ffcd24279df5815c2
     outputs:
       event: ${{ steps.gto.outputs.event }}
+      name: ${{ steps.gto.outputs.name }}
       stage: ${{ steps.gto.outputs.stage }}
       version: ${{ steps.gto.outputs.version }}
 
@@ -62,7 +63,8 @@ jobs:
     - run: |
         MODEL_DATA=$(dvc get --show-url . model.tar.gz)
         python sagemaker/deploy_model.py \
-        --name ${{ needs.parse.outputs.version }} \
+        --name ${{ needs.parse.outputs.name }} \
         --stage ${{ needs.parse.outputs.stage }} \
+        --version ${{ needs.parse.outputs.version }} \
         --model_data $MODEL_DATA \
         --role ${{ secrets.AWS_ROLE_TO_ASSUME }}
