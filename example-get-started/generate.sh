@@ -307,8 +307,7 @@ EOF
   else
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
-      -M eval/live/metrics.json -O eval/live/plots \
-      -O eval/prc -o eval/importance.png \
+      -M eval/live/metrics.json -o eval/live/plots \
       python src/evaluate.py model.pkl data/features
   fi
 
@@ -329,9 +328,9 @@ EOF
     template: simple
     x: recall
     y:
-      eval/prc/train.json: precision
-      eval/prc/test.json: precision
-- eval/importance.png" >> dvc.yaml
+      eval/live/plots/sklearn/prc/train.json: precision
+      eval/live/plots/sklearn/prc/test.json: precision
+- eval/live/plots/images/importance.png" >> dvc.yaml
   dvc repro
   git add .gitignore dvc.yaml dvc.lock eval
   tick
