@@ -36,34 +36,19 @@ def evaluate(model, matrix, split, live, save_path):
     live.summary["avg_prec"][split] = avg_prec
     live.summary["roc_auc"][split] = roc_auc
 
-    # ... and plots...
+    # ... and plots
+    # ... like an roc plot...
     live.log_sklearn_plot("roc", labels, predictions, name=f"roc/{split}")
-
-    # ... but actually it can be done with dumping data points into a file:
-    # ROC has a drop_intermediate arg that reduces the number of points.
-    # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html#sklearn.metrics.roc_curve.
-    # PRC lacks this arg, so we manually reduce to 1000 points as a rough estimate.
-    precision, recall, prc_thresholds = metrics.precision_recall_curve(
-        labels, predictions
+    # ... and precision recall plot...
+    # ... which passes `drop_intermediate=True` to the sklearn method
+    live.log_sklearn_plot(
+        "precision_recall",
+        labels,
+        predictions,
+        name=f"prc/{split}",
+        drop_intermediate=True,
     )
-    nth_point = math.ceil(len(prc_thresholds) / 1000)
-    prc_points = list(zip(precision, recall, prc_thresholds))[::nth_point]
-    prc_dir = os.path.join(save_path, "prc")
-    os.makedirs(prc_dir, exist_ok=True)
-    prc_file = os.path.join(prc_dir, f"{split}.json")
-    with open(prc_file, "w") as fd:
-        json.dump(
-            {
-                "prc": [
-                    {"precision": p, "recall": r, "threshold": t}
-                    for p, r, t in prc_points
-                ]
-            },
-            fd,
-            indent=4,
-        )
-
-    # ... confusion matrix plot
+    # ... and confusion matrix plot
     live.log_sklearn_plot(
         "confusion_matrix",
         labels.squeeze(),
@@ -72,14 +57,14 @@ def evaluate(model, matrix, split, live, save_path):
     )
 
 
-def save_importance_plot(model, feature_names, save_path):
+def save_importance_plot(live, model, feature_names):
     """
     Save feature importance plot.
 
     Args:
+        live (dvclive.Live): DVCLive instance.
         model (sklearn.ensemble.RandomForestClassifier): Trained classifier.
         feature_names (list): List of feature names.
-        save_path (str): Path to save plot.
     """
     fig, axes = plt.subplots(dpi=100)
     fig.subplots_adjust(bottom=0.2, top=0.95)
@@ -89,7 +74,7 @@ def save_importance_plot(model, feature_names, save_path):
     forest_importances = pd.Series(importances, index=feature_names).nlargest(n=30)
     forest_importances.plot.bar(ax=axes)
 
-    fig.savefig(os.path.join(save_path, "importance.png"))
+    live.log_image("importance.png", fig)
 
 
 def main():
@@ -121,7 +106,7 @@ def main():
     live.make_summary()
 
     # Dump feature importance plot.
-    save_importance_plot(model, feature_names, save_path=EVAL_PATH)
+    save_importance_plot(live, model, feature_names)
 
 
 if __name__ == "__main__":
