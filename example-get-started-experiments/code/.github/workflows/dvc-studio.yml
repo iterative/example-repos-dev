@@ -62,7 +62,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-2
-          role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 43200
       - name: Create Runner
         env:
@@ -90,7 +90,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-2
-          role-to-assume: arn:aws:iam::342840881361:role/SandboxUser
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 43200
 
       - run: pip install -r requirements.txt
