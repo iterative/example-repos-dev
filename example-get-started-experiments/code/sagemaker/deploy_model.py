@@ -8,10 +8,10 @@ from sagemaker.serverless import ServerlessInferenceConfig
 
 
 memory_size = { 
-    "dev": 1024,
-    "staging": 1024,
-    "prod": 2048,
-    "default": 1024,
+    "dev": 4096 ,
+    "staging": 4096,
+    "prod": 6144 ,
+    "default": 4096,
 }
 max_concurrency = { 
     "dev": 5,
