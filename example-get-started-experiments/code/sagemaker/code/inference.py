@@ -12,7 +12,12 @@ from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 
 
 def model_fn(model_dir, context):
-    model = torch.load(os.path.join(model_dir, "code/model.pth"))
+    kwargs = {
+        "f": os.path.join(model_dir, "code/model.pth")
+    }
+    if not torch.cuda.is_available():
+        kwargs["map_location"] = torch.device("cpu")
+    model = torch.load(**kwargs)
     return model
 
 
