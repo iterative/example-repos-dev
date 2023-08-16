@@ -108,19 +108,11 @@ This tag also contains a GitHub Actions workflow that reruns the pipeline if any
 [CML](https://cml.dev/) is used in this workflow to provision a cloud-based GPU 
 machine as well as report model performance results in Pull Requests.
 
-## Deploying the model
+## Model Deployment
 
 Check out the [GitHub Workflow](https://github.com/iterative/example-get-started-experiments/blob/main/.github/workflows/deploy-model.yml)
 that uses the [Iterative Studio Model Registry](https://dvc.org/doc/studio/user-guide/model-registry/what-is-a-model-registry).
 to deploy the model to [AWS Sagemaker](https://aws.amazon.com/es/sagemaker/) whenever a new [version is registered](https://dvc.org/doc/studio/user-guide/model-registry/register-version).
-
-You can query the deployed endpoint to get predictions:
-
-```bash
-python src/endpoint_predict.py \
---img_path data/test_data/REGION_1-24_0_1024_0_1024.jpg \
---endpoint_name results-train-pool-segmentation-v0-1-0
-```
 
 ## Project structure
 

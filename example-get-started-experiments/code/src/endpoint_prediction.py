@@ -1,5 +1,7 @@
+from io import BytesIO
 from pathlib import Path
 
+import dvc.api
 import numpy as np
 from PIL import Image
 from sagemaker.deserializers import NumpyDeserializer
@@ -20,16 +22,17 @@ def endpoint_prediction(
     endpoint_name: str,
     output_path: str = "predictions",
 ):
-
+    params = dvc.api.params_show()
+    img_size = params["train"]["img_size"]
     predictor = PyTorchPredictor(endpoint_name, serializer=IdentitySerializer(), deserializer=NumpyDeserializer())
     name = endpoint_name
     
     output_file = Path(output_path) / name / Path(img_path).name
     output_file.parent.mkdir(exist_ok=True, parents=True)
 
-    with open(img_path, "rb") as f:
-        img_bytes = f.read()
-    result = predictor.predict(img_bytes)[0]
+    io = BytesIO()
+    Image.open(img_path).resize((img_size, img_size)).save(io, format="PNG")
+    result = predictor.predict(io.getvalue())[0]
 
     img_pil = Image.open(img_path)
     overlay_img_pil = Image.blend(
