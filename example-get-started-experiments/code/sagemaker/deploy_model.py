@@ -33,7 +33,7 @@ def deploy(
     sagemaker_logger.addHandler(logging.StreamHandler(sys.stdout))
 
     composed_name =  re.sub(
-        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}-{stage}")
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}")
     
     model = PyTorchModel(
         name=composed_name,
