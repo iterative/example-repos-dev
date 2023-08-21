@@ -3,6 +3,8 @@ name: DVC Studio Experiment
 on:
 
   push:
+    tags-ignore:
+      - '**'
 
   workflow_dispatch:
     inputs:
