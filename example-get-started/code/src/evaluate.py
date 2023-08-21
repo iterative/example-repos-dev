@@ -100,7 +100,7 @@ def main():
         test, _ = pickle.load(fd)
 
     # Evaluate train and test datasets.
-    live = Live(os.path.join(EVAL_PATH, "live"), dvcyaml=False)
+    live = Live(os.path.join(EVAL_PATH, "live"))
     evaluate(model, train, "train", live, save_path=EVAL_PATH)
     evaluate(model, test, "test", live, save_path=EVAL_PATH)
     live.make_summary()

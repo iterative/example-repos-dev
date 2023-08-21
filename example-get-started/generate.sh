@@ -301,16 +301,26 @@ EOF
   if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
-      -m eval/live/metrics.json -o eval/live/plots \
+      -o eval/live/metrics.json -o eval/live/plots \
       python src/evaluate.py model.pkl data/features
   else
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
-      -M eval/live/metrics.json -O eval/live/plots \
       python src/evaluate.py model.pkl data/features
   fi
 
-  echo "plots:
+  dvc repro
+  git add .gitignore dvc.yaml dvc.lock eval
+  tick
+  git commit -am "${COMMIT_PREFIX}Create evaluation stage"
+  create_tag "8-dvclive-eval${GIT_TAG_SUFFIX}" "DVCLive evaluation stage created."
+  dvc push
+
+  sed -e 's/Live(\(.*\))/(\1, dvcyaml=False)/' src/evaluate.py
+
+  echo "metrics:
+- eval/live/metrics.json
+plots:
 - ROC:
     template: simple
     x: fpr
@@ -334,7 +344,7 @@ EOF
   git add .gitignore dvc.yaml dvc.lock eval
   tick
   git commit -am "${COMMIT_PREFIX}Create evaluation stage"
-  create_tag "8-evaluation${GIT_TAG_SUFFIX}" "Baseline evaluation stage created."
+  create_tag "9-custom-eval${GIT_TAG_SUFFIX}" "Custom evaluation stage created."
   create_tag "baseline-experiment${GIT_TAG_SUFFIX}" "Baseline experiment evaluation"
   if [ $OPT_TAG_MODELS == "true" ]; then
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.0.0
@@ -349,7 +359,7 @@ EOF
   dvc repro train
   tick
   git commit -am "${COMMIT_PREFIX}Reproduce model using bigrams"
-  create_tag "9-bigrams-model${GIT_TAG_SUFFIX}" "Model retrained using bigrams."
+  create_tag "10-bigrams-model${GIT_TAG_SUFFIX}" "Model retrained using bigrams."
   if [ $OPT_TAG_MODELS == "true" ]; then
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0
     gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0 --stage stage
@@ -361,7 +371,7 @@ EOF
   tick
   git commit -am "${COMMIT_PREFIX}Evaluate bigrams model"
   create_tag "bigrams-experiment${GIT_TAG_SUFFIX}" "Bigrams experiment evaluation"
-  create_tag "10-bigrams-experiment${GIT_TAG_SUFFIX}" "Evaluated bigrams model."
+  create_tag "11-bigrams-experiment${GIT_TAG_SUFFIX}" "Evaluated bigrams model."
   if [ $OPT_TAG_MODELS == "true" ]; then
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0
     gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0 --stage dev
@@ -397,7 +407,7 @@ if [ $OPT_NON_DVC == 'false' ] && [ $OPT_BRANCHES == 'true' ]; then
   tick
   git commit -am "${COMMIT_PREFIX}Run experiments tuning random forest params"
   create_tag "random-forest-experiments${GIT_TAG_SUFFIX}" "Run experiments to tune random forest params"
-  create_tag "11-random-forest-experiments${GIT_TAG_SUFFIX}" "Tuned random forest classifier."
+  create_tag "12-random-forest-experiments${GIT_TAG_SUFFIX}" "Tuned random forest classifier."
   dvc push
 
   git checkout main
