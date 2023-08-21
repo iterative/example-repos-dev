@@ -302,12 +302,11 @@ EOF
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
       -m eval/live/metrics.json -o eval/live/plots \
-      -o eval/prc -o eval/importance.png \
       python src/evaluate.py model.pkl data/features
   else
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
-      -M eval/live/metrics.json -o eval/live/plots \
+      -M eval/live/metrics.json -O eval/live/plots \
       python src/evaluate.py model.pkl data/features
   fi
 
