@@ -68,6 +68,7 @@ def train():
         models_dir = Path("models")
         models_dir.mkdir(exist_ok=True)
         learn.export(fname=(models_dir / "model.pkl").absolute())
+        torch.save(learn.model, (models_dir / "model.pth").absolute())
         live.log_artifact(
             str(models_dir / "model.pkl"),
             type="model",

@@ -1,6 +1,7 @@
 {
   "name": "example-repos-dev",
   "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "runArgs": ["--ipc=host"],
   "extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"],
   "features": {
       "ghcr.io/devcontainers/features/nvidia-cuda:1": {
