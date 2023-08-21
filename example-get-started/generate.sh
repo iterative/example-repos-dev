@@ -301,7 +301,7 @@ EOF
   if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
     dvc stage add -n evaluate \
       -d src/evaluate.py -d model.pkl -d data/features \
-      -o eval/live/metrics.json -o eval/live/plots \
+      -o eval/metrics.json -o eval/plots \
       python src/evaluate.py model.pkl data/features
   else
     dvc stage add -n evaluate \
@@ -319,31 +319,31 @@ EOF
   sed -e 's/Live(\(.*\))/(\1, dvcyaml=False)/' src/evaluate.py
 
   echo "metrics:
-- eval/live/metrics.json
+- eval/metrics.json
 plots:
 - ROC:
     template: simple
     x: fpr
     y:
-      eval/live/plots/sklearn/roc/train.json: tpr
-      eval/live/plots/sklearn/roc/test.json: tpr
+      eval/plots/sklearn/roc/train.json: tpr
+      eval/plots/sklearn/roc/test.json: tpr
 - Confusion-Matrix:
     template: confusion
     x: actual
     y:
-      eval/live/plots/sklearn/cm/train.json: predicted
-      eval/live/plots/sklearn/cm/test.json: predicted
+      eval/plots/sklearn/cm/train.json: predicted
+      eval/plots/sklearn/cm/test.json: predicted
 - Precision-Recall:
     template: simple
     x: recall
     y:
-      eval/live/plots/sklearn/prc/train.json: precision
-      eval/live/plots/sklearn/prc/test.json: precision
-- eval/live/plots/images/importance.png" >> dvc.yaml
+      eval/plots/sklearn/prc/train.json: precision
+      eval/plots/sklearn/prc/test.json: precision
+- eval/plots/images/importance.png" >> dvc.yaml
   dvc repro
   git add .gitignore dvc.yaml dvc.lock eval
   tick
-  git commit -am "${COMMIT_PREFIX}Create evaluation stage"
+  git commit -am "${COMMIT_PREFIX}Customize evaluation plots"
   create_tag "9-custom-eval${GIT_TAG_SUFFIX}" "Custom evaluation stage created."
   create_tag "baseline-experiment${GIT_TAG_SUFFIX}" "Baseline experiment evaluation"
   if [ $OPT_TAG_MODELS == "true" ]; then
