@@ -21,4 +21,6 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         role-duration-seconds: 43200
     - name: Generate repo
-      run: ./generate.sh
+      run: |
+        cd example-get-started
+        ./generate.sh
