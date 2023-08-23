@@ -46,6 +46,10 @@ Run these commands to force push it:
 ```shell
 cd build/example-get-started
 git remote add origin git@github.com:<slug>/example-get-started.git
+# close open PRs
+gh pr close try-large-dataset
+gh pr close tune-hyperparams
+# force push branches
 git push --force origin main
 git push --force origin try-large-dataset
 git push --force origin tune-hyperparams
