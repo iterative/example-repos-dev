@@ -4,6 +4,9 @@ on:
     paths:
       - example-get-started/**
   workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
 jobs:
   test:
     runs-on: ubuntu-latest
