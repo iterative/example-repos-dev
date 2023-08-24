@@ -132,6 +132,7 @@ pip install "git+https://github.com/iterative/dvc#egg=dvc[all]" gto
 
 if [ $OPT_INIT_GIT == 'true' ]; then
   git init
+  git checkout -b main
   cp $HERE/code/README.md .
   cp $HERE/code/.devcontainer.json .
   cp $HERE/code/.gitattributes .
