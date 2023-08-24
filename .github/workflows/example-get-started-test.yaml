@@ -26,5 +26,6 @@ jobs:
         role-duration-seconds: 43200
     - name: Generate repo
       run: |
+        pip install virtualenv
         cd example-get-started
         ./generate.sh
