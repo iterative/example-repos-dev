@@ -32,11 +32,11 @@ def deploy(
     sagemaker_logger.setLevel(logging.DEBUG)
     sagemaker_logger.addHandler(logging.StreamHandler(sys.stdout))
 
-    composed_name =  re.sub(
-        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}-{stage}")
-    
+    version_name =  re.sub(
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}")
+
     model = PyTorchModel(
-        name=composed_name,
+        name=version_name,
         model_data=model_data,
         framework_version="1.12",
         py_version="py38",
@@ -50,11 +50,12 @@ def deploy(
         },
     )
 
-
+    stage_name =  re.sub(
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{stage}")
     return model.deploy(
         initial_instance_count=1,
         deserializer=JSONDeserializer(),
-        endpoint_name=composed_name,
+        endpoint_name=stage_name,
         serverless_inference_config=ServerlessInferenceConfig(
             memory_size_in_mb=memory_size[stage],
             max_concurrency=max_concurrency[stage]
