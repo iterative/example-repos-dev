@@ -1,0 +1,60 @@
+name: example-get-started-experiments test
+on: 
+  push:
+    paths:
+      - example-get-started-experiments/**
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy-runner:
+    environment: aws
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 43200
+      - name: Create Runner
+        env:
+          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          cml runner launch --single \
+            --labels=cml \
+            --cloud=aws \
+            --cloud-region=us-east \
+            --cloud-hdd-size=40 \
+            --cloud-type=g5.2xlarge
+            --idle-timeout=3600 \
+            --cloud-spot
+  test:
+    needs: deploy-runner
+    runs-on: [ self-hosted, cml ]
+    environment: aws
+    container:
+      image: iterativeai/cml:0-dvc2-base1-gpu
+      options: --gpus all --ipc host
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: us-east-2
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-duration-seconds: 43200
+    - name: Generate repo
+      env:
+        REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      run: |
+        pip install virtualenv
+        cd example-get-started-experiments
+        ./generate.sh
