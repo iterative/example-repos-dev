@@ -25,12 +25,12 @@ jobs:
         run: |
           cml runner launch --single \
             --labels=cml \
-            --cloud=${{ inputs.cloud || 'aws' }} \
-            --cloud-region=${{ inputs.region || 'us-east' }} \
-            --cloud-hdd-size=${{ inputs.storage || '40' }} \
-            --cloud-type=${{ inputs.type || 'g5.2xlarge' }} \
-            --idle-timeout=${{ inputs.timeout || '3600' }} \
-             ${{ inputs.spot && '--cloud-spot' }}
+            --cloud=aws \
+            --cloud-region=us-east \
+            --cloud-hdd-size=40 \
+            --cloud-type=g5.2xlarge
+            --idle-timeout=3600 \
+            --cloud-spot
   test:
     needs: deploy-runner
     runs-on: [ self-hosted, cml ]
