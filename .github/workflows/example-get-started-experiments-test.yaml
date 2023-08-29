@@ -30,7 +30,6 @@ jobs:
             --cloud-hdd-size=40 \
             --cloud-type=g5.2xlarge \
             --idle-timeout=3600 \
-            --cloud-spot
   test:
     needs: deploy-runner
     runs-on: [ self-hosted, cml ]
