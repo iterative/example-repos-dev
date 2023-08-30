@@ -1,5 +1,5 @@
 dvc[s3]>=3.0
-dvclive>=2.11.3
+dvclive @ git+https://github.com/iterative/dvclive@move-dvcyaml
 fastai
 python-box
 sagemaker
