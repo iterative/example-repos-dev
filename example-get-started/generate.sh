@@ -4,25 +4,25 @@
 set -eux
 
 HERE=$( cd "$(dirname "$0")" ; pwd -P )
-REPO_NAME="example-get-started"
+REPO_NAME="multiple-remotes-fixture"
 REPO_PATH_BASE="$HERE/build/$REPO_NAME"
 PROD=${1:-false}
 
 # Some additional options to tune the exact repo structure that we generate.
 # It useful to generate nested (monorepo), private storages, a mix of those
 # cases to be used in Studio fixtures or QA.
-OPT_TESTING_REPO='false' # Default false.
-OPT_SUBDIR='' # No leading or trailing slashes. Default "".
-OPT_INIT_GIT='true' # Default true.
+OPT_TESTING_REPO='true' # Default false.
+OPT_SUBDIR='two-private-remotes' # No leading or trailing slashes. Default "".
+OPT_INIT_GIT='false' # Default true.
 OPT_INIT_DVC='true' # Default true.
 OPT_NON_DVC='false' # Default false.
-OPT_BRANCHES='true' # Default true.
-OPT_TAGS='true' # Default true.
+OPT_BRANCHES='false' # Default true.
+OPT_TAGS='false' # Default true.
 OPT_REMOTE='public-s3' # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
-OPT_DVC_TRACKED_METRICS='false' # Default false.
-OPT_REGISTER_MODELS='true' # Default true.
+OPT_DVC_TRACKED_METRICS='true' # Default false.
+OPT_REGISTER_MODELS='false' # Default true.
 OPT_MODEL_NAME='text-classification' # Default "text-classification".
-OPT_TAG_MODELS='true' # Default true.
+OPT_TAG_MODELS='false' # Default true.
 OPT_SQUASH_COMMITS='false' # Default false.
 
 
@@ -188,13 +188,19 @@ create_tag "2-track-data${GIT_TAG_SUFFIX}" "Data file added."
 
 
 if [ $OPT_NON_DVC == 'false' ]; then
-  init_remote_storage
+  #init_remote_storage
+  
+  TS=$(date +%s)
+  R1=${OPT_SUBDIR}-remote1
+  R2=${OPT_SUBDIR}-remote2
+  dvc remote add $R1 s3://dvc-private/remote/fixtures/get-started/$TS/$R1
+  dvc remote add $R2 s3://dvc-private/remote/fixtures/get-started/$TS/$R2
 
   git add $REPO_PATH_BASE/.
   tick
   git commit -m "${COMMIT_PREFIX}Configure default remote"
   create_tag "3-config-remote${GIT_TAG_SUFFIX}" "Remote storage configured."
-  dvc push
+  dvc push -r $R1 data/data.xml
 fi
 
 if [ $OPT_NON_DVC == 'false' ]; then
@@ -205,7 +211,7 @@ if [ $OPT_NON_DVC == 'false' ]; then
   tick
   git commit -m "${COMMIT_PREFIX}Import raw data (overwrite)"
   create_tag "4-import-data${GIT_TAG_SUFFIX}" "Data file overwritten with an import."
-  dvc push
+  dvc push -r $R1 data/data.xml
 fi
 
 # Deploy code
@@ -253,7 +259,8 @@ if [ $OPT_NON_DVC == 'false' ]; then
   tick
   git commit -m "${COMMIT_PREFIX}Create data preparation stage"
   create_tag "6-prepare-stage${GIT_TAG_SUFFIX}" "First pipeline stage (data preparation) created."
-  dvc push
+  dvc push -r $R1 data/data.xml
+  dvc push -r $R1 data/prepared
 
   dvc stage add -n featurize \
     -p featurize.max_features,featurize.ngrams \
@@ -287,7 +294,10 @@ EOF
   tick
   git commit -m "${COMMIT_PREFIX}Create ML pipeline stages"
   create_tag "7-ml-pipeline${GIT_TAG_SUFFIX}" "ML pipeline created."
-  dvc push
+  dvc push -r $R1 data/prepared
+  dvc push -r $R1 data/features
+  dvc push -r $R1 data/data.xml
+  dvc push -r $R2 model.pkl
 
   if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
     dvc stage add -n evaluate \
@@ -333,7 +343,12 @@ EOF
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.0.0
     gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.0.0 --stage prod
   fi
-  dvc push
+  dvc push -r $R1 data/prepared
+  dvc push -r $R1 data/features
+  dvc push -r $R1 data/data.xml
+  dvc push -r $R2 model.pkl
+  dvc push -r $R1 eval/live/plots eval/live/metrics.json 
+  dvc push -r $R2 eval/prc eval/importance.png
 
 
   sed -e "s/max_features: 100/max_features: 200/" -i".bck" params.yaml
@@ -347,7 +362,12 @@ EOF
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0
     gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.1.0 --stage stage
   fi
-  dvc push
+  dvc push -r $R1 data/prepared
+  dvc push -r $R1 data/features
+  dvc push -r $R1 data/data.xml
+  dvc push -r $R2 model.pkl
+  dvc push -r $R1 eval/live/plots eval/live/metrics.json 
+  dvc push -r $R2 eval/prc eval/importance.png
 
 
   dvc repro evaluate
@@ -359,7 +379,12 @@ EOF
     gto register "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0
     gto assign "${GTO_PREFIX}${OPT_MODEL_NAME}" --version v1.2.0 --stage dev
   fi
-  dvc push
+  dvc push -r $R1 data/prepared
+  dvc push -r $R1 data/features
+  dvc push -r $R1 data/data.xml
+  dvc push -r $R2 model.pkl
+  dvc push -r $R1 eval/live/plots eval/live/metrics.json 
+  dvc push -r $R2 eval/prc eval/importance.png
 fi
 
 if [ $OPT_SQUASH_COMMITS == 'true' ]; then
