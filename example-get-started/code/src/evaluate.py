@@ -100,13 +100,14 @@ def main():
         test, _ = pickle.load(fd)
 
     # Evaluate train and test datasets.
-    live = Live(EVAL_PATH)
-    evaluate(model, train, "train", live, save_path=EVAL_PATH)
-    evaluate(model, test, "test", live, save_path=EVAL_PATH)
-    live.make_summary()
+    with Live(EVAL_PATH, cache_images=True, dvcyaml=False) as live:
+        evaluate(model, train, "train", live, save_path=EVAL_PATH)
+        evaluate(model, test, "test", live, save_path=EVAL_PATH)
 
-    # Dump feature importance plot.
-    save_importance_plot(live, model, feature_names)
+        live.make_summary()
+
+        # Dump feature importance plot.
+        save_importance_plot(live, model, feature_names)
 
 
 if __name__ == "__main__":
