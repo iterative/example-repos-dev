@@ -39,12 +39,12 @@ jobs:
             --show-vega --targets Confusion-Matrix | json5 > vega.json
           vl2svg vega.json confusion.svg
 
-          dvc pull eval/importance.png
-          cp eval/importance.png importance_workspace.png
+          dvc pull eval/plots/images
+          cp eval/plots/images/importance.png importance_workspace.png
 
           git checkout $PREVIOUS_REF -- dvc.lock
-          dvc pull eval/importance.png
-          cp eval/importance.png importance_previous.png
+          dvc pull eval/plots/images
+          cp eval/plots/images/importance.png importance_previous.png
 
           dvc_report=$(dvc exp diff $PREVIOUS_REF --md)
 
