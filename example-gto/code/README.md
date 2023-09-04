@@ -2,10 +2,10 @@
 
 A [model registry] is a tool to catalog ML models and their versions. Models from
 your data science projects can be discovered, tested, shared, deployed, and
-audited from there. [DVC], [GTO], and [MLEM] enable these capabilities on top of
+audited from there. [DVC] and [GTO] enable these capabilities on top of
 Git, so you can stick to an existing software engineering stack.
 
-This repo is an example of [Model Registry] built with these tools. The model
+This repo is an example of Model Registry built with these tools. The model
 dashboard:
 
 <big><pre>
@@ -13,7 +13,7 @@ $ gto show
 ╒══════════╤══════════╤═════════╤═════════╤════════════╕
 │ name     │ latest   │ #dev    │ #prod   │ #staging   │
 ╞══════════╪══════════╪═════════╪═════════╪════════════╡
-│ churn    │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn@v3.1.1)   │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn%23dev%235)  │ [v3.0.0](https://github.com/iterative/example-gto/releases/tag/churn%23prod%233)  │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn%23staging%232)     │
+│ churn    │ [v3.1.1](https://github.com/iterative/example-gto/releases/tag/churn@v3.1.1)   │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn%23dev%234)  │ [v3.0.0](https://github.com/iterative/example-gto/releases/tag/churn%23prod%233)  │ [v3.1.0](https://github.com/iterative/example-gto/releases/tag/churn%23staging%232)     │
 │ segment  │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment@v0.4.1)   │ [v0.4.1](https://github.com/iterative/example-gto/releases/tag/segment%23dev%231)  │ -       │ -          │
 │ cv-class │ [v0.1.13](https://github.com/iterative/example-gto/releases/tag/cv-class@v0.1.13)  │ -       │ -       │ -          │
 ╘══════════╧══════════╧═════════╧═════════╧════════════╛
@@ -29,19 +29,19 @@ $ gto show
 - [Github Actions page] of this repo have examples of workflows where we act
   upon these Git tags.
 
-Branch [`mlem`] contains a version that also uses [MLEM] to deploy a model in
-CI/CD upon deployment stage assignment. Check out the deployed service at
-http://mlem-dev.herokuapp.com/docs.
+Check out [public Model Registry] in [Studio] built on top of DVC and GTO
+that provides more insight into your ML models development, including
+training params, metrics and plots.
 
 🧑‍💻 To continue learning, head to [Get Started with GTO].
 
 [github actions page]: https://github.com/iterative/example-gto/actions
-[get started with gto]: https://mlem.ai/doc/gto/get-started
-[model registry]: https://mlem.ai/doc/use-cases/model-registry
-[`mlem`]: https://github.com/iterative/example-gto/tree/mlem
+[get started with gto]: https://dvc.org/doc/gto/get-started
+[model registry]: https://dvc.org/doc/use-cases/model-registry
 [dvc]: https://github.com/iterative/dvc
-[mlem]: https://github.com/iterative/mlem
 [gto]: https://github.com/iterative/gto
 [git tags]: https://github.com/iterative/example-gto/tags
 [`artifacts.yaml`]:
   https://github.com/iterative/example-gto/blob/main/artifacts.yaml
+[public model registry]: https://studio.iterative.ai/team/Iterative/models
+[studio]: https://studio.iterative.ai

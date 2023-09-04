@@ -35,7 +35,7 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   source .venv/bin/activate
   echo '.venv/' >.gitignore
   pip install -r ../code/requirements.txt
-  git clone https://github.com/iterative/gto.git
+  git clone git@github.com:iterative/example-gto.git
   pip install -e ./gto
 fi
 popd
@@ -79,7 +79,7 @@ if $PUSH; then
     --paginate -q '.workflow_runs[] | "\(.id)"' |
     xargs -n1 -I % gh api --silent repos/$USER_NAME/$REPO_NAME/actions/runs/% -X DELETE
   # add remote
-  git remote add origin https://github.com/$USER_NAME/$REPO_NAME
+  git remote add origin git@github.com:$USER_NAME/$REPO_NAME.git
   # remove all tags from remote
   git ls-remote --tags origin | awk '/^(.*)(\s+)(.*[a-zA-Z0-9])$/ {print ":" $2}' | xargs git push origin
 fi
@@ -171,33 +171,13 @@ if $PUSH; then
   git push --tags
 fi
 
-echo "Add MLEM model"
-tick
-git checkout -b mlem
-rm -rf .github
-cp -R $HERE/code/mlem/ .
-pip install -r requirements.txt
-python train.py "The very first MLEM model"
-git add .
-git commit -m "Add MLEM model"
-
-tick
-gto assign churn --stage dev
-if $PUSH; then
-  git push --tags
-fi
-
 
 gto show
 gto history
 
 
 if $PUSH; then
-  git push --set-upstream origin main mlem -f
-  gh pr create --title "Add CI workflow to deploy MLEM model" \
-      --body "Deploy MLEM model in CI as Git tag with Stage assignment was pushed to the repo. Check out the Actions, you could see that the model was indeed deployed to Heroku. See MLEM documentation at https://mlem.ai/doc/" \
-      --base main \
-      --head mlem
+  git push --set-upstream origin main -f
 fi
 
 popd
