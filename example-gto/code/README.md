@@ -29,7 +29,7 @@ $ gto show
 - [Github Actions page] of this repo have examples of workflows where we act
   upon these Git tags.
 
-Check out the [public Model Registry] in [Studio] built on top of GTO
+Check out [public Model Registry] in [Studio] built on top of DVC and GTO
 that provides more insight into your ML models development, including
 training params, metrics and plots.
 
