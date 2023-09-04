@@ -35,7 +35,7 @@ if [ ! -d "$BUILD_PATH/.venv" ]; then
   source .venv/bin/activate
   echo '.venv/' >.gitignore
   pip install -r ../code/requirements.txt
-  git clone https://github.com/iterative/gto.git
+  git clone git@github.com:iterative/example-gto.git
   pip install -e ./gto
 fi
 popd
@@ -79,7 +79,7 @@ if $PUSH; then
     --paginate -q '.workflow_runs[] | "\(.id)"' |
     xargs -n1 -I % gh api --silent repos/$USER_NAME/$REPO_NAME/actions/runs/% -X DELETE
   # add remote
-  git remote add origin https://github.com/$USER_NAME/$REPO_NAME
+  git remote add origin git@github.com:$USER_NAME/$REPO_NAME.git
   # remove all tags from remote
   git ls-remote --tags origin | awk '/^(.*)(\s+)(.*[a-zA-Z0-9])$/ {print ":" $2}' | xargs git push origin
 fi
