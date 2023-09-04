@@ -171,33 +171,13 @@ if $PUSH; then
   git push --tags
 fi
 
-echo "Add MLEM model"
-tick
-git checkout -b mlem
-rm -rf .github
-cp -R $HERE/code/mlem/ .
-pip install -r requirements.txt
-python train.py "The very first MLEM model"
-git add .
-git commit -m "Add MLEM model"
-
-tick
-gto assign churn --stage dev
-if $PUSH; then
-  git push --tags
-fi
-
 
 gto show
 gto history
 
 
 if $PUSH; then
-  git push --set-upstream origin main mlem -f
-  gh pr create --title "Add CI workflow to deploy MLEM model" \
-      --body "Deploy MLEM model in CI as Git tag with Stage assignment was pushed to the repo. Check out the Actions, you could see that the model was indeed deployed to Heroku. See MLEM documentation at https://mlem.ai/doc/" \
-      --base main \
-      --head mlem
+  git push --set-upstream origin main -f
 fi
 
 popd
