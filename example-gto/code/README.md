@@ -29,7 +29,7 @@ $ gto show
 - [Github Actions page] of this repo have examples of workflows where we act
   upon these Git tags.
 
-Check out the public Model Registry in [Studio] built on top of GTO
+Check out the [public Model Registry] in [Studio] built on top of GTO
 that provides more insight into your ML models development, including
 training params, metrics and plots.
 
@@ -43,4 +43,5 @@ training params, metrics and plots.
 [git tags]: https://github.com/iterative/example-gto/tags
 [`artifacts.yaml`]:
   https://github.com/iterative/example-gto/blob/main/artifacts.yaml
+[public model registry]: https://studio.iterative.ai/team/Iterative/models
 [studio]: https://studio.iterative.ai
