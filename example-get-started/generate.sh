@@ -21,7 +21,7 @@ OPT_TAGS='true' # Default true.
 # Default "public-s3". Other options: "public-s3", "private-http", "private-ssh", etc.
 # See the details below in the `init_remote_storage` and in the README.
 OPT_REMOTE='public-s3'
-OPT_DVC_TRACKED_METRICS='false' # Default false.
+OPT_DVC_TRACKED_METRICS='true' # Default true.
 OPT_REGISTER_MODELS='true' # Default true.
 OPT_MODEL_NAME='text-classification' # Default "text-classification".
 OPT_TAG_MODELS='true' # Default true.
@@ -301,12 +301,11 @@ EOF
 
   if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
     dvc stage add -n evaluate \
-      -d src/evaluate.py -d model.pkl -d data/features \
-      -o eval/metrics.json -o eval/plots \
+      -d src/evaluate.py -d model.pkl -d data/features -o eval \
       python src/evaluate.py model.pkl data/features
   else
     dvc stage add -n evaluate \
-      -d src/evaluate.py -d model.pkl -d data/features \
+      -d src/evaluate.py -d model.pkl -d data/features -O eval \
       python src/evaluate.py model.pkl data/features
   fi
 
@@ -334,7 +333,11 @@ plots:
 - eval/plots/images/importance.png" >> dvc.yaml
 
   dvc repro
-  git add .gitignore dvc.yaml dvc.lock eval
+  if [ $OPT_DVC_TRACKED_METRICS == "true" ]; then
+    git add .gitignore dvc.yaml dvc.lock
+  else
+    git add .gitignore dvc.yaml dvc.lock eval
+  fi
   tick
   git commit -am "${COMMIT_PREFIX}Create evaluation stage"
   create_tag "8-dvclive-eval${GIT_TAG_SUFFIX}" "DVCLive evaluation stage created."

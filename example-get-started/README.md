@@ -124,7 +124,7 @@ repositories and/or use different remote types.
   have prefixes or suffixes to distinguish them.
 - `OPT_REMOTE="public-s3"` - (default `private-s3`). Other options: `public-s3`,
   `private-http`, `private-ssh`, etc.
-- `OPT_DVC_TRACKED_METRICS='false'` - (default `false`). Either we should use
+- `OPT_DVC_TRACKED_METRICS='true'` - (default `true`). Either we should use
   DVC to also track all metric and plot files (e.g. to test that Studio can get
   plots from the remote storage).
 - `OPT_REGISTER_MODELS='false'` - (default `true`). Use the `gto` to register
