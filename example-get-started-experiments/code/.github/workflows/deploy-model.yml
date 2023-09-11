@@ -46,7 +46,7 @@ jobs:
     - uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-region: us-east-2
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
         role-duration-seconds: 43200
 
     - name: Set up Python
@@ -67,4 +67,4 @@ jobs:
         --stage ${{ needs.parse.outputs.stage }} \
         --version ${{ needs.parse.outputs.version }} \
         --model_data $MODEL_DATA \
-        --role ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        --role ${{ vars.AWS_SANDBOX_ROLE }}
