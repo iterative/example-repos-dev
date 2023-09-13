@@ -1,4 +1,4 @@
-[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=dvc)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/eval/live/metrics.json&query=avg_prec.test)](https://github.com/iterative/example-get-started/raw/main/eval/live/metrics.json)
+[![DVC](https://img.shields.io/badge/-Open_in_Studio-grey.svg?style=flat-square&logo=dvc)](https://studio.iterative.ai/team/Iterative/views/example-get-started-zde16i6c4g) [![DVC-metrics](https://img.shields.io/badge/dynamic/json?style=flat-square&colorA=grey&colorB=F46737&label=Average%20Precision&url=https://github.com/iterative/example-get-started/raw/main/eval/metrics.json&query=avg_prec.test)](https://github.com/iterative/example-get-started/raw/main/eval/metrics.json)
 
 # DVC Get Started
 
@@ -57,12 +57,14 @@ $ dvc pull
 
 ## Running in your environment
 
-Run [`dvc repro`](https://man.dvc.org/repro) to reproduce the
-[pipeline](https://dvc.org/doc/commands-reference/pipeline):
+Run [`dvc exp run`](https://man.dvc.org/exp/run) to reproduce the
+[pipeline](https://dvc.org/doc/user-guide/pipelines) and create a new
+[experiment](https://dvc.org/doc/user-guide/experiment-management).
 
 ```console
-$ dvc repro
-Data and pipelines are up to date.
+$ dvc exp run
+Ran experiment(s): rapid-cane
+Experiment results have been applied to your workspace.
 ```
 
 If you'd like to test commands like [`dvc push`](https://man.dvc.org/push),
@@ -151,20 +153,20 @@ $ tree
 ├── dvc.lock
 ├── dvc.yaml              # <-- DVC pipeline file
 ├── eval
-│   ├── importance.png    # <-- Feature importance plot
-│   ├── live
-│   │   ├── metrics.json  # <-- Binary classifier final metrics (e.g. AUC)
-│   │   └── plots         # <-- Data points for ROC, confusion matrix
-│   │       └── sklearn
-│   │           ├── cm
-│   │           │   ├── test.json
-│   │           │   └── train.json
-│   │           └── roc
-│   │               ├── test.json
-│   │               └── train.json
-│   └── prc               # <-- Data points for custom PRC
-│       ├── test.json
-│       └── train.json
+│   ├── metrics.json      # <-- Binary classifier final metrics (e.g. AUC)
+│   └── plots             
+│       ├── images
+│       │   └── importance.png    # <-- Feature importance plot
+│       └── sklearn       # <-- Data points for ROC, confusion matrix
+│           ├── cm
+│           │   ├── test.json
+│           │   └── train.json
+│           ├── prc
+│           │   ├── test.json
+│           │   └── train.json
+│           └── roc
+│               ├── test.json
+│               └── train.json
 ├── model.pkl             # <-- Trained model file
 ├── params.yaml           # <-- Parameters file
 └── src                   # <-- Source code to run the pipeline stages
