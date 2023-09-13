@@ -1,4 +1,4 @@
-dvclive @ git+https://github.com/iterative/dvclive@move-dvcyaml
+dvclive @ git+https://github.com/iterative/dvclive@484-30-release
 pandas
 pyaml
 scikit-learn>=1.3
