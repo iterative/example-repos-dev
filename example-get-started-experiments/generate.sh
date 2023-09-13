@@ -80,23 +80,23 @@ git commit -m "Add notebook using DVCLive"
 
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install jupyter
-jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
-# Apply best experiment
-BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
-BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
-BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
-dvc exp apply $BEST_EXP_NAME
-git add .
-tick
-git commit -m "Run notebook and apply best experiment"
-git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
+# jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
+# # Apply best experiment
+# BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
+# BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
+# BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
+# dvc exp apply $BEST_EXP_NAME
+# git add .
+# tick
+# git commit -m "Run notebook and apply best experiment"
+# git tag -a "1-notebook-dvclive" -m "Experiment using Notebook"
 
 
 cp -r $HERE/code/src .
 cp -r $HERE/code/sagemaker .
 cp $HERE/code/params.yaml .
-sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
-rm params.yaml.bkp
+# sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
+# rm params.yaml.bkp
 
 dvc stage add -n data_split \
   -p base,data_split \
@@ -104,7 +104,7 @@ dvc stage add -n data_split \
   -o data/train_data -o  data/test_data \
   python src/data_split.py
 
-dvc remove models/model.pkl.dvc
+# dvc remove models/model.pkl.dvc
 dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
@@ -114,7 +114,7 @@ dvc stage add -n train \
 dvc stage add -n evaluate \
   -p base,evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  python src/evaluate.py
+  python src/evaluate.py -o results
 
 dvc stage add -n sagemaker \
   -d models/model.pth -o model.tar.gz \
@@ -130,8 +130,8 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-gto register results/train:pool-segmentation --version v0.1.0
-gto assign results/train:pool-segmentation --version v0.1.0 --stage dev
+gto register pool-segmentation --version v0.1.0
+gto assign pool-segmentation --version v0.1.0 --stage dev
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
