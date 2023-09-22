@@ -114,7 +114,7 @@ dvc stage add -n train \
 dvc stage add -n evaluate \
   -p base,evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  python src/evaluate.py
+  python src/evaluate.py -o results
 
 dvc stage add -n sagemaker \
   -d models/model.pth -o model.tar.gz \
@@ -130,8 +130,8 @@ git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
 git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
-gto register results/train:pool-segmentation --version v0.1.0
-gto assign results/train:pool-segmentation --version v0.1.0 --stage dev
+gto register pool-segmentation --version v0.1.0
+gto assign pool-segmentation --version v0.1.0 --stage dev
 
 export GIT_AUTHOR_NAME="David de la Iglesia"
 export GIT_AUTHOR_EMAIL="daviddelaiglesiacastro@gmail.com"
