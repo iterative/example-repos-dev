@@ -27,8 +27,6 @@ jobs:
     - uses: iterative/setup-dvc@v1
     - name: Generate repo
       run: |
-        git config --global user.name dberenbaum
-        git config --global user.email dave@iterative.ai
         pip install virtualenv
         cd example-get-started
         ./generate.sh true
