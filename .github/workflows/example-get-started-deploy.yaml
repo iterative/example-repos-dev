@@ -33,6 +33,7 @@ jobs:
     - name: Deploy repo
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # add remote
         cd example-get-started/build/example-get-started
