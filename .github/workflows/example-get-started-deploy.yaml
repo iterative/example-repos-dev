@@ -38,7 +38,7 @@ jobs:
       run: |
         # add remote
         cd example-get-started/build/example-get-started
-        git remote add origin https://github.com/iterative/example-get-started.git
+        git remote add origin https://${{ secrets.GITHUB_TOKEN }}@github.com/iterative/example-get-started.git
         # close open PRs
         gh pr close try-large-dataset
         gh pr close tune-hyperparams
