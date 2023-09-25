@@ -1,0 +1,62 @@
+name: example-get-started deploy
+on: 
+  push:
+    paths:
+      - example-get-started/**
+    branches:
+      - master
+  workflow_dispatch:
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: aws
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: us-east-2
+        role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
+        role-duration-seconds: 43200
+    - uses: iterative/setup-dvc@v1
+    - name: Generate repo
+      run: |
+        pip install virtualenv
+        cd example-get-started
+        ./generate.sh true
+    - name: Deploy repo
+      env:
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # add remote
+        cd build/example-get-started
+        git remote add origin git@github.com:iterative/example-get-started.git
+        # close open PRs
+        gh pr close try-large-dataset
+        gh pr close tune-hyperparams
+        # drop existing refs
+        git ls-remote origin | awk '{print $2}' | xargs -n 1 git push --delete origin || true
+        # force push branches
+        git push --force origin main
+        git push --force origin try-large-dataset
+        git push --force origin tune-hyperparams
+        # we push git tags one by one for Studio to receive webhooks:
+        git tag --sort=creatordate | xargs -n 1 git push --force origin
+        # push exp refs
+        dvc exp push origin -A
+        # create PRs
+        gh pr create -t "Try 40K dataset (4x data)" \
+           -b "We are trying here a large dataset, since the smaller one looks unstable" \
+           -B main -H try-large-dataset
+        gh pr create -t "Run experiments tuning random forest params" \
+           -b "Better RF split and number of estimators based on small grid search." \
+           -B main -H tune-hyperparams

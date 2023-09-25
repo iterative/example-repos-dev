@@ -24,10 +24,10 @@ For the basic use case (docs and Studio demo), use the command below.
 ```
 
 If change source code, to publish it on S3 (needed for the get started tutorial)
-pass `true` to the command. It's needed when you ready to publish it.
+pass `prod` to the command. It's needed when you ready to publish it.
 
 ```shell
-./generate.sh true
+./generate.sh prod
 ```
 
 The repo generated in `build/example-get-started` is intended to be published on
