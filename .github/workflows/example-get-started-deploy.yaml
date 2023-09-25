@@ -24,7 +24,8 @@ jobs:
         aws-region: us-east-2
         role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
         role-duration-seconds: 43200
-    - uses: iterative/setup-dvc@v1
+    - uses: iterative/setup-cml@v1
+      run: cml ci --unshallow
     - name: Generate repo
       run: |
         pip install virtualenv
@@ -33,7 +34,6 @@ jobs:
     - name: Deploy repo
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # add remote
         cd example-get-started/build/example-get-started
