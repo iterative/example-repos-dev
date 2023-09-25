@@ -24,9 +24,11 @@ jobs:
         aws-region: us-east-2
         role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
         role-duration-seconds: 43200
-    - uses: iterative/setup-cml@v1
+    - uses: iterative/setup-dvc@v1
     - name: Generate repo
       run: |
+        git config --global user.name dberenbaum
+        git config --global user.email dave@iterative.ai
         pip install virtualenv
         cd example-get-started
         ./generate.sh true
@@ -36,7 +38,6 @@ jobs:
       run: |
         # add remote
         cd example-get-started/build/example-get-started
-        cml ci --unshallow
         git remote add origin https://github.com/iterative/example-get-started.git
         # close open PRs
         gh pr close try-large-dataset
