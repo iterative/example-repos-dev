@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ''
+      parent-sha:
+        description: 'SHA of the commit to start the experiment from'
+        required: false
+        type: string
+        default: ''
       cloud:
         description: 'Cloud compute provider to host the runner'
         required: false
@@ -60,6 +65,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.parent-sha || '' }}
       - uses: iterative/setup-cml@v1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -89,6 +96,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.parent-sha || '' }}
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-2
