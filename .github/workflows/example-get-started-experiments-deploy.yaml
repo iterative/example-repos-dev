@@ -1,17 +1,12 @@
-name: example-get-started-experiments test
+name: example-get-started-experiments deploy
 on: 
   push:
     paths:
       - example-get-started-experiments/**
     branches:
-      - '**'        # matches every branch
-      - '!master'   # excludes master
+      - master
   workflow_dispatch:
-  schedule:
-    - cron:  '0 0 * * 1'
-permissions:
-  contents: read
-  id-token: write
+permissions: write-all
 jobs:
   deploy-runner:
     environment: aws
@@ -62,3 +57,17 @@ jobs:
         pip install virtualenv
         cd example-get-started-experiments
         ./generate.sh
+    - name: Generate repo
+      env:
+        GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      run: |
+        # add remote
+        cd example-get-started-experiments/build/example-get-started-experiments
+        git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/iterative/example-get-started-experiments.git
+        # drop existing refs
+        git ls-remote origin | awk '{print $2}' | xargs -n 1 git push --delete origin || true
+        # push updated refs
+        git push --force origin main
+        dvc exp push origin -A
+        # we push git tags one by one for Studio to receive webhooks:
+        git tag --sort=creatordate | xargs -n 1 git push --force origin
