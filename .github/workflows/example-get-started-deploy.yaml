@@ -35,7 +35,7 @@ jobs:
         ./generate.sh true
     - name: Deploy repo
       env:
-        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # add remote
         cd example-get-started/build/example-get-started
