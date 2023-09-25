@@ -6,10 +6,7 @@ on:
     branches:
       - master
   workflow_dispatch:
-permissions:
-  contents: write
-  id-token: write
-  pull-requests: write
+permissions: write-all
 jobs:
   test:
     runs-on: ubuntu-latest
