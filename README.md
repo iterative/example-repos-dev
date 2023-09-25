@@ -68,6 +68,16 @@ run within `generate.sh`.
 
   > Requires AWS CLI and write access to `s3://dvc-public/code/get-started/`.
 
-### example-dvc-experiments
+### example-get-started-experiments
 
-- `generate.sh`: Generates the [repository](https://github.com/iterative/example-dvc-experiments) for _Get Started with Experiments_.  It creates a new project in `example-dvc-experiments/build/YYYY-MM-DD-HH-MM-SS/example-dvc-experiments` and an accompanying script to push the repository to DVC and Git. The generated repository uses `s3://dvc-public/remote/example-dvc-experiments/` as a DVC remote.
+There are 2 GitHub Actions set up to test and deploy the project:
+
+- [test](.github/workflows/example-get-started-experiments-test.yaml)
+- [deploy](.github/workflows/example-get-started-experiments-deploy.yaml)
+
+These will automatically test and deploy the project. If you need to run the project locally/manually, run `generate.sh`.
+
+Even after automatic deployment, you still need to follow the
+[instructions](example-get-started-experiments/README.md) to:
+- Update Studio to create a PR from the best generated experiment.
+- Push to GitLab if you want to update the repo there.

@@ -6,10 +6,7 @@ on:
     branches:
       - master
   workflow_dispatch:
-permissions:
-  contents: write
-  id-token: write
-  pull-requests: write
+permissions: write-all
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -35,11 +32,11 @@ jobs:
         ./generate.sh true
     - name: Deploy repo
       env:
-        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         # add remote
-        cd build/example-get-started
-        git remote add origin git@github.com:iterative/example-get-started.git
+        cd example-get-started/build/example-get-started
+        git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/iterative/example-get-started.git
         # close open PRs
         gh pr close try-large-dataset
         gh pr close tune-hyperparams
