@@ -40,8 +40,14 @@ $ ./deploy.sh
 
 ### example-get-started
 
-You only directly need `generate.sh`. `deploy.sh` is a helper script run within
-`generate.sh`.
+There are 2 GitHub Actions set up to test and deploy the project:
+
+- [test](.github/workflows/example-get-started-test.yaml)
+- [deploy](.github/workflows/example-get-started-deploy.yaml)
+
+These will automatically test and deploy the project. If you need to run the project
+locally/manually, you only directly need `generate.sh`. `deploy.sh` is a helper script
+run within `generate.sh`.
 
 - `generate.sh`: Generates the `example-get-started` DVC project from
   scratch. 
