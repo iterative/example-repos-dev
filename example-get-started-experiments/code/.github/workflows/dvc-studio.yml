@@ -84,14 +84,14 @@ jobs:
             --cloud-hdd-size=${{ inputs.storage || '40' }} \
             --cloud-type=${{ inputs.type || 'g5.2xlarge' }} \
             --idle-timeout=${{ inputs.timeout || '3600' }} \
-             ${{ inputs.spot && '--cloud-spot' }}
+             ${{ (inputs.spot == 'true' && '--cloud-spot') || '' }}
 
   runner-job:
     needs: deploy-runner
     runs-on: [ self-hosted, cml ]
     environment: cloud
     container:
-      image: iterativeai/cml:0-dvc2-base1-gpu
+      image: iterativeai/cml:latest-gpu
       options: --gpus all --ipc host
 
     steps:
