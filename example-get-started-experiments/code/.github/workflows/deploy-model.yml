@@ -2,9 +2,8 @@ name: Deploy model
 
 on:
   push:
-    # When a new version is registered in Studio Model Registry
     tags:
-      - "results/train=pool-segmentation#*"
+      - "*"
 
   workflow_dispatch:
     inputs:
