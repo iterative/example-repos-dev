@@ -68,7 +68,7 @@ jobs:
         with:
           ref: ${{ inputs.parent-sha || '' }}
       - uses: iterative/setup-cml@v1
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-2
           role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.parent-sha || '' }}
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-2
           role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}

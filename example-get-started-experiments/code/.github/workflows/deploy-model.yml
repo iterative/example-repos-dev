@@ -43,7 +43,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: aws-actions/configure-aws-credentials@v2
+    - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: us-east-2
         role-to-assume: ${{ vars.AWS_SAGEMAKER_ROLE }}
