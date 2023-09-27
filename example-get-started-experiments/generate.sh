@@ -98,6 +98,9 @@ cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
 
+git rm -r --cached 'results'
+git commit -m "stop tracking results"
+
 dvc stage add -n data_split \
   -p base,data_split \
   -d src/data_split.py -d data/pool_data \
