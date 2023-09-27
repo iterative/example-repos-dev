@@ -57,12 +57,12 @@ jobs:
         pip install virtualenv
         cd example-get-started-experiments
         ./generate.sh
-    - name: Generate repo
+    - name: Deploy repo
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         cd example-get-started-experiments/build/example-get-started-experiments
-        source .venv/bin/activate
+        . .venv/bin/activate
         # add remote
         git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/iterative/example-get-started-experiments.git
         # drop existing refs
