@@ -57,7 +57,7 @@ jobs:
         pip install virtualenv
         cd example-get-started-experiments
         ./generate.sh
-    - name: Generate repo
+    - name: Deploy repo
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
