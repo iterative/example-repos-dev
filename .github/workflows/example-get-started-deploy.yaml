@@ -34,8 +34,9 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
-        # add remote
         cd example-get-started/build/example-get-started
+        source .venv/bin/activate
+        # add remote
         git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/iterative/example-get-started.git
         # close open PRs
         gh pr close try-large-dataset

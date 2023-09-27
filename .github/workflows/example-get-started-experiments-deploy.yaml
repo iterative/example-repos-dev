@@ -61,8 +61,9 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
-        # add remote
         cd example-get-started-experiments/build/example-get-started-experiments
+        source .venv/bin/activate
+        # add remote
         git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/iterative/example-get-started-experiments.git
         # drop existing refs
         git ls-remote origin | awk '{print $2}' | xargs -n 1 git push --delete origin || true
