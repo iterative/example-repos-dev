@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ''
+      parent-sha:
+        description: 'SHA of the commit to start the experiment from'
+        required: false
+        type: string
+        default: ''
       cloud:
         description: 'Cloud compute provider to host the runner'
         required: false
@@ -60,8 +65,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.parent-sha || '' }}
       - uses: iterative/setup-cml@v1
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-2
           role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
@@ -77,19 +84,21 @@ jobs:
             --cloud-hdd-size=${{ inputs.storage || '40' }} \
             --cloud-type=${{ inputs.type || 'g5.2xlarge' }} \
             --idle-timeout=${{ inputs.timeout || '3600' }} \
-             ${{ inputs.spot && '--cloud-spot' }}
+             ${{ (inputs.spot == 'true' && '--cloud-spot') || '' }}
 
   runner-job:
     needs: deploy-runner
     runs-on: [ self-hosted, cml ]
     environment: cloud
     container:
-      image: iterativeai/cml:0-dvc2-base1-gpu
+      image: iterativeai/cml:latest-gpu
       options: --gpus all --ipc host
 
     steps:
       - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          ref: ${{ inputs.parent-sha || '' }}
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-2
           role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
