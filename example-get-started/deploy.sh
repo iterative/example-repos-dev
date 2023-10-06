@@ -20,7 +20,7 @@ popd
 mv $PACKAGE_DIR/$PACKAGE .
 if [ $PROD == 'prod' ]; then
 
-    aws s3 cp --acl public-read $PACKAGE s3://dvc-public/code/get-started/$PACKAGE
+    aws s3 cp $PACKAGE s3://dvc-public/code/get-started/$PACKAGE
 
     # Sanity check
     wget https://code.dvc.org/get-started/$PACKAGE -O $TEST_PACKAGE
