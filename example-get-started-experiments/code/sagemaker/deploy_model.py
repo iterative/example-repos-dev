@@ -2,6 +2,8 @@ import logging
 import re
 import sys
 
+import boto3
+
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.pytorch import PyTorchModel
 from sagemaker.serverless import ServerlessInferenceConfig
@@ -32,9 +34,14 @@ def deploy(
     sagemaker_logger.setLevel(logging.DEBUG)
     sagemaker_logger.addHandler(logging.StreamHandler(sys.stdout))
 
-    composed_name =  re.sub(
+    composed_name = re.sub(
         r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}-{stage}")
     
+    try:
+        boto3.client("sagemaker").delete_endpoint(EndpointName=composed_name)
+    except:
+        pass
+
     model = PyTorchModel(
         name=composed_name,
         model_data=model_data,
