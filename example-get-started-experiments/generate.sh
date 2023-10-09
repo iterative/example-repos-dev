@@ -112,12 +112,12 @@ dvc stage add -n train \
   -p base,train \
   -d src/train.py -d data/train_data \
   -o models/model.pkl -o models/model.pth \
-  python src/train.py
+  -o results/train python src/train.py
 
 dvc stage add -n evaluate \
   -p base,evaluate \
   -d src/evaluate.py -d models/model.pkl -d data/test_data \
-  -o results python src/evaluate.py
+  -o results/evaluate python src/evaluate.py
 
 dvc stage add -n sagemaker \
   -d models/model.pth -o model.tar.gz \
