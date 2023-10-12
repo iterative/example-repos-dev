@@ -66,4 +66,4 @@ jobs:
         --stage ${{ needs.parse.outputs.stage }} \
         --version ${{ needs.parse.outputs.version }} \
         --model_data $MODEL_DATA \
-        --role ${{ vars.AWS_SANDBOX_ROLE }}
+        --role ${{ vars.AWS_SAGEMAKER_ROLE }}
