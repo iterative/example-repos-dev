@@ -1,0 +1,74 @@
+name: Test Model Artifact
+
+on:
+  # the workflow is triggered whenever a tag is pushed to the repository
+  push:
+    tags:
+      - "*"
+  # we can also run the workflow manually...
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Manual version name'
+        required: true
+        type: string
+  
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+
+  # This job parses the git tag with the GTO GitHub Action to identify model registry actions
+  parse:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: "Parse GTO tag"
+      id: gto
+      uses: iterative/gto-action@14723404a00bb0c1e759c02ffcd24279df5815c2
+    outputs:
+      event: ${{ steps.gto.outputs.event }}
+      name: ${{ steps.gto.outputs.name }}
+      stage: ${{ steps.gto.outputs.stage }}
+      version: ${{ steps.gto.outputs.version }}
+
+  test-model-artifact:
+    needs: parse
+    # using the outputs from the "parse" job, we run this job only for actions
+    # in the model registry and only when the model was assigned to a stage called "test"
+    if: "${{ needs.parse.outputs.event == 'assignment' }} && ${{ needs.parse.outputs.stage == 'test' }}"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+        cache: 'pip'
+        cache-dependency-path: requirements.txt
+
+    - run: pip install -r requirements.txt
+
+    # this step adds our project's DVC remote to the workflow environment
+    - name: Add DVC Remote
+      run:  dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
+    
+    # tih step uses DVC to download the model from our remote repository and then checks artifact size
+    - name: Get Model and Check Size
+      run: |
+        dvc get model/model.pth # this will download the right model artifact from the DVC remote
+        artifact_size=$(stat -c %s model.pth)
+        if [ $artifact_size -gt 50000000 ]; then
+          echo "The model artifact is larger than 50 MB."
+          echo "This is too large for our production environment. Try reducing its size."
+          exit 1
+        else
+          echo "The model artifact is small enough for deploymet. Good job!"
+        fi
+      
