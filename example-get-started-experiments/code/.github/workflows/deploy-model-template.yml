@@ -28,7 +28,7 @@ jobs:
         fetch-depth: 0
     - name: "Parse GTO tag"
       id: gto
-      uses: iterative/gto-action@14723404a00bb0c1e759c02ffcd24279df5815c2
+      uses: iterative/gto-action@v2
     outputs:
       event: ${{ steps.gto.outputs.event }}
       name: ${{ steps.gto.outputs.name }}
@@ -59,16 +59,9 @@ jobs:
     - name: Add DVC Remote
       run:  dvc remote add -d --local storage s3://dvc-public/remote/get-started-pools
     
-    # tih step uses DVC to download the model from our remote repository and then checks artifact size
+    # this step uses DVC to download the model from our remote repository and deploys the model
+    # Model deployment is mocked here as it is specific to each deployment environment
     - name: Get Model and Check Size
       run: |
         dvc get model/model.pth # this will download the right model artifact from the DVC remote
-        artifact_size=$(stat -c %s model.pth)
-        if [ $artifact_size -gt 50000000 ]; then
-          echo "The model artifact is larger than 50 MB."
-          echo "This is too large for our production environment. Try reducing its size."
-          exit 1
-        else
-          echo "The model artifact is small enough for deploymet. Good job!"
-        fi
-      
+        echo "The right model is available and can be deployed in the rest of this command. Good job!"      
