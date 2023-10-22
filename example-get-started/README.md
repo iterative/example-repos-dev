@@ -123,7 +123,7 @@ repositories and/or use different remote types.
   branches (bigger dataset, etc). It supports nested repos - branch names will
   have prefixes or suffixes to distinguish them.
 - `OPT_REMOTE="public-s3"` - (default `private-s3`). Other options: `public-s3`,
-  `private-http`, `private-ssh`, etc.
+  `private-http`, `private-ssh`, `private-gdrive`, etc.
 - `OPT_DVC_TRACKED_METRICS='true'` - (default `true`). Either we should use
   DVC to also track all metric and plot files (e.g. to test that Studio can get
   plots from the remote storage).
