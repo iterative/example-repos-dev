@@ -126,7 +126,7 @@ dvc stage add -n sagemaker \
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"
-git tag -a "2-get-started-model-management"
+git tag -a "2-get-started-model-management" -m "Start the model management guide here"
 
 
 dvc exp run
