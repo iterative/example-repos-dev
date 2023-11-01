@@ -35,7 +35,6 @@ jobs:
   deploy-model:
     needs: parse
     if: "${{ needs.parse.outputs.event == 'assignment' }}"
-    environment: cloud
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
