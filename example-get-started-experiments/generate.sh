@@ -138,7 +138,7 @@ tick
 gto register pool-segmentation --version v1.0.0
 gto assign pool-segmentation --version v1.0.0 --stage dev
 tick
-gto assign pool-segmentation --version v1.0.0 --stage test
+gto assign pool-segmentation --version v1.0.0 --stage prod
 gto deprecate pool-segmentation v1.0.0 dev
 
 

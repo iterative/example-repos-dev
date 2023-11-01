@@ -35,11 +35,11 @@ jobs:
       stage: ${{ steps.gto.outputs.stage }}
       version: ${{ steps.gto.outputs.version }}
 
-  test-model-artifact:
+  deploy-model:
     needs: parse
     # using the outputs from the "parse" job, we run this job only for actions
-    # in the model registry and only when the model was assigned to a stage called "test"
-    if: "${{ needs.parse.outputs.event == 'assignment' }} && ${{ needs.parse.outputs.stage == 'test' }}"
+    # in the model registry and only when the model was assigned to a stage called "prod"
+    if: "${{ needs.parse.outputs.event == 'assignment' }} && ${{ needs.parse.outputs.stage == 'prod' }}"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
