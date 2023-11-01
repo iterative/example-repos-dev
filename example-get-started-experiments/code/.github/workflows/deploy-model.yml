@@ -25,7 +25,7 @@ jobs:
         fetch-depth: 0
     - name: "Parse GTO tag"
       id: gto
-      uses: iterative/gto-action@14723404a00bb0c1e759c02ffcd24279df5815c2
+      uses: iterative/gto-action@v2
     outputs:
       event: ${{ steps.gto.outputs.event }}
       name: ${{ steps.gto.outputs.name }}
@@ -45,7 +45,7 @@ jobs:
     - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: us-east-2
-        role-to-assume: ${{ vars.AWS_SAGEMAKER_ROLE }}
+        role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
         role-duration-seconds: 43200
 
     - name: Set up Python
@@ -66,4 +66,4 @@ jobs:
         --stage ${{ needs.parse.outputs.stage }} \
         --version ${{ needs.parse.outputs.version }} \
         --model_data $MODEL_DATA \
-        --role ${{ vars.AWS_SAGEMAKER_ROLE }}
+        --role ${{ vars.AWS_SANDBOX_ROLE }}
