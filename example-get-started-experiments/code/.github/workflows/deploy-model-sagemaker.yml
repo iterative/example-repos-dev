@@ -1,4 +1,4 @@
-name: Deploy model
+name: Deploy model (Sagemaker)
 
 on:
   push:

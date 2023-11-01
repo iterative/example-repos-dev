@@ -1,4 +1,4 @@
-name: Test Model Artifact
+name: Deploy Model (Template)
 
 on:
   # the workflow is triggered whenever a tag is pushed to the repository
