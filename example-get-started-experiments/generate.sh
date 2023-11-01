@@ -126,13 +126,14 @@ dvc stage add -n sagemaker \
 git add .
 tick
 git commit -m "Convert Notebook to dvc.yaml pipeline"
+git tag -a "2-get-started-model-management"
 
 
 dvc exp run
 git add .
 tick
 git commit -m "Run dvc.yaml pipeline"
-git tag -a "2-dvc-pipeline" -m "Experiment using dvc pipeline"
+git tag -a "3-dvc-pipeline" -m "Experiment run using dvc pipeline"
 tick
 gto register pool-segmentation --version v1.0.0
 gto assign pool-segmentation --version v1.0.0 --stage dev
