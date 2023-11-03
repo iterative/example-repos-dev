@@ -42,9 +42,6 @@ jobs:
     if: "${{ needs.parse.outputs.event == 'assignment' }} && ${{ needs.parse.outputs.stage == 'prod' }}"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - uses: iterative/setup-dvc@v1
     # this step uses DVC to download the model from our remote repository and deploys the model
     # Model deployment is mocked here as it is specific to each deployment environment
