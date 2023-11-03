@@ -24,10 +24,10 @@ For the basic use case (docs and Studio demo), use the command below.
 ```
 
 If change source code, to publish it on S3 (needed for the get started tutorial)
-pass `true` to the command. It's needed when you ready to publish it.
+pass `prod` to the command. It's needed when you ready to publish it.
 
 ```shell
-./generate.sh true
+./generate.sh prod
 ```
 
 The repo generated in `build/example-get-started` is intended to be published on
@@ -123,7 +123,7 @@ repositories and/or use different remote types.
   branches (bigger dataset, etc). It supports nested repos - branch names will
   have prefixes or suffixes to distinguish them.
 - `OPT_REMOTE="public-s3"` - (default `private-s3`). Other options: `public-s3`,
-  `private-http`, `private-ssh`, etc.
+  `private-http`, `private-ssh`, `private-gdrive`, etc.
 - `OPT_DVC_TRACKED_METRICS='true'` - (default `true`). Either we should use
   DVC to also track all metric and plot files (e.g. to test that Studio can get
   plots from the remote storage).

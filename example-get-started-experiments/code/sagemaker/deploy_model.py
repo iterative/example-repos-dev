@@ -2,6 +2,9 @@ import logging
 import re
 import sys
 
+import boto3
+import botocore
+
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.pytorch import PyTorchModel
 from sagemaker.serverless import ServerlessInferenceConfig
@@ -52,6 +55,15 @@ def deploy(
 
     stage_name =  re.sub(
         r"[^a-zA-Z0-9\-]", "-", f"{name}-{stage}")
+    try:
+        boto3.client("sagemaker").delete_endpoint(EndpointName=stage_name)
+    except botocore.exceptions.ClientError as e:
+        sagemaker_logger.warn(e)
+    try:
+        boto3.client("sagemaker").delete_endpoint_config(EndpointConfigName=stage_name)
+    except botocore.exceptions.ClientError as e:
+        sagemaker_logger.warn(e)
+
     return model.deploy(
         initial_instance_count=1,
         deserializer=JSONDeserializer(),

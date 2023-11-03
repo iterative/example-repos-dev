@@ -3,7 +3,12 @@ on:
   push:
     paths:
       - example-get-started/**
+    branches:
+      - '**'        # matches every branch
+      - '!master'   # excludes master
   workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * 1'
 permissions:
   contents: read
   id-token: write

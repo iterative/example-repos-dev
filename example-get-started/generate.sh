@@ -63,6 +63,17 @@ init_remote_storage() {
     dvc remote add -f -d $OPT_REMOTE https://remote.dvc.org/get-started
   fi
 
+  if [ $OPT_REMOTE == 'private-gdrive' ]; then
+    # This corresponds to the Iterative shared GDrive disk.
+    dvc remote add -f -d $OPT_REMOTE gdrive://1x2tUWiCqcHxmUli7BP6qOrrlmp-12DYY
+    # In Studio we have to use a custom app for GDrive. This one is created in
+    # the pydrive-test project and in Studio we provide service account credentials.
+    # When testing in Studio get a service credentials JSON file from the Google
+    # Cloud Console.
+    dvc remote modify $OPT_REMOTE gdrive_client_id "47794215776-cd9ssb6a4vv5otkq6n0iadpgc4efgjb1.apps.googleusercontent.com"
+    dvc remote modify $OPT_REMOTE gdrive_client_secret 'i2gerGA7uBjZbR08HqSOSt9Z'
+  fi
+
   if [ $OPT_REMOTE == 'private-s3' ]; then
     dvc remote add -f -d $OPT_REMOTE s3://dvc-private/remote/get-started
   fi
