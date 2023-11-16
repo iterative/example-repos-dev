@@ -3,6 +3,7 @@ import re
 import sys
 
 import boto3
+import botocore
 
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.pytorch import PyTorchModel
@@ -34,16 +35,11 @@ def deploy(
     sagemaker_logger.setLevel(logging.DEBUG)
     sagemaker_logger.addHandler(logging.StreamHandler(sys.stdout))
 
-    composed_name = re.sub(
-        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}-{stage}")
-    
-    try:
-        boto3.client("sagemaker").delete_endpoint(EndpointName=composed_name)
-    except:
-        pass
+    version_name =  re.sub(
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{version}")
 
     model = PyTorchModel(
-        name=composed_name,
+        name=version_name,
         model_data=model_data,
         framework_version="1.12",
         py_version="py38",
@@ -57,11 +53,21 @@ def deploy(
         },
     )
 
+    stage_name =  re.sub(
+        r"[^a-zA-Z0-9\-]", "-", f"{name}-{stage}")
+    try:
+        boto3.client("sagemaker").delete_endpoint(EndpointName=stage_name)
+    except botocore.exceptions.ClientError as e:
+        sagemaker_logger.warn(e)
+    try:
+        boto3.client("sagemaker").delete_endpoint_config(EndpointConfigName=stage_name)
+    except botocore.exceptions.ClientError as e:
+        sagemaker_logger.warn(e)
 
     return model.deploy(
         initial_instance_count=1,
         deserializer=JSONDeserializer(),
-        endpoint_name=composed_name,
+        endpoint_name=stage_name,
         serverless_inference_config=ServerlessInferenceConfig(
             memory_size_in_mb=memory_size[stage],
             max_concurrency=max_concurrency[stage]
