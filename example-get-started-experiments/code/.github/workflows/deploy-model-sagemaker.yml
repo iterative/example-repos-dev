@@ -1,17 +1,10 @@
-name: Deploy model
+name: Deploy model (Sagemaker)
 
 on:
   push:
     tags:
       - "*"
 
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Manual version name'
-        required: true
-        type: string
-  
 permissions:
   contents: write
   id-token: write
@@ -21,11 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: "Parse GTO tag"
       id: gto
-      uses: iterative/gto-action@14723404a00bb0c1e759c02ffcd24279df5815c2
+      uses: iterative/gto-action@v2
     outputs:
       event: ${{ steps.gto.outputs.event }}
       name: ${{ steps.gto.outputs.name }}
@@ -35,7 +26,6 @@ jobs:
   deploy-model:
     needs: parse
     if: "${{ needs.parse.outputs.event == 'assignment' }}"
-    environment: cloud
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -45,7 +35,7 @@ jobs:
     - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: us-east-2
-        role-to-assume: ${{ vars.AWS_SAGEMAKER_ROLE }}
+        role-to-assume: ${{ vars.AWS_SANDBOX_ROLE }}
         role-duration-seconds: 43200
 
     - name: Set up Python
