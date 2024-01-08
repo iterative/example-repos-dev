@@ -82,7 +82,7 @@ pip install -r requirements.txt --extra-index-url https://download.pytorch.org/w
 pip install jupyter
 jupyter nbconvert --execute 'notebooks/TrainSegModel.ipynb' --inplace
 # Apply best experiment
-BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|evaluate/dice_multi|base_lr' --csv --sort-by evaluate/dice_multi | tail -n 1)
+BEST_EXP_ROW=$(dvc exp show --drop '.*' --keep 'Experiment|results/evaluate/metrics.json:dice_multi|base_lr' --csv --sort-by 'results/evaluate/metrics.json:dice_multi' | tail -n 1)
 BEST_EXP_NAME=$(echo $BEST_EXP_ROW | cut -d, -f 1)
 BEST_EXP_BASE_LR=$(echo $BEST_EXP_ROW | cut -d, -f 3)
 dvc exp apply $BEST_EXP_NAME
@@ -98,7 +98,7 @@ cp $HERE/code/params.yaml .
 sed -e "s/base_lr: 0.01/base_lr: $BEST_EXP_BASE_LR/" -i".bkp" params.yaml
 rm params.yaml.bkp
 
-git rm -r --cached 'results'
+git rm -r --cached 'results' 'models'
 git commit -m "stop tracking results"
 
 dvc stage add -n data_split \
